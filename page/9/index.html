@@ -15,67 +15,253 @@
 <meta name="twitter:title" content="(MyLife)Population.FindControl("sujunmin")">
 <meta name="twitter:description">
   
-    <link rel="alternate" href="/atom.xml" title="(MyLife)Population.FindControl(&quot;sujunmin&quot;)" type="application/atom+xml">
+    <link rel="alternative" href="/atom.xml" title="(MyLife)Population.FindControl(&quot;sujunmin&quot;)" type="application/atom+xml">
   
   
-    <link rel="icon" href="/favicon.png">
+    <link rel="icon" href="/img/favicon.png">
   
   
-    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
   
   <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   
-
+    
+    
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <!-- 加载特效 -->
+    <script src="/js/pace.js"></script>
+    <link href="/css/pace/pace-theme-flash.css" rel="stylesheet" />
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: true,
+          isPost: false,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false
+      }
+  </script>
 </head>
-
 <body>
   <div id="container">
-    <div id="wrap">
-      <header id="header">
-  <div id="banner"></div>
-  <div id="header-outer" class="outer">
-    <div id="header-title" class="inner">
-      <h1 id="logo-wrap">
-        <a href="/" id="logo">(MyLife)Population.FindControl(&quot;sujunmin&quot;)</a>
-      </h1>
-      
-        <h2 id="subtitle-wrap">
-          <a href="/" id="subtitle">throw System.NullReferenceException.....</a>
-        </h2>
-      
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="/img/head.jpg" class="js-avatar">
+            
+        </a>
+
+        <hgroup>
+          <h1 class="header-author"><a href="/">John Doe</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">throw System.NullReferenceException.....</p>
+        
+        
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/Home">博客首页</a></li>
+                        
+                            <li><a href="/works">作品展示</a></li>
+                        
+                            <li><a href="/about">留言打卡</a></li>
+                        
+                            <li><a href="/FrontEndGuide">前端导航</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fl mail" target="_blank" href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=PAkNDgsKBQ4MCnxNTRJfU1E" title="mail">mail</a>
+                            
+                                <a class="fl github" target="_blank" href="https://github.com/luuman" title="github">github</a>
+                            
+                                <a class="fl zhihu" target="_blank" href="https://www.zhihu.com/people/luuman" title="zhihu">zhihu</a>
+                            
+                                <a class="fl weibo" target="_blank" href="http://weibo.com/lishangmou" title="weibo">weibo</a>
+                            
+                                <a class="fl google" target="_blank" href="http://i.youku.com/shangmou" title="google">google</a>
+                            
+                                <a class="fl twitter" target="_blank" href="http: //twitter.com/luuman" title="twitter">twitter</a>
+                            
+                                <a class="fl facebook" target="_blank" href="#" title="facebook">facebook</a>
+                            
+                                <a class="fl rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="/tags/Net/" style="font-size: 16.25px;">.Net</a> <a href="/tags/Art/" style="font-size: 10px;">Art</a> <a href="/tags/Boutique/" style="font-size: 12.5px;">Boutique</a> <a href="/tags/Foods/" style="font-size: 10px;">Foods</a> <a href="/tags/Games/" style="font-size: 10px;">Games</a> <a href="/tags/Gossipings/" style="font-size: 13.75px;">Gossipings</a> <a href="/tags/Health/" style="font-size: 11.25px;">Health</a> <a href="/tags/Kona/" style="font-size: 10px;">Kona</a> <a href="/tags/MSSQL/" style="font-size: 10px;">MSSQL</a> <a href="/tags/Marriage/" style="font-size: 11.25px;">Marriage</a> <a href="/tags/Movies/" style="font-size: 15px;">Movies</a> <a href="/tags/Networks/" style="font-size: 11.25px;">Networks</a> <a href="/tags/PMP/" style="font-size: 17.5px;">PMP</a> <a href="/tags/Ruby/" style="font-size: 10px;">Ruby</a> <a href="/tags/Travel/" style="font-size: 18.75px;">Travel</a> <a href="/tags/Windows-Mobile/" style="font-size: 11.25px;">Windows Mobile</a> <a href="/tags/http-schemas-google-com-blogger-2008-kind-post/" style="font-size: 20px;">http://schemas.google.com/blogger/2008/kind#post</a>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="http://MOxFIVE.github.io/">MOxFIVE</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="http://www.vsay.cn/">DoubleV</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="http://www.ccwebsite.com/">兮兮</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="http://blog.dandyweng.com/">翁天信</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="http://www.plqblog.com/views/index.php">潘利强</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="http://www.hankin.cn/">hankin</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="http://blog.waydrow.com/">waydrow</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">纯海迷、爱运动、爱交友、爱旅行、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
     </div>
-    <div id="header-inner" class="inner">
-      <nav id="main-nav">
-        <a id="main-nav-toggle" class="nav-icon"></a>
-        
-          <a class="main-nav-link" href="/">Home</a>
-        
-          <a class="main-nav-link" href="/archives">Archives</a>
-        
-      </nav>
-      <nav id="sub-nav">
-        
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
-        
-        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
-      </nav>
-      <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">John Doe</a></h1>
       </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="/img/head.jpg" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">John Doe</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">throw System.NullReferenceException.....</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/Home">博客首页</a></li>
+                
+                    <li><a href="/works">作品展示</a></li>
+                
+                    <li><a href="/about">留言打卡</a></li>
+                
+                    <li><a href="/FrontEndGuide">前端导航</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                <div class="social">
+                    
+                        <a class="mail" target="_blank" href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=PAkNDgsKBQ4MCnxNTRJfU1E" title="mail">mail</a>
+                    
+                        <a class="github" target="_blank" href="https://github.com/luuman" title="github">github</a>
+                    
+                        <a class="zhihu" target="_blank" href="https://www.zhihu.com/people/luuman" title="zhihu">zhihu</a>
+                    
+                        <a class="weibo" target="_blank" href="http://weibo.com/lishangmou" title="weibo">weibo</a>
+                    
+                        <a class="google" target="_blank" href="http://i.youku.com/shangmou" title="google">google</a>
+                    
+                        <a class="twitter" target="_blank" href="http: //twitter.com/luuman" title="twitter">twitter</a>
+                    
+                        <a class="facebook" target="_blank" href="#" title="facebook">facebook</a>
+                    
+                        <a class="rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+                    
+                </div>
+            </nav>
+        </header>                
     </div>
-  </div>
-</header>
-      <div class="outer">
-        <section id="main">
+</nav>
+      <div class="body-wrap">
   
     <article id="post-20091101-20091108-印度行-5-完" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2009/11/19/20091101-20091108-印度行-5-完/" class="article-date">
-  <time datetime="2009-11-19T04:40:03.000Z" itemprop="datePublished">2009-11-19</time>
+  
+    <div class="article-meta">
+      <a href="/2009/11/19/20091101-20091108-印度行-5-完/" class="article-date">
+      <time datetime="2009-11-19T04:40:03.000Z" itemprop="datePublished">2009-11-19</time>
 </a>
-    
-  </div>
+    </div>
+  
   <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
     
     
       <header class="article-header">
@@ -87,9 +273,11 @@
   
 
       </header>
+      
     
     <div class="article-entry" itemprop="articleBody">
       
+          
         <p>今天在新聞中看到<a href="http://n.yam.com/rti/computer/200911/20091118922131.html" target="_blank" rel="external">這個</a>，終於知道我們去的會議不是白去的了，不過也太晚報了吧，都幾個星期後了。</p>
 <p>這邊是寫11/7與11/8的印度遊記，大概重點是泰姬陵。話說11/6有人安排旅程以後，11/7早上6:15集合出發，我跟同寢的團員把我帶來的泡麵吃掉當早餐(飯店還沒有供餐，也不想帶回去)，感覺吃的很飽，同寢的團員也帶著他的OREO(好幾條)帶到車上吃，就準備出發了。這一次的團費(8人團)每個人大概3600Rs，算是還好，包車費，一些地方的過路費，中餐(在其他飯店吃)，兩個地方的入園費，還有一些小費，導遊費等。</p>
 <iframe scrolling="no" marginwidth="0" width="300" frameborder="0" src="http://maps.google.com.tw/maps/ms?brcurrent=3,0x0:0x0,0&amp;ie=UTF8&amp;msa=0&amp;msid=110315272316057324713.000478b2181276707b230&amp;ll=27.737023,77.700806&amp;spn=2.430849,1.647949&amp;z=8&amp;output=embed" marginheight="0" height="500"></iframe>
@@ -176,27 +364,44 @@
 
       
     </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2009/11/19/20091101-20091108-印度行-5-完/" data-id="cip0y8ym50008al5pzdyuipol" class="article-share-link">Share</a>
+    
+    <div class="article-info article-info-index">
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Travel/">Travel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
 
-    </footer>
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Travel/">Travel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
+    </div>
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
   </div>
   
 </article>
 
 
+
+
+
+
+
+
+
   
     <article id="post-20091101-20091108-印度行-4" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2009/11/17/20091101-20091108-印度行-4/" class="article-date">
-  <time datetime="2009-11-17T06:00:07.000Z" itemprop="datePublished">2009-11-17</time>
+  
+    <div class="article-meta">
+      <a href="/2009/11/17/20091101-20091108-印度行-4/" class="article-date">
+      <time datetime="2009-11-17T06:00:07.000Z" itemprop="datePublished">2009-11-17</time>
 </a>
-    
-  </div>
+    </div>
+  
   <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
     
     
       <header class="article-header">
@@ -208,9 +413,11 @@
   
 
       </header>
+      
     
     <div class="article-entry" itemprop="articleBody">
       
+          
         <p>接下來寫11/5與11/6經歷的事情。11/5是eAsia Award評選與頒獎的日子，是在表彰會員國的專案有高度切合貿易便捷化與電子商務的貢獻。這天的白天都是在評選相關專案的活動，並且從下午開始展覽專案。我國也派了不少案子來參展。不過這時候跟我就比較沒有關係了(因為我代表的專案沒有參賽)，就跟一些團員出去探險了。</p>
 <p>在11/2那天想去的點，因為計程車司機覺得太遠而作罷。那時候坐的<a href="http://images.google.com.tw/images?hl=zh-TW&amp;q=Auto-Rickshaw&amp;um=1&amp;ie=UTF-8&amp;ei=Bz8CS7HGC9PakAX3q7jHAQ&amp;sa=X&amp;oi=image_result_group&amp;ct=title&amp;resnum=1&amp;ved=0CBUQsAQwAA" target="_blank" rel="external">Tu-Tu車</a>(Auto-Rickshaw)真的很難忘，很熱不打緊，開起來實在很刺激，像在坐越野車，又切合交通很亂的感覺，真的很難忘。不過這次出去玩就想坐好一些的車子了。</p>
 <p><iframe scrolling="no" marginwidth="0" width="350" frameborder="0" src="http://maps.google.com.tw/maps/ms?ie=UTF8&amp;hl=zh-TW&amp;brcurrent=3,0x0:0x0,0&amp;msa=0&amp;msid=110315272316057324713.0004788b200a255e580c5&amp;ll=28.595073,77.235603&amp;spn=0.150723,0.120163&amp;z=12&amp;output=embed" marginheight="0" height="500"></iframe><br><small>在較大的地圖上查看<a href="http://maps.google.com.tw/maps/ms?ie=UTF8&amp;hl=zh-TW&amp;brcurrent=3,0x0:0x0,0&amp;msa=0&amp;msid=110315272316057324713.0004788b200a255e580c5&amp;ll=28.595073,77.235603&amp;spn=0.150723,0.120163&amp;z=12&amp;source=embed" target="_blank" rel="external">2009110506</a></small></p>
@@ -257,27 +464,44 @@
 
       
     </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2009/11/17/20091101-20091108-印度行-4/" data-id="cip0y8ylx0007al5po9rgzvbg" class="article-share-link">Share</a>
+    
+    <div class="article-info article-info-index">
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Travel/">Travel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
 
-    </footer>
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Travel/">Travel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
+    </div>
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
   </div>
   
 </article>
 
 
+
+
+
+
+
+
+
   
     <article id="post-20091101-20091108-印度行-3" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2009/11/16/20091101-20091108-印度行-3/" class="article-date">
-  <time datetime="2009-11-16T13:24:27.000Z" itemprop="datePublished">2009-11-16</time>
+  
+    <div class="article-meta">
+      <a href="/2009/11/16/20091101-20091108-印度行-3/" class="article-date">
+      <time datetime="2009-11-16T13:24:27.000Z" itemprop="datePublished">2009-11-16</time>
 </a>
-    
-  </div>
+    </div>
+  
   <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
     
     
       <header class="article-header">
@@ -289,9 +513,11 @@
   
 
       </header>
+      
     
     <div class="article-entry" itemprop="articleBody">
       
+          
         <p>今天回家，濕淋淋的回家，真是討厭的天氣。不過在信箱中發現到之前要寄回台灣的明信片，今天終於到我家了。</p>
 <p>給bonnie的上星期五(11/13)就到了，寄到我家的跟我爸媽家的都是今天。</p>
 <p>&nbsp;<a href="http://photo.xuite.net/_r9009/retsamsu/3423409/44.jpg" target="_blank" rel="external"><img src="http://e.share.photo.xuite.net/retsamsu/1e23296/3423409/138317285_m.jpg" alt=""></a></p>
@@ -323,27 +549,44 @@
 
       
     </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2009/11/16/20091101-20091108-印度行-3/" data-id="cip0y8ylg0006al5pw7cyznqn" class="article-share-link">Share</a>
+    
+    <div class="article-info article-info-index">
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Travel/">Travel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
 
-    </footer>
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Travel/">Travel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
+    </div>
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
   </div>
   
 </article>
 
 
+
+
+
+
+
+
+
   
     <article id="post-20091101-20091108-印度行-2" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2009/11/14/20091101-20091108-印度行-2/" class="article-date">
-  <time datetime="2009-11-14T14:05:43.000Z" itemprop="datePublished">2009-11-14</time>
+  
+    <div class="article-meta">
+      <a href="/2009/11/14/20091101-20091108-印度行-2/" class="article-date">
+      <time datetime="2009-11-14T14:05:43.000Z" itemprop="datePublished">2009-11-14</time>
 </a>
-    
-  </div>
+    </div>
+  
   <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
     
     
       <header class="article-header">
@@ -355,9 +598,11 @@
   
 
       </header>
+      
     
     <div class="article-entry" itemprop="articleBody">
       
+          
         <p>這篇是寫11/2發生的事情，今天除了第一次去會場以外，還看了很多地方，第一次的印度景色之旅開始了。</p>
 <p><iframe scrolling="no" marginwidth="0" width="425" frameborder="0" src="http://maps.google.com.tw/maps/ms?hl=zh-TW&amp;brcurrent=3,0x0:0x0,1&amp;ie=UTF8&amp;msa=0&amp;msid=110315272316057324713.000478556c6edeb07bc11&amp;ll=28.612555,77.219296&amp;spn=0.052744,0.072956&amp;z=13&amp;output=embed" marginheight="0" height="350"></iframe><br><small>在較大的地圖上查看<a href="http://maps.google.com.tw/maps/ms?hl=zh-TW&amp;brcurrent=3,0x0:0x0,1&amp;ie=UTF8&amp;msa=0&amp;msid=110315272316057324713.000478556c6edeb07bc11&amp;ll=28.612555,77.219296&amp;spn=0.052744,0.072956&amp;z=13&amp;source=embed" target="_blank" rel="external">20091102</a></small></p>
 <p>昨天晚上(11/1)調了鬧鐘，其實今天(11/2)應該是不用去的(委員會會議)，不過召集人昨晚吃飯的時候叫我們今天都要到，8點半在lobby集合。因此怕會遲到，調了鬧鐘6:30起來。可能是第一天在這邊睡覺吧，其實不太需要鬧鐘，自然就醒了。外面的景色每天都一樣，晴朗無雲，但是空氣都是霧霧的，火車站有些嗚嗚聲。穿上衣服，打個領帶，漱個口，就去吃早餐了。</p>
@@ -401,27 +646,44 @@
 
       
     </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2009/11/14/20091101-20091108-印度行-2/" data-id="cip0y8yl10004al5pz2lvcyar" class="article-share-link">Share</a>
+    
+    <div class="article-info article-info-index">
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Travel/">Travel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
 
-    </footer>
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Travel/">Travel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
+    </div>
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
   </div>
   
 </article>
 
 
+
+
+
+
+
+
+
   
     <article id="post-20091101-20091108-印度行-1" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2009/11/13/20091101-20091108-印度行-1/" class="article-date">
-  <time datetime="2009-11-13T04:54:58.000Z" itemprop="datePublished">2009-11-13</time>
+  
+    <div class="article-meta">
+      <a href="/2009/11/13/20091101-20091108-印度行-1/" class="article-date">
+      <time datetime="2009-11-13T04:54:58.000Z" itemprop="datePublished">2009-11-13</time>
 </a>
-    
-  </div>
+    </div>
+  
   <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
     
     
       <header class="article-header">
@@ -433,9 +695,11 @@
   
 
       </header>
+      
     
     <div class="article-entry" itemprop="articleBody">
       
+          
         <p>終於有一些空閒時間來寫寫這一次公司派我去印度出國開會的事情，今天(11/13)下午，要來跟我們單位的人分享會議的內容。說來實在是很多要寫的，恨不得有一個秘書幫我寫回憶錄(笑)，不過當然是沒有這樣的事情，只能就我慢慢的打字速度來寫這次印度行的記錄。</p>
 <p>時間是10/19，我生日的前一天，聽到老闆說：「小蘇阿，你要不要出國去開個會，那個<a href="http://www.afact.org/group/application/afact/index.php" target="_blank" rel="external">AFACT</a>(這個等一下後面會說這是什麼會議)可能要叫你去….不過我要先跟處長說一下，也許不一定會去…」，我就回覆說，如有機會當然是最好，但是一切要看處上的指示(因為之前某個長官是必去這個會議的，不過之前好像有跟老闆提，但是老闆以經費不足為由就暫緩)，如果要節省經費，或是不需要去，也沒什麼關係。這件事情就這樣先暫停了，我也不以為意。</p>
 <p>10/20我過著有趣(笑)的生日後，隔天就跑到高雄出差了，要去幫人家<a href="https://web02.mtnet.gov.tw/new/readbulletins.jsp?newsid=82" target="_blank" rel="external">上課</a>，不過在台北的同事說老闆要給我個文，說是出國的事情，結果我求證過以後，說真的要派我去，而且是去<a href="http://etrade.gov.in/afact2009/afact.aspx" target="_blank" rel="external">印度</a>開會，於是在高雄遠端問清楚流程以後，就開始辦了，一方面是問自己公司的流程(實在是非常繁瑣)，還有旅行設定機票的流程(這比較簡單些，但是我是沒有出過國，當然護照與當地的簽證我也沒有)。</p>
@@ -471,27 +735,44 @@
 
       
     </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2009/11/13/20091101-20091108-印度行-1/" data-id="cip0y8ykv0003al5pwzju40h3" class="article-share-link">Share</a>
+    
+    <div class="article-info article-info-index">
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Travel/">Travel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
 
-    </footer>
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Travel/">Travel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
+    </div>
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
   </div>
   
 </article>
 
 
+
+
+
+
+
+
+
   
     <article id="post-充實的週末-3-Pixar-20-年展、松山機場看飛機、與士林夜市-完" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2009/10/17/充實的週末-3-Pixar-20-年展、松山機場看飛機、與士林夜市-完/" class="article-date">
-  <time datetime="2009-10-17T12:58:07.000Z" itemprop="datePublished">2009-10-17</time>
+  
+    <div class="article-meta">
+      <a href="/2009/10/17/充實的週末-3-Pixar-20-年展、松山機場看飛機、與士林夜市-完/" class="article-date">
+      <time datetime="2009-10-17T12:58:07.000Z" itemprop="datePublished">2009-10-17</time>
 </a>
-    
-  </div>
+    </div>
+  
   <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
     
     
       <header class="article-header">
@@ -503,9 +784,11 @@
   
 
       </header>
+      
     
     <div class="article-entry" itemprop="articleBody">
       
+          
         <p>經過了一夜休息以後，睡到快中午才起來，不過天公仍然不作美，時陰時雨，我也順便做了點家事，洗了點衣服。稍微整理一下以後，就到附近的一家早餐店吃個早午餐了。</p>
 <p><img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/27799137/0.png" alt=""></p>
 <p>這家早餐店呢，人很多，也賣很多東西，不過呢，bonnie感覺跟之前經過的感覺不太一樣，服務不太好，東西不太好吃，吃著吃著，bonnie下了詛咒，說這間店開不久會倒閉，不過我記得沒錯的話，這間店已經開很久了…</p>
@@ -547,27 +830,44 @@
 
       
     </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2009/10/17/充實的週末-3-Pixar-20-年展、松山機場看飛機、與士林夜市-完/" data-id="cip0y8yvl004cal5pp5ydqwvo" class="article-share-link">Share</a>
+    
+    <div class="article-info article-info-index">
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Travel/">Travel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
 
-    </footer>
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Travel/">Travel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
+    </div>
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
   </div>
   
 </article>
 
 
+
+
+
+
+
+
+
   
     <article id="post-充實的週末-2-–-剝皮寮藝條通與自來水博物館民歌演唱" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2009/10/14/充實的週末-2-–-剝皮寮藝條通與自來水博物館民歌演唱/" class="article-date">
-  <time datetime="2009-10-14T07:21:06.000Z" itemprop="datePublished">2009-10-14</time>
+  
+    <div class="article-meta">
+      <a href="/2009/10/14/充實的週末-2-–-剝皮寮藝條通與自來水博物館民歌演唱/" class="article-date">
+      <time datetime="2009-10-14T07:21:06.000Z" itemprop="datePublished">2009-10-14</time>
 </a>
-    
-  </div>
+    </div>
+  
   <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
     
     
       <header class="article-header">
@@ -579,9 +879,11 @@
   
 
       </header>
+      
     
     <div class="article-entry" itemprop="articleBody">
       
+          
         <p>在下著小雨的士林夜市，我們跟其他人道別，與bonnie的同學約好再聚的位置以後(龍山寺站)，就迎著風雨往下個目的地邁進–剝皮寮藝條通。</p>
 <p>&nbsp;</p>
 <p><img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/27722124/16.png" alt=""><br>到了那邊，聚集一下，記得之前bonnie說過，她有個朋友在龍山寺那邊算命，好奇的我們就下去龍山寺地下街去尋跡。</p>
@@ -614,27 +916,44 @@
 
       
     </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2009/10/14/充實的週末-2-–-剝皮寮藝條通與自來水博物館民歌演唱/" data-id="cip0y8yvj004aal5pmvp9ahsc" class="article-share-link">Share</a>
+    
+    <div class="article-info article-info-index">
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Travel/">Travel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
 
-    </footer>
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Travel/">Travel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
+    </div>
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
   </div>
   
 </article>
 
 
+
+
+
+
+
+
+
   
     <article id="post-充實的週末-1-冷水坑公車之旅與快樂的早餐" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2009/10/12/充實的週末-1-冷水坑公車之旅與快樂的早餐/" class="article-date">
-  <time datetime="2009-10-12T03:40:22.000Z" itemprop="datePublished">2009-10-12</time>
+  
+    <div class="article-meta">
+      <a href="/2009/10/12/充實的週末-1-冷水坑公車之旅與快樂的早餐/" class="article-date">
+      <time datetime="2009-10-12T03:40:22.000Z" itemprop="datePublished">2009-10-12</time>
 </a>
-    
-  </div>
+    </div>
+  
   <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
     
     
       <header class="article-header">
@@ -646,9 +965,11 @@
   
 
       </header>
+      
     
     <div class="article-entry" itemprop="articleBody">
       
+          
         <p>這兩天(國慶日跟星期天)過的真是非常充實，除了原有的行程以外，一些新增的行程跟朋友加入，還有雨神來攪局，逛了很多地方。雖累但很充實，加上部落格很久沒文章，順便來練練寫遊記的文筆。</p>
 <p><img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/27661888/5.png" alt=""><br>星期五晚上，準備進行以往的行程，這個是前一個星期就規劃好的。孰料bonnie告訴我，手機簡訊裡躺了一個不知怎麼辦的簡訊，來源是bonnie的舅媽，大意是之前欠他們一個爬山(擎天崗)跟早餐之類云云，要7點在劍潭捷運站集合，這可苦了我們兩個，因為一個是被台北市政府跟其他案子弄的體無完膚，像是一個需要休息身經百戰的老兵，而我是還好，但是也才剛通過前幾天基隆港的摧殘，正在慢慢恢復中，我們現在需要的，除了出去遊玩的行程以外，當然就是&mdash;睡覺，睡個又香甜又久又能恢復體力的覺。</p>
 <p>百般計畫思考後，當然還想到一些但書(打電話給舅媽說陽明山之前下雨封路，文大停課等等之類)，希望能夠讓大人打消念頭，不過最後還是失敗，因此最後連同bonnie的同學(現在是室友)，要5:30起床，7點在劍潭捷運站集合，bonnie的同學比較辛苦，翻山越嶺，我的Google Maps又報一個沒有的公車路線，而我們則是騎著在台北最方便的交通工具&mdash;機車，一路騎到那邊。</p>
@@ -661,27 +982,44 @@
 
       
     </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2009/10/12/充實的週末-1-冷水坑公車之旅與快樂的早餐/" data-id="cip0y8yvf0048al5p9rjtzm13" class="article-share-link">Share</a>
+    
+    <div class="article-info article-info-index">
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Travel/">Travel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
 
-    </footer>
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Travel/">Travel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
+    </div>
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
   </div>
   
 </article>
 
 
+
+
+
+
+
+
+
   
     <article id="post-20090822-北海岸一日遊" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2009/09/15/20090822-北海岸一日遊/" class="article-date">
-  <time datetime="2009-09-15T02:31:39.000Z" itemprop="datePublished">2009-09-15</time>
+  
+    <div class="article-meta">
+      <a href="/2009/09/15/20090822-北海岸一日遊/" class="article-date">
+      <time datetime="2009-09-15T02:31:39.000Z" itemprop="datePublished">2009-09-15</time>
 </a>
-    
-  </div>
+    </div>
+  
   <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
     
     
       <header class="article-header">
@@ -693,9 +1031,11 @@
   
 
       </header>
+      
     
     <div class="article-entry" itemprop="articleBody">
       
+          
         <p>今天是自己自主管理的最後一天(應該吧)，就把之前要補的遊記補一下吧。</p>
 <p>2009年8月22日，我們開著我們的車(最後還是發生奇怪的事件了)，往北海岸出發。</p>
 <p>原來規劃是跟bonnie的同學一起出去玩，路程依序是<a href="http://www.yannick.com.tw/yannick/" target="_blank" rel="external">亞尼克</a>-&gt;<a href="http://www.wretch.cc/blog/smilejean/8287932" target="_blank" rel="external">石門風力發電場</a>-&gt;<a href="http://www.liujiarice.com.tw/" target="_blank" rel="external">劉家肉粽</a>-&gt;<a href="http://www.wingnet.com.tw/easytravel/18nurse/about.htm" target="_blank" rel="external">18王公廟</a>-&gt;<a href="http://blog.xuite.net/kai6612/kai/24682196" target="_blank" rel="external">金山鴨肉</a>-&gt;<a href="http://www.juming.org.tw/" target="_blank" rel="external">朱銘美術館</a>，不過bonnie的同學臨時因為身體因素無法前往，因此我們就自行前往，行程也有些改變。</p>
@@ -734,27 +1074,44 @@
 
       
     </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2009/09/15/20090822-北海岸一日遊/" data-id="cip0y8yk80001al5py0svgkcq" class="article-share-link">Share</a>
+    
+    <div class="article-info article-info-index">
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Travel/">Travel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
 
-    </footer>
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Travel/">Travel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
+    </div>
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
   </div>
   
 </article>
 
 
+
+
+
+
+
+
+
   
     <article id="post-三菜一湯測試記錄" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2009/09/06/三菜一湯測試記錄/" class="article-date">
-  <time datetime="2009-09-06T02:51:35.000Z" itemprop="datePublished">2009-09-06</time>
+  
+    <div class="article-meta">
+      <a href="/2009/09/06/三菜一湯測試記錄/" class="article-date">
+      <time datetime="2009-09-06T02:51:35.000Z" itemprop="datePublished">2009-09-06</time>
 </a>
-    
-  </div>
+    </div>
+  
   <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
     
     
       <header class="article-header">
@@ -766,9 +1123,11 @@
   
 
       </header>
+      
     
     <div class="article-entry" itemprop="articleBody">
       
+          
         <p>由於前幾個星期bonnie回台南老家，想要學個菜來煮一煮，不過因為公平原則，每人都要煮兩道菜，我這個人說實在要有碰那些東西，應該可以追溯到…高中的家政課吧，不過看bonnie那麼熱衷，也只能撩下去了~</p>
 <p>bonnie的菜單部分是很早就定了，一個蒸蛋跟涼拌雞絲，不過我的一直改，從咖哩飯到蛤蠣湯都有，最後決定是紫菜蛋花湯跟鴻禧菇豬肉。</p>
 <p>鴻禧菇豬肉的由來是因為之前有人寄給我一個減重食譜(原來的連結不能用了)，裡面有一道鴻禧菇牛肉，不過牛肉又貴又不知道要選哪邊的，食譜裡寫可以用豬肉、雞肉等，就改用豬肉了(雖然還是不知道要吃哪個部位的，最後選擇里肌肉)。</p>
@@ -812,121 +1171,132 @@
 
       
     </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2009/09/06/三菜一湯測試記錄/" data-id="cip0y8yt80031al5p3hjbocte" class="article-share-link">Share</a>
+    
+    <div class="article-info article-info-index">
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Foods/">Foods</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
 
-    </footer>
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Foods/">Foods</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
+    </div>
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
   </div>
   
 </article>
 
 
-  
 
 
-  <nav id="page-nav">
-    <a class="extend prev" rel="prev" href="/page/8/">&laquo; __('prev')</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/page/10/">10</a><a class="page-number" href="/page/11/">11</a><a class="extend next" rel="next" href="/page/10/">__('next') &raquo;</a>
-  </nav>
-</section>
-        
-          <aside id="sidebar">
-  
-    
 
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Tags</h3>
-    <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Net/">.Net</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Art/">Art</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Boutique/">Boutique</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Foods/">Foods</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Games/">Games</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Gossipings/">Gossipings</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Health/">Health</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kona/">Kona</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MSSQL/">MSSQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Marriage/">Marriage</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Movies/">Movies</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Networks/">Networks</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PMP/">PMP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Ruby/">Ruby</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Travel/">Travel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows-Mobile/">Windows Mobile</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
-    </div>
-  </div>
+
+
 
 
   
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Tag Cloud</h3>
-    <div class="widget tagcloud">
-      <a href="/tags/Net/" style="font-size: 16.25px;">.Net</a> <a href="/tags/Art/" style="font-size: 10px;">Art</a> <a href="/tags/Boutique/" style="font-size: 12.5px;">Boutique</a> <a href="/tags/Foods/" style="font-size: 10px;">Foods</a> <a href="/tags/Games/" style="font-size: 10px;">Games</a> <a href="/tags/Gossipings/" style="font-size: 13.75px;">Gossipings</a> <a href="/tags/Health/" style="font-size: 11.25px;">Health</a> <a href="/tags/Kona/" style="font-size: 10px;">Kona</a> <a href="/tags/MSSQL/" style="font-size: 10px;">MSSQL</a> <a href="/tags/Marriage/" style="font-size: 11.25px;">Marriage</a> <a href="/tags/Movies/" style="font-size: 15px;">Movies</a> <a href="/tags/Networks/" style="font-size: 11.25px;">Networks</a> <a href="/tags/PMP/" style="font-size: 17.5px;">PMP</a> <a href="/tags/Ruby/" style="font-size: 10px;">Ruby</a> <a href="/tags/Travel/" style="font-size: 18.75px;">Travel</a> <a href="/tags/Windows-Mobile/" style="font-size: 11.25px;">Windows Mobile</a> <a href="/tags/http-schemas-google-com-blogger-2008-kind-post/" style="font-size: 20px;">http://schemas.google.com/blogger/2008/kind#post</a>
-    </div>
-  </div>
-
   
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Archives</h3>
-    <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/01/">January 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/03/">March 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/01/">January 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/12/">December 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/11/">November 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/10/">October 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/09/">September 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/08/">August 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/07/">July 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/06/">June 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/05/">May 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/04/">April 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/03/">March 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/01/">January 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/12/">December 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/11/">November 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/10/">October 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/09/">September 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/08/">August 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/07/">July 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/06/">June 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/05/">May 2009</a></li></ul>
-    </div>
-  </div>
-
-
+    <nav id="page-nav">
+      <a class="extend prev" rel="prev" href="/page/8/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/page/10/">10</a><a class="page-number" href="/page/11/">11</a><a class="extend next" rel="next" href="/page/10/">Next &raquo;</a>
+    </nav>
   
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Recent Posts</h3>
-    <div class="widget">
-      <ul>
-        
-          <li>
-            <a href="/2016/06/04/hello-world/">Hello World</a>
-          </li>
-        
-          <li>
-            <a href="/2013/07/08/控制資料庫使用者的登入/">控制資料庫使用者的登入</a>
-          </li>
-        
-          <li>
-            <a href="/2012/01/18/R-D澳洲蜜月探險-Day-0-前言/">[R&amp;D澳洲蜜月探險][Day 0]前言</a>
-          </li>
-        
-          <li>
-            <a href="/2011/08/20/婚紗處理紀實-下/">婚紗處理紀實(下)</a>
-          </li>
-        
-          <li>
-            <a href="/2011/08/16/婚紗處理紀實-上/">婚紗處理紀實(上)</a>
-          </li>
-        
-      </ul>
-    </div>
-  </div>
-
-  
-</aside>
-        
-      </div>
+</div>
       <footer id="footer">
-  
-  <div class="outer">
-    <div id="footer-info" class="inner">
-      &copy; 2016 John Doe<br>
-      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2016 John Doe
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/luuman/hexo-theme-spfk" target="_blank">spfk</a> by luuman
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" >海贼到访数: 
+                            <span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>, </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit">本页阅读量: 
+                            <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
     </div>
-  </div>
 </footer>
+
     </div>
-    <nav id="mobile-nav">
-  
-    <a href="/" class="mobile-nav-link">Home</a>
-  
-    <a href="/archives" class="mobile-nav-link">Archives</a>
-  
-</nav>
-    
+    <script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+<script src="/js/main.js"></script>
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-
-
-  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
-  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+    <script>
+        $(document).ready(function() {
+            var backgroundnum = 24;
+            var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+            $("#mobile-nav").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+            $(".left-col").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+        })
+    </script>
 
 
-<script src="/js/script.js"></script>
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+  <script language="javascript">
+    $(function() {
+        $("a[title]").each(function() {
+            var a = $(this);
+            var title = a.attr('title');
+            if (title == undefined || title == "") return;
+            a.data('title', title).removeAttr('title').hover(
+
+            function() {
+                var offset = a.offset();
+                $("<div id=\"anchortitlecontainer\"></div>").appendTo($("body")).html(title).css({
+                    top: offset.top - a.outerHeight() - 15,
+                    left: offset.left + a.outerWidth()/2 + 1
+                }).fadeIn(function() {
+                    var pop = $(this);
+                    setTimeout(function() {
+                        pop.remove();
+                    }, pop.text().length * 800);
+                });
+            }, function() {
+                $("#anchortitlecontainer").remove();
+            });
+        });
+    });
+</script>
+
 
   </div>
 </body>

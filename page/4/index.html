@@ -15,67 +15,253 @@
 <meta name="twitter:title" content="(MyLife)Population.FindControl("sujunmin")">
 <meta name="twitter:description">
   
-    <link rel="alternate" href="/atom.xml" title="(MyLife)Population.FindControl(&quot;sujunmin&quot;)" type="application/atom+xml">
+    <link rel="alternative" href="/atom.xml" title="(MyLife)Population.FindControl(&quot;sujunmin&quot;)" type="application/atom+xml">
   
   
-    <link rel="icon" href="/favicon.png">
+    <link rel="icon" href="/img/favicon.png">
   
   
-    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
   
   <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   
-
+    
+    
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <!-- 加载特效 -->
+    <script src="/js/pace.js"></script>
+    <link href="/css/pace/pace-theme-flash.css" rel="stylesheet" />
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: true,
+          isPost: false,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false
+      }
+  </script>
 </head>
-
 <body>
   <div id="container">
-    <div id="wrap">
-      <header id="header">
-  <div id="banner"></div>
-  <div id="header-outer" class="outer">
-    <div id="header-title" class="inner">
-      <h1 id="logo-wrap">
-        <a href="/" id="logo">(MyLife)Population.FindControl(&quot;sujunmin&quot;)</a>
-      </h1>
-      
-        <h2 id="subtitle-wrap">
-          <a href="/" id="subtitle">throw System.NullReferenceException.....</a>
-        </h2>
-      
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="/img/head.jpg" class="js-avatar">
+            
+        </a>
+
+        <hgroup>
+          <h1 class="header-author"><a href="/">John Doe</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">throw System.NullReferenceException.....</p>
+        
+        
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/Home">博客首页</a></li>
+                        
+                            <li><a href="/works">作品展示</a></li>
+                        
+                            <li><a href="/about">留言打卡</a></li>
+                        
+                            <li><a href="/FrontEndGuide">前端导航</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fl mail" target="_blank" href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=PAkNDgsKBQ4MCnxNTRJfU1E" title="mail">mail</a>
+                            
+                                <a class="fl github" target="_blank" href="https://github.com/luuman" title="github">github</a>
+                            
+                                <a class="fl zhihu" target="_blank" href="https://www.zhihu.com/people/luuman" title="zhihu">zhihu</a>
+                            
+                                <a class="fl weibo" target="_blank" href="http://weibo.com/lishangmou" title="weibo">weibo</a>
+                            
+                                <a class="fl google" target="_blank" href="http://i.youku.com/shangmou" title="google">google</a>
+                            
+                                <a class="fl twitter" target="_blank" href="http: //twitter.com/luuman" title="twitter">twitter</a>
+                            
+                                <a class="fl facebook" target="_blank" href="#" title="facebook">facebook</a>
+                            
+                                <a class="fl rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="/tags/Net/" style="font-size: 16.25px;">.Net</a> <a href="/tags/Art/" style="font-size: 10px;">Art</a> <a href="/tags/Boutique/" style="font-size: 12.5px;">Boutique</a> <a href="/tags/Foods/" style="font-size: 10px;">Foods</a> <a href="/tags/Games/" style="font-size: 10px;">Games</a> <a href="/tags/Gossipings/" style="font-size: 13.75px;">Gossipings</a> <a href="/tags/Health/" style="font-size: 11.25px;">Health</a> <a href="/tags/Kona/" style="font-size: 10px;">Kona</a> <a href="/tags/MSSQL/" style="font-size: 10px;">MSSQL</a> <a href="/tags/Marriage/" style="font-size: 11.25px;">Marriage</a> <a href="/tags/Movies/" style="font-size: 15px;">Movies</a> <a href="/tags/Networks/" style="font-size: 11.25px;">Networks</a> <a href="/tags/PMP/" style="font-size: 17.5px;">PMP</a> <a href="/tags/Ruby/" style="font-size: 10px;">Ruby</a> <a href="/tags/Travel/" style="font-size: 18.75px;">Travel</a> <a href="/tags/Windows-Mobile/" style="font-size: 11.25px;">Windows Mobile</a> <a href="/tags/http-schemas-google-com-blogger-2008-kind-post/" style="font-size: 20px;">http://schemas.google.com/blogger/2008/kind#post</a>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="http://MOxFIVE.github.io/">MOxFIVE</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="http://www.vsay.cn/">DoubleV</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="http://www.ccwebsite.com/">兮兮</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="http://blog.dandyweng.com/">翁天信</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="http://www.plqblog.com/views/index.php">潘利强</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="http://www.hankin.cn/">hankin</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="http://blog.waydrow.com/">waydrow</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">纯海迷、爱运动、爱交友、爱旅行、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
     </div>
-    <div id="header-inner" class="inner">
-      <nav id="main-nav">
-        <a id="main-nav-toggle" class="nav-icon"></a>
-        
-          <a class="main-nav-link" href="/">Home</a>
-        
-          <a class="main-nav-link" href="/archives">Archives</a>
-        
-      </nav>
-      <nav id="sub-nav">
-        
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
-        
-        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
-      </nav>
-      <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">John Doe</a></h1>
       </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="/img/head.jpg" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">John Doe</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">throw System.NullReferenceException.....</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/Home">博客首页</a></li>
+                
+                    <li><a href="/works">作品展示</a></li>
+                
+                    <li><a href="/about">留言打卡</a></li>
+                
+                    <li><a href="/FrontEndGuide">前端导航</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                <div class="social">
+                    
+                        <a class="mail" target="_blank" href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=PAkNDgsKBQ4MCnxNTRJfU1E" title="mail">mail</a>
+                    
+                        <a class="github" target="_blank" href="https://github.com/luuman" title="github">github</a>
+                    
+                        <a class="zhihu" target="_blank" href="https://www.zhihu.com/people/luuman" title="zhihu">zhihu</a>
+                    
+                        <a class="weibo" target="_blank" href="http://weibo.com/lishangmou" title="weibo">weibo</a>
+                    
+                        <a class="google" target="_blank" href="http://i.youku.com/shangmou" title="google">google</a>
+                    
+                        <a class="twitter" target="_blank" href="http: //twitter.com/luuman" title="twitter">twitter</a>
+                    
+                        <a class="facebook" target="_blank" href="#" title="facebook">facebook</a>
+                    
+                        <a class="rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+                    
+                </div>
+            </nav>
+        </header>                
     </div>
-  </div>
-</header>
-      <div class="outer">
-        <section id="main">
+</nav>
+      <div class="body-wrap">
   
     <article id="post-上海世博6日遊-13-世博C片區-下" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2010/11/22/上海世博6日遊-13-世博C片區-下/" class="article-date">
-  <time datetime="2010-11-22T13:11:50.000Z" itemprop="datePublished">2010-11-22</time>
+  
+    <div class="article-meta">
+      <a href="/2010/11/22/上海世博6日遊-13-世博C片區-下/" class="article-date">
+      <time datetime="2010-11-22T13:11:50.000Z" itemprop="datePublished">2010-11-22</time>
 </a>
-    
-  </div>
+    </div>
+  
   <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
     
     
       <header class="article-header">
@@ -87,9 +273,11 @@
   
 
       </header>
+      
     
     <div class="article-entry" itemprop="articleBody">
       
+          
         <p>(續<a href="http://blog.xuite.net/retsamsu/diary/39815961" target="_blank" rel="external">前篇</a>)</p>
 <p>來到了德國館，也從有太陽的狀態排到晚上，不知道排過了幾個棚子，來來去去幾個隊伍，終於進入德國館。不過這個館是我覺得最有價值的，難怪人那麼多，也值得得好好寫一寫。</p>
 <p>和諧都市balancity(如果念的話是白爛City，怪怪的)，德國的主題。</p>
@@ -103,27 +291,44 @@
 
       
     </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2010/11/22/上海世博6日遊-13-世博C片區-下/" data-id="cip0y8yur003ual5pztl6pn46" class="article-share-link">Share</a>
+    
+    <div class="article-info article-info-index">
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Travel/">Travel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
 
-    </footer>
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Travel/">Travel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
+    </div>
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
   </div>
   
 </article>
 
 
+
+
+
+
+
+
+
   
     <article id="post-上海世博6日遊-12-世博C片區-中" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2010/11/17/上海世博6日遊-12-世博C片區-中/" class="article-date">
-  <time datetime="2010-11-17T13:16:01.000Z" itemprop="datePublished">2010-11-17</time>
+  
+    <div class="article-meta">
+      <a href="/2010/11/17/上海世博6日遊-12-世博C片區-中/" class="article-date">
+      <time datetime="2010-11-17T13:16:01.000Z" itemprop="datePublished">2010-11-17</time>
 </a>
-    
-  </div>
+    </div>
+  
   <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
     
     
       <header class="article-header">
@@ -135,9 +340,11 @@
   
 
       </header>
+      
     
     <div class="article-entry" itemprop="articleBody">
       
+          
         <p>(續<a href="http://blog.xuite.net/retsamsu/diary/39201219" target="_blank" rel="external">前篇</a>)</p>
 <p>進入丹麥館，映入眼簾的就是著名的小美人魚雕像，在設置的水池中央上面。整個場館是一個螺旋狀建築，重點是旁邊可以借腳踏車，一路騎上去。也因此在館裡面有人走的跟車走的兩個道路。裡面有提到小美人魚雕像是怎麼從丹麥一路運往遙遠的上海影片，蠻有趣的。還有提到丹麥人如何生活、如何享樂、如核對環境的保護等，”我們如何設想未來”，就是丹麥對世界的想法。<br><img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/39815961/5.png" alt=""></p>
 <p>接下來看看附近的館，真的人都爆多。挪威館看起來就是整個木頭，加上人沒有很多，也在移動，就去看挪威館。挪威館展館都是用木頭與竹子做成的，非常的環保概念，裡頭講到挪威的特色：北極光、海岸、森林、狹灣、群山等部分，並且展示挪威人的生活。那邊有一塊實際的冰，代表北極熊的腳印，還真的很冰。<br><img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/39815961/6.png" alt=""></p>
@@ -145,27 +352,44 @@
 
       
     </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2010/11/17/上海世博6日遊-12-世博C片區-中/" data-id="cip0y8yun003sal5psvg8qxki" class="article-share-link">Share</a>
+    
+    <div class="article-info article-info-index">
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Travel/">Travel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
 
-    </footer>
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Travel/">Travel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
+    </div>
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
   </div>
   
 </article>
 
 
+
+
+
+
+
+
+
   
     <article id="post-上海世博6日遊-11-世博C片區-上" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2010/11/12/上海世博6日遊-11-世博C片區-上/" class="article-date">
-  <time datetime="2010-11-12T13:01:48.000Z" itemprop="datePublished">2010-11-12</time>
+  
+    <div class="article-meta">
+      <a href="/2010/11/12/上海世博6日遊-11-世博C片區-上/" class="article-date">
+      <time datetime="2010-11-12T13:01:48.000Z" itemprop="datePublished">2010-11-12</time>
 </a>
-    
-  </div>
+    </div>
+  
   <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
     
     
       <header class="article-header">
@@ -177,9 +401,11 @@
   
 
       </header>
+      
     
     <div class="article-entry" itemprop="articleBody">
       
+          
         <p><span style="text-decoration: underline;"><strong><span style="font-size: 14pt;">2010/09/25&nbsp;上海世博6日遊 Day 5</span></strong></span></p>
 <p>這一天也是睡的很晚才起來，因為只要逛一個區，而且都是我們比較有興趣的歐洲區。不過去的時候坐的車子比較迂迴，從飯店出發後，坐地鐵4號線到宜山路，再坐地鐵9號到馬當路，這時候必須先出來，進入園區，再坐地鐵13號(只有兩站)到世博大道站，出來往C區就到了。<br><img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/39201219/5.png" alt=""></p>
 <p>首先先參觀比利時-歐盟館，首先先請你吃個餅乾-有名的蓮花餅乾，每人可以拿一片。接下來介紹現在歐盟各國的領袖與相關人員，除了這個以外，科技的展示也是十分有趣，譬如太陽能車、虛擬實境的電影，可以把你拍進去，放在影片裡。另外還有尿尿小童的模型，美味的巧克力，這裡有很多有名的牌子(Godiva，neuhaus…)，但是價格實在恐怖。這邊看到另外一個有趣的東西，就是藍色小精靈(藍精靈)竟然是比利時人，這裡有展出很多面相、很多個不同的藍色小精靈的圖樣，挺可愛的。<br><img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/39201219/6.png" alt=""></p>
@@ -190,27 +416,44 @@
 
       
     </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2010/11/12/上海世博6日遊-11-世博C片區-上/" data-id="cip0y8yug003qal5pm6oxi83s" class="article-share-link">Share</a>
+    
+    <div class="article-info article-info-index">
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Travel/">Travel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
 
-    </footer>
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Travel/">Travel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
+    </div>
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
   </div>
   
 </article>
 
 
+
+
+
+
+
+
+
   
     <article id="post-上海世博6日遊-10-孫中山故居、新天地、豫園、田子坊-下" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2010/10/23/上海世博6日遊-10-孫中山故居、新天地、豫園、田子坊-下/" class="article-date">
-  <time datetime="2010-10-23T06:22:24.000Z" itemprop="datePublished">2010-10-23</time>
+  
+    <div class="article-meta">
+      <a href="/2010/10/23/上海世博6日遊-10-孫中山故居、新天地、豫園、田子坊-下/" class="article-date">
+      <time datetime="2010-10-23T06:22:24.000Z" itemprop="datePublished">2010-10-23</time>
 </a>
-    
-  </div>
+    </div>
+  
   <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
     
     
       <header class="article-header">
@@ -222,9 +465,11 @@
   
 
       </header>
+      
     
     <div class="article-entry" itemprop="articleBody">
       
+          
         <p>(續<a href="http://blog.xuite.net/retsamsu/diary/38932836" target="_blank" rel="external">前篇</a>)</p>
 <p>出豫園以後，在旁邊逛逛，在九曲橋上面拍幾張照，人潮還是一樣那麼多。接下來在附近的商店街逛逛，什麼都有在賣。不過很商業化。逛的差不多後，就到我們今天最後一個要去的地方，田子坊。</p>
 <p>九曲橋上一瞥。<br><img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/39141341/9.jpg" alt=""></p>
@@ -241,27 +486,44 @@
 
       
     </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2010/10/23/上海世博6日遊-10-孫中山故居、新天地、豫園、田子坊-下/" data-id="cip0y8yua003oal5pe894bur3" class="article-share-link">Share</a>
+    
+    <div class="article-info article-info-index">
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Travel/">Travel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
 
-    </footer>
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Travel/">Travel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
+    </div>
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
   </div>
   
 </article>
 
 
+
+
+
+
+
+
+
   
     <article id="post-上海世博6日遊-09-孫中山故居、新天地、豫園、田子坊-上" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2010/10/17/上海世博6日遊-09-孫中山故居、新天地、豫園、田子坊-上/" class="article-date">
-  <time datetime="2010-10-17T02:33:24.000Z" itemprop="datePublished">2010-10-17</time>
+  
+    <div class="article-meta">
+      <a href="/2010/10/17/上海世博6日遊-09-孫中山故居、新天地、豫園、田子坊-上/" class="article-date">
+      <time datetime="2010-10-17T02:33:24.000Z" itemprop="datePublished">2010-10-17</time>
 </a>
-    
-  </div>
+    </div>
+  
   <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
     
     
       <header class="article-header">
@@ -273,9 +535,11 @@
   
 
       </header>
+      
     
     <div class="article-entry" itemprop="articleBody">
       
+          
         <p><span style="text-decoration: underline;"><strong><span style="font-size: 14pt;">2010/9/24 上海世博6日遊 Day 4</span></strong></span></p>
 <p>因為昨天的疲累，今天早上很晚才起來，差點吃不到飯店的早餐了。整理一下以後，今天不去世博，要來逛逛上海的藝文地區。首先到孫中山故居。出了飯店坐地鐵2號，轉地鐵1號於陝西南路站4號出口，走淮海東路，右轉思南路，在香山路的底，就會到孫中山故居。</p>
 <p>今天的天氣跟昨天不一樣，沒有下雨，天空有大太陽，但是不熱，涼涼的，逛起來很舒服。淮海中路有一堆百貨公司跟商家，跟旁邊的老房子建築物相比，格外有趣。走入思南路，就很像走到幾十年前的上海，一堆樹蔭底下的商家，那種老房子的感覺，小麵攤賣很便宜的道地麵食，一個一個的社區，竹竿一根橫過一根，房字的中間掛滿了衣服，很多房子外面都掛著法定古蹟的牌子，在在都在說明我們回到過去看看這裡的風華。</p>
@@ -294,27 +558,44 @@
 
       
     </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2010/10/17/上海世博6日遊-09-孫中山故居、新天地、豫園、田子坊-上/" data-id="cip0y8yu6003mal5p08h1veph" class="article-share-link">Share</a>
+    
+    <div class="article-info article-info-index">
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Travel/">Travel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
 
-    </footer>
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Travel/">Travel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
+    </div>
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
   </div>
   
 </article>
 
 
+
+
+
+
+
+
+
   
     <article id="post-上海世博6日遊-08-世博A、B片區-下" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2010/10/16/上海世博6日遊-08-世博A、B片區-下/" class="article-date">
-  <time datetime="2010-10-16T11:24:41.000Z" itemprop="datePublished">2010-10-16</time>
+  
+    <div class="article-meta">
+      <a href="/2010/10/16/上海世博6日遊-08-世博A、B片區-下/" class="article-date">
+      <time datetime="2010-10-16T11:24:41.000Z" itemprop="datePublished">2010-10-16</time>
 </a>
-    
-  </div>
+    </div>
+  
   <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
     
     
       <header class="article-header">
@@ -326,9 +607,11 @@
   
 
       </header>
+      
     
     <div class="article-entry" itemprop="articleBody">
       
+          
         <p>(續<a href="http://blog.xuite.net/retsamsu/diary/38892045" target="_blank" rel="external">前篇</a>)</p>
 <p>澳大利亞館是個紅紅的波浪型建築，進入以後，映入眼簾的就是當地的文化，有許多有趣的木雕。接下來就是用一些誇張簡單的雕塑來快速介紹澳大利亞的歷史、政治、經濟狀態。有很多的有趣雕塑與節目都在天花板。這個館的高潮就是最後的劇場。有一個說著還蠻不錯的澳洲人(應該是吧)，一直介紹這個節目有多好多好，而且看來他真的很厲害，應該是非常了解世博園區生態吧(這裡比中國館好看，這裡比德國館好看、這裡比沙特館好看，大家聽了都一直笑)，不過他說的也沒錯，這個節目是蠻好看的就是了。說到一個澳洲小朋友與中國小朋友的對話，介紹澳洲。看完還真想去澳洲住呢。<br><img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/38917663/0.png" alt=""></p>
 <p>離開澳大利亞館，看看附近有沒有館可以去看看的。泰國、新加坡一堆人，怕會影響到我們看台灣館的行程，看到新西蘭(紐西蘭)館沒什麼人，就進去看看了。不過進去還真的沒什麼有記憶的，介紹蠻多當地風土民情的，不過不是很好的館。離開了澳大利亞館，就到馬來西亞館看看。同樣的，沒什麼特別的。只是那個館外面有一種花，它是很特別的(Bonnie的職業病又來了)，拍了幾張照片，看到旁邊的菲律賓館，外觀實在是亮到不行，就跑進去看看。沒想到就跟之前看到的斯里蘭卡館一樣，不太好看不打緊，這裡的章跟斯里蘭卡館一樣，有一個人在前面收錢，我當然也是掉頭離開。<br><img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/38917663/1.png" alt=""><br>離開菲律賓館以後，距離看台灣館的時間還有一些餘裕，就到主題館看一下，這邊我們看了城市生命館與城市地球館，很可惜的，城市人館因為找不到入口，加上看台灣館的時間快到了，於是只能放棄，要不然就能全部的主題館都看過了。這個主題館包含上面說的三個館，從一邊走到另一邊真的超遠，Bonnie邊走邊苦笑說，她的公司在做的花博規模可能只是這邊的一個區吧。可能是晚了的關係，人很少，所以有一些入口都關了，一些志願者也不知道跑到哪，三個館的入口標示不是那麼清楚。城市生命館一進去就是看到活力車站，以車站來往人潮很多、繁忙火車的感覺，來代表城市的活力。循環管道裡有許多跟參觀者互動的地方(如古今的地區樣貌)。城市廣場播放著世界各地的城市生活。生活街市裡有許多的圖書，每一本都代表著城市生命興衰與人們的關係。離開以後，繞了一大圈從另一側進入城市地球館。它是個螺旋狀的走道，裡頭是個地球，從一開始的狀態、到沙漠化、海平面上升等。最後有個節目：我們只有一個地球，講著人類過度開發地球，地球生態極度危機，是該時候覺醒了。<br><img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/38917663/2.png" alt=""></p>
@@ -347,27 +630,44 @@
 
       
     </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2010/10/16/上海世博6日遊-08-世博A、B片區-下/" data-id="cip0y8yu3003kal5pfzu6vel4" class="article-share-link">Share</a>
+    
+    <div class="article-info article-info-index">
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Travel/">Travel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
 
-    </footer>
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Travel/">Travel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
+    </div>
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
   </div>
   
 </article>
 
 
+
+
+
+
+
+
+
   
     <article id="post-上海世博6日遊-07-世博A、B片區-中" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2010/10/15/上海世博6日遊-07-世博A、B片區-中/" class="article-date">
-  <time datetime="2010-10-15T13:09:22.000Z" itemprop="datePublished">2010-10-15</time>
+  
+    <div class="article-meta">
+      <a href="/2010/10/15/上海世博6日遊-07-世博A、B片區-中/" class="article-date">
+      <time datetime="2010-10-15T13:09:22.000Z" itemprop="datePublished">2010-10-15</time>
 </a>
-    
-  </div>
+    </div>
+  
   <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
     
     
       <header class="article-header">
@@ -379,9 +679,11 @@
   
 
       </header>
+      
     
     <div class="article-entry" itemprop="articleBody">
       
+          
         <p>(續<a href="http://blog.xuite.net/retsamsu/diary/38837581" target="_blank" rel="external">前篇</a>)</p>
 <p>出了沙特館，原來的陰暗毛毛雨天氣變成大太陽了，圍繞在我們身邊的，有很多不同風情的館。我們先找了摩洛哥館來看看，人雖多，但是有在移動。大概排了30分鐘就進去了。外面看起來非常的有阿拉伯與地中海風情，外面看起來十分的白，裡面卻非常的黑，感覺很神祕。走進去很像走到一個阿拉伯飯店一樣，至少像高級飯店的lobby。裡面分成一間一間的，每一間裡面介紹著摩洛哥的風土名情，吃什麼、用什麼、穿什麼等等，舉凡銅器，紡織，手工藝，都很有特色。最上面一層有個大金燈，很漂亮。看完以後就出去蓋章了。<br><img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/38892045/0.png" alt=""></p>
 <p>出來以後，最引人矚目的，就是阿聯酋館，整個外表就是金光閃閃的，超級漂亮，只是人也是爆多的。阿拉伯聯合酋長國也有一隻金色的駱駝雕像，不過同樣人也是爆多，而且可能是今天排沙特館的原因，腳特別容易軟，所以就先去看其他館了。途中看到阿曼館(阿曼蘇丹國)，人數普通，外表還不賴，就進去看看。一進去的感覺，就是一種叫做乳香的香料燃燒味道，整間都是，裡面有幾台電腦可以留妳的email，會有一些旅遊資料寄給你。十分的中東風情。裡頭有個人在現場作船的模型，不過被大家的閃光燈弄的睜不開眼了吧(雖然寫著請勿開閃光燈)。可能是外頭的人流變多了，就看到裡面的接待人員喊：今天本館發放紀念品，是限量的免費紀念品，趕快去拿。果然一堆人頭也不回的就去出口排隊，實在是不知道是來看館還是拿紀念品的。<br><img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/38892045/1.png" alt=""></p>
@@ -391,27 +693,44 @@
 
       
     </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2010/10/15/上海世博6日遊-07-世博A、B片區-中/" data-id="cip0y8yu1003ial5ps4e3fvyt" class="article-share-link">Share</a>
+    
+    <div class="article-info article-info-index">
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Travel/">Travel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
 
-    </footer>
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Travel/">Travel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
+    </div>
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
   </div>
   
 </article>
 
 
+
+
+
+
+
+
+
   
     <article id="post-上海世博6日遊-06-世博A、B片區-上" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2010/10/13/上海世博6日遊-06-世博A、B片區-上/" class="article-date">
-  <time datetime="2010-10-13T13:06:07.000Z" itemprop="datePublished">2010-10-13</time>
+  
+    <div class="article-meta">
+      <a href="/2010/10/13/上海世博6日遊-06-世博A、B片區-上/" class="article-date">
+      <time datetime="2010-10-13T13:06:07.000Z" itemprop="datePublished">2010-10-13</time>
 </a>
-    
-  </div>
+    </div>
+  
   <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
     
     
       <header class="article-header">
@@ -423,9 +742,11 @@
   
 
       </header>
+      
     
     <div class="article-entry" itemprop="articleBody">
       
+          
         <p><span style="font-size: 14pt;"><span style="text-decoration: underline;"><strong>2010/9/23 上海世博6日遊 Day 3</strong></span></span></p>
 <p>這一天真的是恐怖的一天，為什麼說這樣呢?我們先來看一下數據吧。<br><img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/38837581/14.png" alt=""></p>
 <p>還不夠？看看隔天的報紙吧。<br><img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/38837581/15.jpg" alt=""></p>
@@ -440,27 +761,44 @@
 
       
     </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2010/10/13/上海世博6日遊-06-世博A、B片區-上/" data-id="cip0y8ytu003gal5p6oidzz7h" class="article-share-link">Share</a>
+    
+    <div class="article-info article-info-index">
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Travel/">Travel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
 
-    </footer>
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Travel/">Travel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
+    </div>
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
   </div>
   
 </article>
 
 
+
+
+
+
+
+
+
   
     <article id="post-上海世博6日遊-05-世博D、E片區-下" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2010/10/11/上海世博6日遊-05-世博D、E片區-下/" class="article-date">
-  <time datetime="2010-10-11T14:21:17.000Z" itemprop="datePublished">2010-10-11</time>
+  
+    <div class="article-meta">
+      <a href="/2010/10/11/上海世博6日遊-05-世博D、E片區-下/" class="article-date">
+      <time datetime="2010-10-11T14:21:17.000Z" itemprop="datePublished">2010-10-11</time>
 </a>
-    
-  </div>
+    </div>
+  
   <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
     
     
       <header class="article-header">
@@ -472,9 +810,11 @@
   
 
       </header>
+      
     
     <div class="article-entry" itemprop="articleBody">
       
+          
         <p>(續<a href="http://blog.xuite.net/retsamsu/diary/38703701" target="_blank" rel="external">前篇</a>)</p>
 <p>最近發生了一件重大的事情，就是我跟我女朋友分手了，傷心之餘，必須趕快振作。麻煩的是，這些回憶有她的影子。不過我想把這次的遊記寫完的動力仍然不減，所以後面有一些可能寫的不太穩的，就請大家多多包含吧。</p>
 <p>在等上汽集團館的入場時，雖說有快速預約券，也是等了15分才進去後，終於好不容易進去了。裡面有許多鋪後來梗的地方，介紹著未來的車子設計：需要停車位嘛？以後只要一些小小的空間利用，就能夠停車，因為未來的車將會是全自動、環保節能不用油料、更高效能的概念車。因此不用駕照了，只要有鑰匙就能開。是不是要跑大老遠開車?不用，因為電梯系統會把車送來給你。紅綠燈是不是需要?不用，因為車輛會自動感應周邊狀態…。一連串的概念，到了這個館的高潮：直達2030身歷其境影片。除了觀眾是坐著體感座椅(會動來動去那種)，影片的內容也是很有未來概念的意味：不同時間的歌手能夠同時表演、盲人能開車、簡化停車問題、多用途的車上配備…，實在是很有趣。結束以後，更有舞者帶領著影片裡的概念車表演展示，甚至離場以後外面也展示這些概念車(都有序號跟開發號碼了)，希望未來這些東西能夠興起汽車革命。<br><img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/38758603/0.png" alt=""><br>離開E片區，接下來回到D片區，到之前有預約的上企聯合館。這邊也是一樣，排了一下子的隊，有一些互動遊戲可以玩。我們是在該館的建築物下面排隊，頭上一根一根的東西是用廢棄的光碟片作的塑膠棒，旁邊有一些螢幕，上面播放一個老人跟一個小孩在說夢的事情。跟前面的活力矩陣一樣，有個聲控裝置(雖然Bonnie說那個可能是套好的)，只要跟隨著播放的螢幕故事作，就會有拍手時光線會跟隨著節奏閃動的感覺。裡面還有一些影片與聲光效果極佳的電影，描述著未來的體驗。</p>
@@ -484,27 +824,44 @@
 
       
     </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2010/10/11/上海世博6日遊-05-世博D、E片區-下/" data-id="cip0y8ytp003cal5pmwp0elbz" class="article-share-link">Share</a>
+    
+    <div class="article-info article-info-index">
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Travel/">Travel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
 
-    </footer>
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Travel/">Travel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
+    </div>
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
   </div>
   
 </article>
 
 
+
+
+
+
+
+
+
   
     <article id="post-上海世博6日遊-04-世博D、E片區-中" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2010/10/09/上海世博6日遊-04-世博D、E片區-中/" class="article-date">
-  <time datetime="2010-10-09T11:58:06.000Z" itemprop="datePublished">2010-10-09</time>
+  
+    <div class="article-meta">
+      <a href="/2010/10/09/上海世博6日遊-04-世博D、E片區-中/" class="article-date">
+      <time datetime="2010-10-09T11:58:06.000Z" itemprop="datePublished">2010-10-09</time>
 </a>
-    
-  </div>
+    </div>
+  
   <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
     
     
       <header class="article-header">
@@ -516,9 +873,11 @@
   
 
       </header>
+      
     
     <div class="article-entry" itemprop="articleBody">
       
+          
         <p>(續<a href="http://blog.xuite.net/retsamsu/diary/38598167" target="_blank" rel="external">前篇</a>)</p>
 <p>前一篇忘了標上我們走過的足跡，下面就是這一天走過的路。紅色是進入D區的路程，藍色是從E區回來時逛的路程。<br>D片區：<br><img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/38703701/8.png" alt=""></p>
 <p>E片區前頭：</p>
@@ -541,121 +900,132 @@
 
       
     </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2010/10/09/上海世博6日遊-04-世博D、E片區-中/" data-id="cip0y8ytl003aal5pmi2lnii2" class="article-share-link">Share</a>
+    
+    <div class="article-info article-info-index">
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Travel/">Travel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
 
-    </footer>
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Travel/">Travel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
+    </div>
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
   </div>
   
 </article>
 
 
-  
 
 
-  <nav id="page-nav">
-    <a class="extend prev" rel="prev" href="/page/3/">&laquo; __('prev')</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><a class="extend next" rel="next" href="/page/5/">__('next') &raquo;</a>
-  </nav>
-</section>
-        
-          <aside id="sidebar">
-  
-    
 
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Tags</h3>
-    <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Net/">.Net</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Art/">Art</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Boutique/">Boutique</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Foods/">Foods</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Games/">Games</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Gossipings/">Gossipings</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Health/">Health</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kona/">Kona</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MSSQL/">MSSQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Marriage/">Marriage</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Movies/">Movies</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Networks/">Networks</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PMP/">PMP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Ruby/">Ruby</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Travel/">Travel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows-Mobile/">Windows Mobile</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
-    </div>
-  </div>
+
+
 
 
   
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Tag Cloud</h3>
-    <div class="widget tagcloud">
-      <a href="/tags/Net/" style="font-size: 16.25px;">.Net</a> <a href="/tags/Art/" style="font-size: 10px;">Art</a> <a href="/tags/Boutique/" style="font-size: 12.5px;">Boutique</a> <a href="/tags/Foods/" style="font-size: 10px;">Foods</a> <a href="/tags/Games/" style="font-size: 10px;">Games</a> <a href="/tags/Gossipings/" style="font-size: 13.75px;">Gossipings</a> <a href="/tags/Health/" style="font-size: 11.25px;">Health</a> <a href="/tags/Kona/" style="font-size: 10px;">Kona</a> <a href="/tags/MSSQL/" style="font-size: 10px;">MSSQL</a> <a href="/tags/Marriage/" style="font-size: 11.25px;">Marriage</a> <a href="/tags/Movies/" style="font-size: 15px;">Movies</a> <a href="/tags/Networks/" style="font-size: 11.25px;">Networks</a> <a href="/tags/PMP/" style="font-size: 17.5px;">PMP</a> <a href="/tags/Ruby/" style="font-size: 10px;">Ruby</a> <a href="/tags/Travel/" style="font-size: 18.75px;">Travel</a> <a href="/tags/Windows-Mobile/" style="font-size: 11.25px;">Windows Mobile</a> <a href="/tags/http-schemas-google-com-blogger-2008-kind-post/" style="font-size: 20px;">http://schemas.google.com/blogger/2008/kind#post</a>
-    </div>
-  </div>
-
   
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Archives</h3>
-    <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/01/">January 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/03/">March 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/01/">January 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/12/">December 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/11/">November 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/10/">October 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/09/">September 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/08/">August 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/07/">July 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/06/">June 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/05/">May 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/04/">April 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/03/">March 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/01/">January 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/12/">December 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/11/">November 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/10/">October 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/09/">September 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/08/">August 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/07/">July 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/06/">June 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/05/">May 2009</a></li></ul>
-    </div>
-  </div>
-
-
+    <nav id="page-nav">
+      <a class="extend prev" rel="prev" href="/page/3/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><a class="extend next" rel="next" href="/page/5/">Next &raquo;</a>
+    </nav>
   
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Recent Posts</h3>
-    <div class="widget">
-      <ul>
-        
-          <li>
-            <a href="/2016/06/04/hello-world/">Hello World</a>
-          </li>
-        
-          <li>
-            <a href="/2013/07/08/控制資料庫使用者的登入/">控制資料庫使用者的登入</a>
-          </li>
-        
-          <li>
-            <a href="/2012/01/18/R-D澳洲蜜月探險-Day-0-前言/">[R&amp;D澳洲蜜月探險][Day 0]前言</a>
-          </li>
-        
-          <li>
-            <a href="/2011/08/20/婚紗處理紀實-下/">婚紗處理紀實(下)</a>
-          </li>
-        
-          <li>
-            <a href="/2011/08/16/婚紗處理紀實-上/">婚紗處理紀實(上)</a>
-          </li>
-        
-      </ul>
-    </div>
-  </div>
-
-  
-</aside>
-        
-      </div>
+</div>
       <footer id="footer">
-  
-  <div class="outer">
-    <div id="footer-info" class="inner">
-      &copy; 2016 John Doe<br>
-      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2016 John Doe
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/luuman/hexo-theme-spfk" target="_blank">spfk</a> by luuman
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" >海贼到访数: 
+                            <span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>, </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit">本页阅读量: 
+                            <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
     </div>
-  </div>
 </footer>
+
     </div>
-    <nav id="mobile-nav">
-  
-    <a href="/" class="mobile-nav-link">Home</a>
-  
-    <a href="/archives" class="mobile-nav-link">Archives</a>
-  
-</nav>
-    
+    <script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+<script src="/js/main.js"></script>
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-
-
-  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
-  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+    <script>
+        $(document).ready(function() {
+            var backgroundnum = 24;
+            var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+            $("#mobile-nav").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+            $(".left-col").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+        })
+    </script>
 
 
-<script src="/js/script.js"></script>
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+  <script language="javascript">
+    $(function() {
+        $("a[title]").each(function() {
+            var a = $(this);
+            var title = a.attr('title');
+            if (title == undefined || title == "") return;
+            a.data('title', title).removeAttr('title').hover(
+
+            function() {
+                var offset = a.offset();
+                $("<div id=\"anchortitlecontainer\"></div>").appendTo($("body")).html(title).css({
+                    top: offset.top - a.outerHeight() - 15,
+                    left: offset.left + a.outerWidth()/2 + 1
+                }).fadeIn(function() {
+                    var pop = $(this);
+                    setTimeout(function() {
+                        pop.remove();
+                    }, pop.text().length * 800);
+                });
+            }, function() {
+                $("#anchortitlecontainer").remove();
+            });
+        });
+    });
+</script>
+
 
   </div>
 </body>
