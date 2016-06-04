@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>使用Exchange Web Services來存取Exchange服務 | (MyLife)Population.FindControl(&quot;sujunmin&quot;)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="SyntaxHighlighter.config.clipboardSwf = &apos;https://googledrive.com/host/0B6HWfJSgyadTUzBPMzhVbWN0TzQ/scripts/clipboard.swf&apos;;
+        SyntaxHighlighter.all();
+
+
+
+最近公司的信箱因為申請改成了Exchange服務">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用Exchange Web Services來存取Exchange服務">
+<meta property="og:url" content="http://yoursite.com/2010/07/19/使用Exchange-Web-Services來存取Exchange服務/index.html">
+<meta property="og:site_name" content="(MyLife)Population.FindControl("sujunmin")">
+<meta property="og:description" content="SyntaxHighlighter.config.clipboardSwf = &apos;https://googledrive.com/host/0B6HWfJSgyadTUzBPMzhVbWN0TzQ/scripts/clipboard.swf&apos;;
+        SyntaxHighlighter.all();
+
+
+
+最近公司的信箱因為申請改成了Exchange服務">
+<meta property="og:updated_time" content="2016-06-04T09:20:19.280Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用Exchange Web Services來存取Exchange服務">
+<meta name="twitter:description" content="SyntaxHighlighter.config.clipboardSwf = &apos;https://googledrive.com/host/0B6HWfJSgyadTUzBPMzhVbWN0TzQ/scripts/clipboard.swf&apos;;
+        SyntaxHighlighter.all();
+
+
+
+最近公司的信箱因為申請改成了Exchange服務">
+  
+    <link rel="alternate" href="/atom.xml" title="(MyLife)Population.FindControl(&quot;sujunmin&quot;)" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">(MyLife)Population.FindControl(&quot;sujunmin&quot;)</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">throw System.NullReferenceException.....</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-使用Exchange-Web-Services來存取Exchange服務" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2010/07/19/使用Exchange-Web-Services來存取Exchange服務/" class="article-date">
+  <time datetime="2010-07-19T09:30:59.000Z" itemprop="datePublished">2010-07-19</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      使用Exchange Web Services來存取Exchange服務
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <script type="text/javascript" src="https://googledrive.com/host/0B6HWfJSgyadTUzBPMzhVbWN0TzQ/scripts/shCore.js">
+
+</script> <script type="text/javascript" src="https://googledrive.com/host/0B6HWfJSgyadTUzBPMzhVbWN0TzQ/scripts/shBrushVb.js">
+
+</script> <link href="https://googledrive.com/host/0B6HWfJSgyadTUzBPMzhVbWN0TzQ/styles/shCore.css" type="text/css" rel="stylesheet"> <link href="https://googledrive.com/host/0B6HWfJSgyadTUzBPMzhVbWN0TzQ/styles/shThemeDefault.css" type="text/css" rel="stylesheet"> <script type="text/javascript">
+        SyntaxHighlighter.config.clipboardSwf = 'https://googledrive.com/host/0B6HWfJSgyadTUzBPMzhVbWN0TzQ/scripts/clipboard.swf';
+        SyntaxHighlighter.all();
+
+</script>
+
+<p>最近公司的信箱因為申請改成了Exchange服務，信箱變大，也有比較好的介面(原來的只有200M，Mail2000的介面)。不過謎之程式(自動轉信程式)因為使用Exchange而不能使用。雖然原來使用的Email函式庫可以直接存取Exchange的信件伺服器，但也因為安全問題而無法直接存取。在網路上找呀找，最後找到<a href="http://msdn.microsoft.com/en-us/library/bb204119.aspx" target="_blank" rel="external">Exchange Web Services</a>(EWS)，試了一下又可以繼續Work了，也分享給大家。</p>
+<p>首先使用之前，記得原來Exchange的憑證要匯入到執行程式的系統中，並且設定為受信任根憑證，要不然會無法執行。</p>
+<p>另外<a href="http://www.microsoft.com/exchange/code/owa/index.html" target="_blank" rel="external">Outlook Web Access</a>(OWA)服務記得要先使用過一次，要不然會有奇怪無法執行的問題。我把程式給了同事，在同事的電腦上不能跑，直到上了公司的OWA，才可以跑。</p>
+<p>開發部分從<a href="http://omegacoder.com/?p=454" target="_blank" rel="external">這裡</a>知道需安裝<a href="http://www.microsoft.com/downloads/details.aspx?displaylang=en&amp;FamilyID=c3342fb3-fbcc-4127-becf-872c746840e1" target="_blank" rel="external">Exchange Web Services Managed API</a>，開一個專案，記得要引用安裝目錄下的dll檔(Microsoft.Exchange.WebServices.Data.dll)，並且using/imports到程式裡。</p>
+<p>接下來是程式內容的部份。原來的流程是把全部在收件夾的信件，轉到gmail去，並且在Server上不留備份。不過我們公司的EWS好像不支援寄信(擋權限)，所以就交給原來的程式內容繼續做，只需改一開始用POP3 Server接收信件的部份，變成連結EWS取信件。</p>
+<pre class="brush: vb;">Dim service As ExchangeService
+service = New ExchangeService(ExchangeVersion.Exchange2007_SP1)
+service.Credentials = New NetworkCredential(ChtMailForwarder.My.MySettings.Default.ExchangeUserName, ChtMailForwarder.My.MySettings.Default.ExchangeUserPassword, ChtMailForwarder.My.MySettings.Default.ExchangeDomainName)
+service.Url = New Uri(ChtMailForwarder.My.MySettings.Default.ExchangeWS)
+</pre>
+
+<p>第2航線在有支援的是Exchange2007 SP1與Exchange 2010，Credentials填寫LDAP的帳號、密碼、與網域，Url是填寫Web Services的asmx位置。如果不知道的話，可以改寫成</p>
+<pre class="brush: vb;">service.AutodiscoverUrl(ChtMailForwarder.My.MySettings.Default.ExchangeMailAddress)
+</pre>
+
+<p>這樣就會根據Email去找到asmx。不過每一次都要找的話可能會花很多時間，因此還是找到Url會比較快些。接下來是找新信，方法如下</p>
+<pre class="brush: vb;">Dim itemV As ItemView
+Dim findResults As FindItemsResults(Of Item)
+itemV = New ItemView(ChtMailForwarder.My.MySettings.Default.ExchangeFetchCount)
+findResults = service.FindItems(WellKnownFolderName.Inbox, itemV)
+If findResults.TotalCount &lt;&gt; 0 Then
+For Each item In findResults.Items
+If mail.SendMime(fromAddr, toAddr, item.MimeContent.ToString()) = True Then
+item.Delete(DeleteMode.HardDelete)
+End If
+Next
+End If
+</pre>
+
+<p>這邊介紹一下：第4行使用FindItems找出在itemV中限制數量的item，信件內容會記錄在裡面。至於要抓哪一個資料夾，第一個參數就是決定要抓哪個，我選擇收件夾那個來抓。第7行是原來用SMTP寄信的程式，只是把MIME內容帶入item裡的MimeContent。如果已經寄出，就在第8行把在Server上的信件砍掉(HardDelete是直接刪除，其他像有移到刪除的資料夾或是標記為刪除等)，就完成了程式。</p>
+<p>不過真正在測的時候，老是會當在SendMime的部分，因為MimeContent一直都沒值，但是其他的(Subject, To,…)都有。查了一下網路，<a href="http://social.technet.microsoft.com/Forums/en-US/exchangesvrdevelopment/thread/a0fe7163-adcd-4fd6-94f1-065ee18135da" target="_blank" rel="external">有人說</a>可以在FindItem後用LoadPropertiesForItems來把那些屬性讀進item裡，原來不是沒有資料，而是沒有去呼叫讀進去的函式。所以修改如下</p>
+<pre class="brush: vb;">Dim itemV As ItemView
+Dim findResults As FindItemsResults(Of Item)
+Dim encoding As ASCIIEncoding
+itemV = New ItemView(ChtMailForwarder.My.MySettings.Default.ExchangeFetchCount)
+itemV.PropertySet = PropertySet.IdOnly
+findResults = service.FindItems(WellKnownFolderName.Inbox, itemV)
+If findResults.TotalCount &lt;&gt; 0 Then
+service.LoadPropertiesForItems(findResults.Items, New PropertySet(ItemSchema.MimeContent))
+encoding = New ASCIIEncoding()
+For Each item In findResults.Items
+If mail.SendMime(fromAddr, toAddr, encoding.GetString(item.MimeContent.Content)) = True Then
+item.Delete(DeleteMode.HardDelete)
+End If
+Next
+End If
+</pre>
+
+<p>其中第5行IdOnly表示我們只讀Id，因為後來要填MimeContent，第8行LoadPropertiesForItems根據schema把資料讀到item裡，最後第11行用encoding函式轉換成MIME string。這樣就能自動轉寄信件了。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2010/07/19/使用Exchange-Web-Services來存取Exchange服務/" data-id="cip0y8yva0045al5psfrzrnf8" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Net/">.Net</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2010/07/26/新手教練初試啼聲-北39第6組春風得意帶隊心得/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          新手教練初試啼聲 - 北39第6組春風得意帶隊心得
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2010/07/13/生與死、緣起與緣滅-婚假觀後感/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">生與死、緣起與緣滅 - 婚假觀後感</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Net/">.Net</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Art/">Art</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Boutique/">Boutique</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Foods/">Foods</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Games/">Games</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Gossipings/">Gossipings</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Health/">Health</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kona/">Kona</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MSSQL/">MSSQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Marriage/">Marriage</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Movies/">Movies</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Networks/">Networks</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PMP/">PMP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Ruby/">Ruby</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Travel/">Travel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows-Mobile/">Windows Mobile</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Net/" style="font-size: 16.25px;">.Net</a> <a href="/tags/Art/" style="font-size: 10px;">Art</a> <a href="/tags/Boutique/" style="font-size: 12.5px;">Boutique</a> <a href="/tags/Foods/" style="font-size: 10px;">Foods</a> <a href="/tags/Games/" style="font-size: 10px;">Games</a> <a href="/tags/Gossipings/" style="font-size: 13.75px;">Gossipings</a> <a href="/tags/Health/" style="font-size: 11.25px;">Health</a> <a href="/tags/Kona/" style="font-size: 10px;">Kona</a> <a href="/tags/MSSQL/" style="font-size: 10px;">MSSQL</a> <a href="/tags/Marriage/" style="font-size: 11.25px;">Marriage</a> <a href="/tags/Movies/" style="font-size: 15px;">Movies</a> <a href="/tags/Networks/" style="font-size: 11.25px;">Networks</a> <a href="/tags/PMP/" style="font-size: 17.5px;">PMP</a> <a href="/tags/Ruby/" style="font-size: 10px;">Ruby</a> <a href="/tags/Travel/" style="font-size: 18.75px;">Travel</a> <a href="/tags/Windows-Mobile/" style="font-size: 11.25px;">Windows Mobile</a> <a href="/tags/http-schemas-google-com-blogger-2008-kind-post/" style="font-size: 20px;">http://schemas.google.com/blogger/2008/kind#post</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/01/">January 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/03/">March 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/01/">January 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/12/">December 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/11/">November 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/10/">October 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/09/">September 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/08/">August 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/07/">July 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/06/">June 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/05/">May 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/04/">April 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/03/">March 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/01/">January 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/12/">December 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/11/">November 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/10/">October 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/09/">September 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/08/">August 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/07/">July 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/06/">June 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/05/">May 2009</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/06/04/hello-world/">Hello World</a>
+          </li>
+        
+          <li>
+            <a href="/2013/07/08/控制資料庫使用者的登入/">控制資料庫使用者的登入</a>
+          </li>
+        
+          <li>
+            <a href="/2012/01/18/R-D澳洲蜜月探險-Day-0-前言/">[R&amp;D澳洲蜜月探險][Day 0]前言</a>
+          </li>
+        
+          <li>
+            <a href="/2011/08/20/婚紗處理紀實-下/">婚紗處理紀實(下)</a>
+          </li>
+        
+          <li>
+            <a href="/2011/08/16/婚紗處理紀實-上/">婚紗處理紀實(上)</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

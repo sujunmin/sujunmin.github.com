@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>以前寫的關於Ruby的文章 | (MyLife)Population.FindControl(&quot;sujunmin&quot;)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="SyntaxHighlighter.config.clipboardSwf = &apos;https://googledrive.com/host/0B6HWfJSgyadTUzBPMzhVbWN0TzQ/scripts/clipboard.swf&apos;;
+        SyntaxHighlighter.all();
+
+
+
+之前作一些project的心得，大家勉強看看吧~
+使">
+<meta property="og:type" content="article">
+<meta property="og:title" content="以前寫的關於Ruby的文章">
+<meta property="og:url" content="http://yoursite.com/2009/05/19/以前寫的關於Ruby的文章/index.html">
+<meta property="og:site_name" content="(MyLife)Population.FindControl("sujunmin")">
+<meta property="og:description" content="SyntaxHighlighter.config.clipboardSwf = &apos;https://googledrive.com/host/0B6HWfJSgyadTUzBPMzhVbWN0TzQ/scripts/clipboard.swf&apos;;
+        SyntaxHighlighter.all();
+
+
+
+之前作一些project的心得，大家勉強看看吧~
+使">
+<meta property="og:updated_time" content="2016-06-04T09:20:19.296Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="以前寫的關於Ruby的文章">
+<meta name="twitter:description" content="SyntaxHighlighter.config.clipboardSwf = &apos;https://googledrive.com/host/0B6HWfJSgyadTUzBPMzhVbWN0TzQ/scripts/clipboard.swf&apos;;
+        SyntaxHighlighter.all();
+
+
+
+之前作一些project的心得，大家勉強看看吧~
+使">
+  
+    <link rel="alternate" href="/atom.xml" title="(MyLife)Population.FindControl(&quot;sujunmin&quot;)" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">(MyLife)Population.FindControl(&quot;sujunmin&quot;)</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">throw System.NullReferenceException.....</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-以前寫的關於Ruby的文章" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2009/05/19/以前寫的關於Ruby的文章/" class="article-date">
+  <time datetime="2009-05-19T09:24:20.000Z" itemprop="datePublished">2009-05-19</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      以前寫的關於Ruby的文章
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <script type="text/javascript" src="https://googledrive.com/host/0B6HWfJSgyadTUzBPMzhVbWN0TzQ/scripts/shCore.js">
+</script> <script type="text/javascript" src="https://googledrive.com/host/0B6HWfJSgyadTUzBPMzhVbWN0TzQ/scripts/shBrushRuby.js">
+</script> <link rel="stylesheet" type="text/css" href="https://googledrive.com/host/0B6HWfJSgyadTUzBPMzhVbWN0TzQ/styles/shCore.css"> <link rel="stylesheet" type="text/css" href="https://googledrive.com/host/0B6HWfJSgyadTUzBPMzhVbWN0TzQ/styles/shThemeDefault.css"> <script type="text/javascript">
+        SyntaxHighlighter.config.clipboardSwf = 'https://googledrive.com/host/0B6HWfJSgyadTUzBPMzhVbWN0TzQ/scripts/clipboard.swf';
+        SyntaxHighlighter.all();
+
+</script>
+
+<p>之前作一些project的心得，大家勉強看看吧~</p>
+<p>使用ruby也有一點時間了，最近大改一個之前寫的程式，發現有很多的心得，想跟之前的心得合起來記在這，供日後的參考。</p>
+<p>ruby是一個日本人Yukihiro Matsumoto(matz)開發的Object-Oriented Script&nbsp;Language，在新版的RPGMaker裡可以使用ruby寫腳本。如果你已經會了perl，shell scripts，java等語言，這個東西將很容易上手(我的第一個程式就是改廠商的perl程式成ruby版本，至於為什麼要改，大概是主管對perl 的奇怪偏見吧:))。</p>
+<p>以下是使用ruby 1.8(on fedora core 3)來寫作的心得。</p>
+<p>一般來說跟perl的寫法幾乎一模一樣，只有一些地方不一樣(我碰到的)：<br>1. 變數前面一般來說不用加$，因為加$是global變數。</p>
+<pre class="brush: rb;">hello # local variable
+$hello2 # global variable
+@hello3 # instance variable，可從其包含該值得object得到該值
+HELLO4 # constant variable</pre>
+
+<p>2. 字串裡秀變數值，或是要把值從變數拿出來時，就在變數上加上#{}就可以把值拿出來了。</p>
+<pre class="brush: rb;">puts "hello: #{var_1}\n" #印出含var_1的字串</pre>
+
+<p>3. 敘述句結束也不用加;號。</p>
+<p>4. if-then-else-end，for，loop，更加的靈活。</p>
+<pre class="brush: rb;">2000.times {
+do_something
+} # 做2000次 do_something
+for i in collection # collection可以是一堆數字，一堆array...
+...
+end
+</pre>
+
+<p>5. try-catch exception處理。使用rescue，raise等解決。</p>
+<pre class="brush: rb;">begin
+f = File.new("abc")
+...
+rescue
+puts "files abc can not be created.\n"
+end</pre>
+
+<p>基本上我碰到修改與perl不同的大概就是這些。接下來就是實作程式時得到的一些心得。我把原來的perl程式改寫成了一隻multi-thread的daemon，碰到了不少問題，以下就是我的心得。</p>
+<p>1. ruby連結mysql：裡面並沒內建連結mysql的函式，要去安裝ruby-mysql。<br>使用方法也很簡單，如下所示。</p>
+<pre class="brush: rb;">begin
+require "mysql"
+...
+my = Mysql::new(mysqldbhost, mysqldbuser, mysqldbpasswd, mysqldbname)
+res = my.query(sql_query_language)
+res.each do |row|
+col1 = row[0]
+col2 = row[1]
+...
+end
+</pre>
+
+<p>基本上我用的大部分是傳回一個hash，然後再根據名稱找值。</p>
+<p>2. 建立一個daemon：用fork，loop就可以完成。加一個pid比較好控制。使用-kill<br>只會把之前的process砍掉。</p>
+<pre class="brush: rb;"># 外部呼叫砍掉之前的process
+if ARGV[0] == "-kill" then
+# pidfile存在，先把之前的process砍掉
+if File.exists(pidfile) then
+f = File.open(pidfile)
+previus_pid = f.readlines()[0].to_i
+f.close
+Process.kill("SIGHUP", previus_pid)
+end
+exit
+end
+
+# pidfile存在，先把之前的process砍掉
+if File.exists(pidfile) then
+f = File.open(pidfile)
+previus_pid = f.readlines()[0].to_i
+f.close
+Process.kill("SIGHUP", previus_pid)
+end
+
+# 寫新的pid到檔案裡
+f = File.open(pidfile, "w")
+f.write("#{Process.pid}\n")
+f.close
+
+#主程式daemon開始
+fork do
+loop do
+daemon_main_procedure
+end
+end
+exit
+</pre>
+
+<p>3. Thread的使用：ruby提供一系列的Thread函式，不過因為主程式沒有等其他thread做完的特性，老是主程式馬上結束了，但是其他thread沒做完(其他thread作一些IO與存取資料庫的動作)。一開始有想要用join，來等其他的thread，但是被發現這樣其實不太像thread(一個一個做)，結果使用array與while loop就可以達成。</p>
+<pre class="brush: rb;">to_do_list = ""
+...
+Thread.new(){|t|
+to_do_list.push(t)
+do_thread_thing
+to_do_list.pop(t)
+}
+while to_do_list.length!=0
+# spin lock
+end
+</pre>
+
+<p>4. 使用pop3：因為我的程式有去讀信的動作，因此使用此函式，不過因為後來覺得如果使用者很多的時候pop3 server會爆掉，然後原來的程式在consistence上會有很大的問題，就用其他的方法了。</p>
+<pre class="brush: rb;">require 'net/pop'
+...
+pop = Net::POP3.new(pop3server)
+pop.start(pop3user, pop3passwd) do |pop|
+msg = pop.mails[0]
+header = msg.header
+body = msg.gsub("\r\n\r\n") # 兩個enter後為內文
+...
+pop.mails[0].delete # 砍掉mail
+end
+pop.finish
+..
+</pre>
+
+<p>5. 因為之前4的問題，因此改採直接從本地端的mailbox(/var/mail/username)來讀信。好加在ruby有solution，差點又要回去找perl了:)這樣一來也比較快，而且不會用到pop3 server，也減少被try站的機會。</p>
+<pre class="brush: rb;">require 'mailread'
+...
+mailbox = File.open("/var/mail/username")
+until (m = Mail.new(mailbox)).header.empty?
+header = m. header
+body = m.body
+end
+File.truncate("/var/mail/username") # 砍掉mail
+</pre>
+
+<p>最後，說一下這個ruby其實還蠻好用的，不過文件總是很亂，也沒什麼固定的<br>(我覺得的)，不過ruby-doc mailling list有人發起重新寫文件的計畫，希望能<br>寫的更好，讓programmer查的更方便。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2009/05/19/以前寫的關於Ruby的文章/" data-id="cip0y8yv40040al5peoxoou30" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Ruby/">Ruby</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2009/06/23/AI-轉-JPEG-in-NET-C/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          AI 轉 JPEG in .NET C#
+        
+      </div>
+    </a>
+  
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Net/">.Net</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Art/">Art</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Boutique/">Boutique</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Foods/">Foods</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Games/">Games</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Gossipings/">Gossipings</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Health/">Health</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kona/">Kona</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MSSQL/">MSSQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Marriage/">Marriage</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Movies/">Movies</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Networks/">Networks</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PMP/">PMP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Ruby/">Ruby</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Travel/">Travel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows-Mobile/">Windows Mobile</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Net/" style="font-size: 16.25px;">.Net</a> <a href="/tags/Art/" style="font-size: 10px;">Art</a> <a href="/tags/Boutique/" style="font-size: 12.5px;">Boutique</a> <a href="/tags/Foods/" style="font-size: 10px;">Foods</a> <a href="/tags/Games/" style="font-size: 10px;">Games</a> <a href="/tags/Gossipings/" style="font-size: 13.75px;">Gossipings</a> <a href="/tags/Health/" style="font-size: 11.25px;">Health</a> <a href="/tags/Kona/" style="font-size: 10px;">Kona</a> <a href="/tags/MSSQL/" style="font-size: 10px;">MSSQL</a> <a href="/tags/Marriage/" style="font-size: 11.25px;">Marriage</a> <a href="/tags/Movies/" style="font-size: 15px;">Movies</a> <a href="/tags/Networks/" style="font-size: 11.25px;">Networks</a> <a href="/tags/PMP/" style="font-size: 17.5px;">PMP</a> <a href="/tags/Ruby/" style="font-size: 10px;">Ruby</a> <a href="/tags/Travel/" style="font-size: 18.75px;">Travel</a> <a href="/tags/Windows-Mobile/" style="font-size: 11.25px;">Windows Mobile</a> <a href="/tags/http-schemas-google-com-blogger-2008-kind-post/" style="font-size: 20px;">http://schemas.google.com/blogger/2008/kind#post</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/01/">January 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/03/">March 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/01/">January 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/12/">December 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/11/">November 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/10/">October 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/09/">September 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/08/">August 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/07/">July 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/06/">June 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/05/">May 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/04/">April 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/03/">March 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/01/">January 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/12/">December 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/11/">November 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/10/">October 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/09/">September 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/08/">August 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/07/">July 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/06/">June 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/05/">May 2009</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/06/04/hello-world/">Hello World</a>
+          </li>
+        
+          <li>
+            <a href="/2013/07/08/控制資料庫使用者的登入/">控制資料庫使用者的登入</a>
+          </li>
+        
+          <li>
+            <a href="/2012/01/18/R-D澳洲蜜月探險-Day-0-前言/">[R&amp;D澳洲蜜月探險][Day 0]前言</a>
+          </li>
+        
+          <li>
+            <a href="/2011/08/20/婚紗處理紀實-下/">婚紗處理紀實(下)</a>
+          </li>
+        
+          <li>
+            <a href="/2011/08/16/婚紗處理紀實-上/">婚紗處理紀實(上)</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

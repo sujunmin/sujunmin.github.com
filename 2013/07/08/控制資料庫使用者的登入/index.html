@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>控制資料庫使用者的登入 | (MyLife)Population.FindControl(&quot;sujunmin&quot;)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="SyntaxHighlighter.config.clipboardSwf = &apos;https://googledrive.com/host/0B6HWfJSgyadTUzBPMzhVbWN0TzQ/scripts/clipboard.swf&apos;;
+        SyntaxHighlighter.all();
+
+
+很久沒有寫blog了，自從上次的旅遊紀錄。
+最近做了比">
+<meta property="og:type" content="article">
+<meta property="og:title" content="控制資料庫使用者的登入">
+<meta property="og:url" content="http://yoursite.com/2013/07/08/控制資料庫使用者的登入/index.html">
+<meta property="og:site_name" content="(MyLife)Population.FindControl("sujunmin")">
+<meta property="og:description" content="SyntaxHighlighter.config.clipboardSwf = &apos;https://googledrive.com/host/0B6HWfJSgyadTUzBPMzhVbWN0TzQ/scripts/clipboard.swf&apos;;
+        SyntaxHighlighter.all();
+
+
+很久沒有寫blog了，自從上次的旅遊紀錄。
+最近做了比">
+<meta property="og:image" content="http://e.share.photo.xuite.net/retsamsu/1e232b0/5078060/260527236_o.jpg">
+<meta property="og:image" content="http://e.share.photo.xuite.net/retsamsu/1e232c5/5078060/260527513_o.jpg">
+<meta property="og:image" content="http://e.share.photo.xuite.net/retsamsu/1e232db/5078060/260527535_o.jpg">
+<meta property="og:updated_time" content="2016-06-04T09:20:19.272Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="控制資料庫使用者的登入">
+<meta name="twitter:description" content="SyntaxHighlighter.config.clipboardSwf = &apos;https://googledrive.com/host/0B6HWfJSgyadTUzBPMzhVbWN0TzQ/scripts/clipboard.swf&apos;;
+        SyntaxHighlighter.all();
+
+
+很久沒有寫blog了，自從上次的旅遊紀錄。
+最近做了比">
+<meta name="twitter:image" content="http://e.share.photo.xuite.net/retsamsu/1e232b0/5078060/260527236_o.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="(MyLife)Population.FindControl(&quot;sujunmin&quot;)" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">(MyLife)Population.FindControl(&quot;sujunmin&quot;)</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">throw System.NullReferenceException.....</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-控制資料庫使用者的登入" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/07/08/控制資料庫使用者的登入/" class="article-date">
+  <time datetime="2013-07-08T01:32:21.000Z" itemprop="datePublished">2013-07-08</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      控制資料庫使用者的登入
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <script type="text/javascript" src="https://googledrive.com/host/0B6HWfJSgyadTUzBPMzhVbWN0TzQ/scripts/shCore.js">
+</script> <script type="text/javascript" src="https://googledrive.com/host/0B6HWfJSgyadTUzBPMzhVbWN0TzQ/scripts/shBrushSql.js">
+</script> <link href="https://googledrive.com/host/0B6HWfJSgyadTUzBPMzhVbWN0TzQ/styles/shCore.css" type="text/css" rel="stylesheet"> <link href="https://googledrive.com/host/0B6HWfJSgyadTUzBPMzhVbWN0TzQ/styles/shThemeDefault.css" type="text/css" rel="stylesheet"> <script type="text/javascript">
+        SyntaxHighlighter.config.clipboardSwf = 'https://googledrive.com/host/0B6HWfJSgyadTUzBPMzhVbWN0TzQ/scripts/clipboard.swf';
+        SyntaxHighlighter.all();
+</script>
+
+<p>很久沒有寫blog了，自從上次的<a href="http://blog.xuite.net/retsamsu/diary/56507473" target="_blank" rel="external">旅遊紀錄</a>。</p>
+<p>最近做了比較多技術層面的東西，想想一方面也該是要回饋以外，另一方面也是怕自己忘記了(哈哈)。</p>
+<p>開始來記錄一些技術的東西吧(旅遊的話就…XD)~</p>
+<p>這篇是來說明控制MSSQL資料庫使用者的登入。<span style="line-height: 1.2;">&nbsp;</span></p>
+<p>因為公司的資料庫有個需求，防火牆雖然已設定了內網連到資料庫的Policies，但是對於帳號本身的控管仍然較為鬆散，也就是說雖有開通防火牆連線，但是帳號的連線無法正常管控，所以要做的事情就是要讓帳號的登入受到管控。</p>
+<p>網路上大部分的<a href="https://www.google.com.tw/search?q=mssql+login+trigger&amp;oq=mssql+login+trigger&amp;aqs=chrome.0.57j59l3j62l2.7585j0&amp;sourceid=chrome&amp;ie=UTF-8" target="_blank" rel="external">解法</a>都是使用Login Trigger來做處理，因此我也做了一個Login Trigger到資料庫上，以下是我的作法。</p>
+<p>目標：能夠控管資料庫上的帳號(必要)，根據來源IP(必要)、使用的程式(非必要)、作業時間(AP帳號(全時暢通)或是管理用帳號(上班日可使用)，必要)來控管。</p>
+<ol>
+<li><span style="line-height: 1.2;">資料庫設定</span><pre class="brush: sql;">USE master
+GO
+GRANT SELECT ON LoginMain TO public
+GO
+GRANT SELECT ON LoginDate TO public
+GO
+</pre>
+
+</li>
+</ol>
+<pre class="brush: sql;">USE master
+GO
+ALTER DATABASE master SET ANSI_PADDING ON
+GO
+ALTER DATABASE master SET CONCAT_NULL_YIELDS_NULL ON
+GO
+ALTER DATABASE master SET ANSI_WARNINGS ON
+GO
+ALTER DATABASE master SET ANSI_NULL_DEFAULT ON
+GO
+ALTER DATABASE master SET ANSI_NULLS ON
+GO
+</pre>
+
+<ol>
+<li><span style="line-height: 1.2;">加入<a href="https://googledrive.com/host/0B6HWfJSgyadTSWdfdnp3NloxcXc/Trig_Connection_Limit.sql" target="_blank" rel="external">Login Trigger</a></span></li>
+</ol>
+<ul>
+<li><p><span style="line-height: 1.2;">執行該Script新增。</span></p>
+</li>
+<li><p><span style="line-height: 1.2;">這個Trigger透過Logon Event得到的</span><a href="http://technet.microsoft.com/en-us/library/hh213611.aspx" target="_blank" rel="external">XML</a><span style="line-height: 1.2;">來做判斷。</span></p>
+<pre class="brush: sql;">SET @data = EVENTDATA()
+SET @srcip = @data.value('(/EVENT_INSTANCE/ClientHost)[1]', 'varchar(50)')
+SET @username = @data.value('(/EVENT_INSTANCE/LoginName)[1]', 'varchar(50)')
+SET @LoginDate = @data.value('(/EVENT_INSTANCE/PostTime)[1]', 'datetime')</pre>
+</li>
+<li><p><span style="line-height: 1.2;">第一個IF免除掉不被分析的帳號(如系統帳號、Domain帳號等)。</span></p>
+<pre class="brush: sql;">IF (@username NOT LIKE '%\%')&nbsp;</pre>
+</li>
+<li><p><span style="line-height: 1.2;">判斷式中對於帳號、程式名、IP等有限制。</span></p>
+<pre class="brush: sql;">BEGIN
+SELECT @lm_idx = idx FROM LoginMain WHERE username=@username AND ((CHARINDEX(@srcip,srcip) &lt;&gt; 0) OR srcip = '') AND APP_NAME() like '%'+apname+'%'
+IF @lm_idx is null
+BEGIN
+RAISERROR ('無法在資料庫中找到您的登入帳號、來源IP、或是使用之程式不正確。',16,1)
+ROLLBACK
+END&nbsp;</pre>
+</li>
+<li><p><span style="line-height: 1.2;">接下來判斷時間是否正常。</span></p>
+<pre class="brush: sql;">BEGIN      
+SELECT @ld_idx = idx FROM LoginDate WHERE lm_idx = @lm_idx AND wkdnum = @wkdnum AND dfrom &lt;= lgtime="" and="" dto=""&gt;= @lgtime
+IF @ld_idx is null
+BEGIN
+RAISERROR ('您的帳號無法在此時段登入。',16,1)
+ROLLBACK
+END </pre>
+</li>
+<li><p><span style="line-height: 1.2;">如果登入的條件未達到，就會有如同以下的訊息。</span><img src="http://e.share.photo.xuite.net/retsamsu/1e232b0/5078060/260527236_o.jpg" alt=""></p>
+</li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li><span style="line-height: 1.2;">如果是帳戶名稱不對，IP不對，或是程式名稱無法配對，在SQL的記錄檔會有錯誤訊息。</span><img src="http://e.share.photo.xuite.net/retsamsu/1e232c5/5078060/260527513_o.jpg" alt=""></li>
+</ul>
+<p>&nbsp;</p>
+<ul>
+<li><span style="line-height: 1.2;">如果是時間不對，在SQL的記錄檔會有錯誤訊息。</span><img src="http://e.share.photo.xuite.net/retsamsu/1e232db/5078060/260527535_o.jpg" alt=""></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2013/07/08/控制資料庫使用者的登入/" data-id="cip0y8yxp005jal5ps07xb8ej" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MSSQL/">MSSQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/06/04/hello-world/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Hello World
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2012/01/18/R-D澳洲蜜月探險-Day-0-前言/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">[R&amp;D澳洲蜜月探險][Day 0]前言</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Net/">.Net</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Art/">Art</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Boutique/">Boutique</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Foods/">Foods</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Games/">Games</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Gossipings/">Gossipings</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Health/">Health</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kona/">Kona</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MSSQL/">MSSQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Marriage/">Marriage</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Movies/">Movies</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Networks/">Networks</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PMP/">PMP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Ruby/">Ruby</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Travel/">Travel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows-Mobile/">Windows Mobile</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Net/" style="font-size: 16.25px;">.Net</a> <a href="/tags/Art/" style="font-size: 10px;">Art</a> <a href="/tags/Boutique/" style="font-size: 12.5px;">Boutique</a> <a href="/tags/Foods/" style="font-size: 10px;">Foods</a> <a href="/tags/Games/" style="font-size: 10px;">Games</a> <a href="/tags/Gossipings/" style="font-size: 13.75px;">Gossipings</a> <a href="/tags/Health/" style="font-size: 11.25px;">Health</a> <a href="/tags/Kona/" style="font-size: 10px;">Kona</a> <a href="/tags/MSSQL/" style="font-size: 10px;">MSSQL</a> <a href="/tags/Marriage/" style="font-size: 11.25px;">Marriage</a> <a href="/tags/Movies/" style="font-size: 15px;">Movies</a> <a href="/tags/Networks/" style="font-size: 11.25px;">Networks</a> <a href="/tags/PMP/" style="font-size: 17.5px;">PMP</a> <a href="/tags/Ruby/" style="font-size: 10px;">Ruby</a> <a href="/tags/Travel/" style="font-size: 18.75px;">Travel</a> <a href="/tags/Windows-Mobile/" style="font-size: 11.25px;">Windows Mobile</a> <a href="/tags/http-schemas-google-com-blogger-2008-kind-post/" style="font-size: 20px;">http://schemas.google.com/blogger/2008/kind#post</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/01/">January 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/03/">March 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/01/">January 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/12/">December 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/11/">November 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/10/">October 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/09/">September 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/08/">August 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/07/">July 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/06/">June 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/05/">May 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/04/">April 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/03/">March 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/01/">January 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/12/">December 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/11/">November 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/10/">October 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/09/">September 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/08/">August 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/07/">July 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/06/">June 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/05/">May 2009</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/06/04/hello-world/">Hello World</a>
+          </li>
+        
+          <li>
+            <a href="/2013/07/08/控制資料庫使用者的登入/">控制資料庫使用者的登入</a>
+          </li>
+        
+          <li>
+            <a href="/2012/01/18/R-D澳洲蜜月探險-Day-0-前言/">[R&amp;D澳洲蜜月探險][Day 0]前言</a>
+          </li>
+        
+          <li>
+            <a href="/2011/08/20/婚紗處理紀實-下/">婚紗處理紀實(下)</a>
+          </li>
+        
+          <li>
+            <a href="/2011/08/16/婚紗處理紀實-上/">婚紗處理紀實(上)</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

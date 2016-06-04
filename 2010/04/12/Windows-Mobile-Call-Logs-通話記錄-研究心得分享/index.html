@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Windows Mobile Call Logs (通話記錄) 研究心得分享 | (MyLife)Population.FindControl(&quot;sujunmin&quot;)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="這一篇分享文的由來，不是因為無聊想研究，而是因為需求而研究的，該換手機啦~~
+話說到昨天(4/12)，晚上跟Bonnie一起去東區逛街，在有名的兔子兔子餐廳吃飯的時候，拍了一些有趣的照片。因為Bonnie的傳輸線壞掉了，所以我們用藍芽來互傳。傳完之後呢，就去逛街。逛到一半，拿出手機來看看，好像當機了。於是就拿對付這台老CHT9100的方法，戳屁屁，可是這一次卻沒辦法一如往常的重開，而是”噹”的一聲">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Windows Mobile Call Logs (通話記錄) 研究心得分享">
+<meta property="og:url" content="http://yoursite.com/2010/04/12/Windows-Mobile-Call-Logs-通話記錄-研究心得分享/index.html">
+<meta property="og:site_name" content="(MyLife)Population.FindControl("sujunmin")">
+<meta property="og:description" content="這一篇分享文的由來，不是因為無聊想研究，而是因為需求而研究的，該換手機啦~~
+話說到昨天(4/12)，晚上跟Bonnie一起去東區逛街，在有名的兔子兔子餐廳吃飯的時候，拍了一些有趣的照片。因為Bonnie的傳輸線壞掉了，所以我們用藍芽來互傳。傳完之後呢，就去逛街。逛到一半，拿出手機來看看，好像當機了。於是就拿對付這台老CHT9100的方法，戳屁屁，可是這一次卻沒辦法一如往常的重開，而是”噹”的一聲">
+<meta property="og:image" content="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/32899274/5.png">
+<meta property="og:image" content="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/32899274/6.png">
+<meta property="og:image" content="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/32899274/7.png">
+<meta property="og:image" content="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/32899274/8.png">
+<meta property="og:image" content="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/32899274/9.png">
+<meta property="og:image" content="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/32899274/10.png">
+<meta property="og:image" content="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/32899274/11.png">
+<meta property="og:updated_time" content="2016-06-04T09:20:19.296Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Windows Mobile Call Logs (通話記錄) 研究心得分享">
+<meta name="twitter:description" content="這一篇分享文的由來，不是因為無聊想研究，而是因為需求而研究的，該換手機啦~~
+話說到昨天(4/12)，晚上跟Bonnie一起去東區逛街，在有名的兔子兔子餐廳吃飯的時候，拍了一些有趣的照片。因為Bonnie的傳輸線壞掉了，所以我們用藍芽來互傳。傳完之後呢，就去逛街。逛到一半，拿出手機來看看，好像當機了。於是就拿對付這台老CHT9100的方法，戳屁屁，可是這一次卻沒辦法一如往常的重開，而是”噹”的一聲">
+<meta name="twitter:image" content="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/32899274/5.png">
+  
+    <link rel="alternate" href="/atom.xml" title="(MyLife)Population.FindControl(&quot;sujunmin&quot;)" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">(MyLife)Population.FindControl(&quot;sujunmin&quot;)</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">throw System.NullReferenceException.....</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Windows-Mobile-Call-Logs-通話記錄-研究心得分享" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2010/04/12/Windows-Mobile-Call-Logs-通話記錄-研究心得分享/" class="article-date">
+  <time datetime="2010-04-12T06:13:36.000Z" itemprop="datePublished">2010-04-12</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Windows Mobile Call Logs (通話記錄) 研究心得分享
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>這一篇分享文的由來，不是因為無聊想研究，而是因為需求而研究的，該換手機啦~~</p>
+<p>話說到昨天(4/12)，晚上跟Bonnie一起去東區逛街，在有名的<a href="http://rabbitrabbit.com.tw/" target="_blank" rel="external">兔子兔子</a>餐廳吃飯的時候，拍了一些有趣的照片。因為Bonnie的傳輸線壞掉了，所以我們用藍芽來互傳。傳完之後呢，就去逛街。逛到一半，拿出手機來看看，好像當機了。於是就拿對付這台老CHT9100的方法，戳屁屁，可是這一次卻沒辦法一如往常的重開，而是”噹”的一聲，我的手機居然被重置了&gt;///&lt;，失望之餘趕緊找回之前的備份，也帶著失望(應該是說沒心情)回家了(Bonnie的名言：絕不能相信手機等3C用品)。</p>
+<p>因為我每個星期都會拿<a href="http://addintimer.5d6d.com/" target="_blank" rel="external">AddinTimer</a>的備份聯絡人、簡訊、與通話記錄功能來備份系統，話說這時應該是派上用場的時候。聯絡人、簡訊都回復了，就通話記錄找不到哪邊還原，實在有夠奇怪，怎麼只能備份不能還原呢?上網找了一下，還真的是<a href="http://addintimer.5d6d.com/viewthread.php?tid=658" target="_blank" rel="external">沒法還原</a>，沒這個功能。這就很像備了一堆沒用的東西一樣，很笨蛋的感覺。</p>
+<p>可是不死心的我找了很多資料，想要恢復通話記錄，但都是碰壁。實在是這樣的應用太少了，所以再更深入找了一下，有下面的一些結論：</p>
+<ul>
+<li>Windows Mobile有許多的系統資料庫，如行事曆、系統排程等資料庫，有的可以看到，有的是隱藏檔。</li>
+<li>應用程式透過<a href="http://msdn.microsoft.com/en-us/library/aa914277.aspx" target="_blank" rel="external">Pocket Outlook Object Model (POOM)</a>，這個包好API的Framework，來跟這些資料庫溝通。</li>
+<li>所以不管是新增行事曆、修改電話簿等等作業就可以透過POOM來執行。</li>
+<li>有許多已經完整的POOM實作可以使用，如<a href="http://www.opennetcf.com/" target="_blank" rel="external">OpenNETCF</a>、<a href="http://inthehand.com/content/Mobile.aspx" target="_blank" rel="external">Mobile In The Hand</a>、<a href="https://blogs.msdn.com/stevenpr/archive/2004/08/05/209390.aspx" target="_blank" rel="external">.NetCF</a>等，都可以在手機上來存取資料。</li>
+<li>也有許多應用程式已經可以存取，如<a href="http://www.s-k-tools.com/index.html?sktools/m_feat.html" target="_blank" rel="external">SKTools</a>、<a href="http://www.pocketgear.com/en/usd/107981,product-details.html" target="_blank" rel="external">CeDatabase Manager</a>、<a href="http://www.phatware.com/index.php?q=product/details/dbexplorer" target="_blank" rel="external">Pocket dbExplorer</a>等。</li>
+<li>不過沒有一個程式能大量匯入使用者定義的資料(From AddinTimer的備份)。</li>
+<li>對於手機的程式要寫起來應該很麻煩。</li>
+</ul>
+<p>中間Try and Error的過程就不說了，直接跟大家分享最後的方法：SKTools+寫程式產生Import檔。</p>
+<p>SKTools是個很方便的Windows Mobile控管程式，會用到的是他管理資料庫的功能。</p>
+<p><img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/32899274/5.png" alt=""></p>
+<p>點進去以後就可以看到系統資料庫。今天我們要存取的是clog.db(Call Logs資料庫)。</p>
+<p><img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/32899274/6.png" alt=""></p>
+<p>可以看到一些重要的資料：屬於<a href="http://msdn.microsoft.com/en-us/library/aa912256.aspx" target="_blank" rel="external">EDB</a>格式，存在於pim.vol。</p>
+<p>pim.vol存在系統的根目錄下，裡面放著通訊錄、行程、約會等<a href="http://www.pocketpcjunkies.com/Uwe/Forum.aspx/pocketpc-dev/21040/Reading-pim-vol-EDB-File-on-a-PC" target="_blank" rel="external">資料</a>，就像是一個磁區(Volume)一樣，所以對應如果要改其他的內容的話，就是去存取在pim.vol下的其他資料庫。</p>
+<p><img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/32899274/7.png" alt=""></p>
+<p>可以匯入也能匯出，都是xml檔。既然是xml檔，就可以來研究研究是不是可以用程式還是其他方法來加工一下，再匯入進去。xml檔的格式大概是這樣：</p>
+<p><img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/32899274/8.png" alt=""></p>
+<p>上面那沱東西，不用管他，反正保留在那就好，重要是下面的部份：</p>
+<p><img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/32899274/9.png" alt=""></p>
+<p>可以看出大概的資料結構，所幸有<a href="http://windows-tech.info/10/646502d8870f8a9b.php" target="_blank" rel="external">這個</a>跟<a href="http://www.codeproject.com/tips/68144/Modifying-the-Call-History-on-Windows-Mobile.aspx?display=Print" target="_blank" rel="external">這個</a>的幫忙，一方面是知道欄位的格式與內容，另一方面是如果是參數的話是什麼東西，大概是這樣：</p>
+<ul>
+<li>record oid:沒關係，亂打就好，匯入會重編。</li>
+<li>field 1:固定是1。</li>
+<li>field 2:開始時間，這個時間是<a href="http://msdn.microsoft.com/zh-tw/library/system.globalization.datetimeformatinfo.sortabledatetimepattern%28v=VS.80%29.aspx" target="_blank" rel="external">SortableDateTimePattern</a>加個Z(與<a href="http://msdn.microsoft.com/zh-tw/library/system.globalization.datetimeformatinfo.universalsortabledatetimepattern%28v=VS.80%29.aspx" target="_blank" rel="external">UniversalSortableDateTimePattern</a>類似，真是奇怪的格式)，位數都不要補零。</li>
+<li>field 3:結束時間，格式跟上面一樣。</li>
+<li>field 4:來電的格式，有下面幾種，分別是有沒有在電話簿裡的來電與打的方式有代碼。</li>
+<li><img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/32899274/10.png" alt=""></li>
+<li>field 6:電話號碼。</li>
+<li>field 7:聯絡人名稱。</li>
+<li>field 10:是什麼樣的電話(行動電話、家用電話還是什麼的)。</li>
+<li>field 9:固定是0。</li>
+</ul>
+<p>然後看看AddinTimer的通話記錄備份裡有什麼欄位。<br><img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/32899274/11.png" alt=""></p>
+<ul>
+<li>StartTime:開始時間，就是field 1。</li>
+<li>Name:如果是在電話簿裡有名字的話，會記錄名稱，field 7。</li>
+<li>Number:電話號碼，field 6。</li>
+<li><p>CallType:經過比對的結果呢(就是打給某人的比較長，就大概知道Type是什麼意思了(笑))，再根據Name就可決定field 4的內容，大概是這樣： </p>
+<ul>
+<li>a是未接來電。</li>
+<li>b是已接來電。</li>
+<li>c是播出電話。</li>
+</ul>
+</li>
+<li><p>Duration:持續時間，與StartTime配合可以產生field 3。</p>
+</li>
+<li>Note:沒東西。</li>
+</ul>
+<p>基本上都能配合著作，除了field 10不知道要填什麼(不填也沒關係)，field 3 = field 2 + Duration以外，就是單純的資料輸出了。</p>
+<p>做完以後，丟到手機上，Import進去，就可以看到結果啦，完成了還原的工作，下次要記得用其他東西備份啦~</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2010/04/12/Windows-Mobile-Call-Logs-通話記錄-研究心得分享/" data-id="cip0y8ysk002pal5pcywnisyg" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Windows-Mobile/">Windows Mobile</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2010/05/11/終於聽到在排行榜裡不芭樂的歌了/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          終於聽到在排行榜裡不芭樂的歌了
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2010/04/05/我的PMP之路/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">我的PMP之路</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Net/">.Net</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Art/">Art</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Boutique/">Boutique</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Foods/">Foods</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Games/">Games</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Gossipings/">Gossipings</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Health/">Health</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kona/">Kona</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MSSQL/">MSSQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Marriage/">Marriage</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Movies/">Movies</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Networks/">Networks</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PMP/">PMP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Ruby/">Ruby</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Travel/">Travel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows-Mobile/">Windows Mobile</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Net/" style="font-size: 16.25px;">.Net</a> <a href="/tags/Art/" style="font-size: 10px;">Art</a> <a href="/tags/Boutique/" style="font-size: 12.5px;">Boutique</a> <a href="/tags/Foods/" style="font-size: 10px;">Foods</a> <a href="/tags/Games/" style="font-size: 10px;">Games</a> <a href="/tags/Gossipings/" style="font-size: 13.75px;">Gossipings</a> <a href="/tags/Health/" style="font-size: 11.25px;">Health</a> <a href="/tags/Kona/" style="font-size: 10px;">Kona</a> <a href="/tags/MSSQL/" style="font-size: 10px;">MSSQL</a> <a href="/tags/Marriage/" style="font-size: 11.25px;">Marriage</a> <a href="/tags/Movies/" style="font-size: 15px;">Movies</a> <a href="/tags/Networks/" style="font-size: 11.25px;">Networks</a> <a href="/tags/PMP/" style="font-size: 17.5px;">PMP</a> <a href="/tags/Ruby/" style="font-size: 10px;">Ruby</a> <a href="/tags/Travel/" style="font-size: 18.75px;">Travel</a> <a href="/tags/Windows-Mobile/" style="font-size: 11.25px;">Windows Mobile</a> <a href="/tags/http-schemas-google-com-blogger-2008-kind-post/" style="font-size: 20px;">http://schemas.google.com/blogger/2008/kind#post</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/01/">January 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/03/">March 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/01/">January 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/12/">December 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/11/">November 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/10/">October 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/09/">September 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/08/">August 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/07/">July 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/06/">June 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/05/">May 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/04/">April 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/03/">March 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/01/">January 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/12/">December 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/11/">November 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/10/">October 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/09/">September 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/08/">August 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/07/">July 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/06/">June 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/05/">May 2009</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/06/04/hello-world/">Hello World</a>
+          </li>
+        
+          <li>
+            <a href="/2013/07/08/控制資料庫使用者的登入/">控制資料庫使用者的登入</a>
+          </li>
+        
+          <li>
+            <a href="/2012/01/18/R-D澳洲蜜月探險-Day-0-前言/">[R&amp;D澳洲蜜月探險][Day 0]前言</a>
+          </li>
+        
+          <li>
+            <a href="/2011/08/20/婚紗處理紀實-下/">婚紗處理紀實(下)</a>
+          </li>
+        
+          <li>
+            <a href="/2011/08/16/婚紗處理紀實-上/">婚紗處理紀實(上)</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

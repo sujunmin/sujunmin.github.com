@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>CHT9100解磚(unbrick)的方法 | (MyLife)Population.FindControl(&quot;sujunmin&quot;)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="昨天同事義欽兄問我之前CHT9100刷WM6.5的ROM資訊，我就給他這個，想到我之前也抓了一個WM6.5的最新ROM還沒刷，就拿來刷看看
+刷完以後覺得不賴，用之前SPB Backup備份的資料還原回去，因為以為都差不多吧，是用全系統還原回去
+結果還原以後是很像之前的沒錯啦，不過因為ROM跟Flash上面太多檔案重複了(Windows下面有的程式其實之前也有灌過，64M的Flash用到只剩下2M)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CHT9100解磚(unbrick)的方法">
+<meta property="og:url" content="http://yoursite.com/2009/07/23/CHT9100解磚-unbrick-的方法/index.html">
+<meta property="og:site_name" content="(MyLife)Population.FindControl("sujunmin")">
+<meta property="og:description" content="昨天同事義欽兄問我之前CHT9100刷WM6.5的ROM資訊，我就給他這個，想到我之前也抓了一個WM6.5的最新ROM還沒刷，就拿來刷看看
+刷完以後覺得不賴，用之前SPB Backup備份的資料還原回去，因為以為都差不多吧，是用全系統還原回去
+結果還原以後是很像之前的沒錯啦，不過因為ROM跟Flash上面太多檔案重複了(Windows下面有的程式其實之前也有灌過，64M的Flash用到只剩下2M)">
+<meta property="og:image" content="http://s.blog.xuite.net/_image/emotion/m20.gif">
+<meta property="og:image" content="http://s.blog.xuite.net/_image/emotion/m4.gif">
+<meta property="og:image" content="http://s.blog.xuite.net/_image/emotion/m14.gif">
+<meta property="og:image" content="http://s.blog.xuite.net/_image/emotion/m11.gif">
+<meta property="og:image" content="http://s.blog.xuite.net/_image/emotion/m16.gif">
+<meta property="og:image" content="http://s.blog.xuite.net/_image/emotion/m10.gif">
+<meta property="og:image" content="http://s.blog.xuite.net/_image/emotion/m10.gif">
+<meta property="og:image" content="http://s.blog.xuite.net/_image/emotion/m10.gif">
+<meta property="og:image" content="http://s.blog.xuite.net/_image/emotion/m10.gif">
+<meta property="og:image" content="http://s.blog.xuite.net/_image/emotion/m10.gif">
+<meta property="og:updated_time" content="2016-06-04T09:20:19.292Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CHT9100解磚(unbrick)的方法">
+<meta name="twitter:description" content="昨天同事義欽兄問我之前CHT9100刷WM6.5的ROM資訊，我就給他這個，想到我之前也抓了一個WM6.5的最新ROM還沒刷，就拿來刷看看
+刷完以後覺得不賴，用之前SPB Backup備份的資料還原回去，因為以為都差不多吧，是用全系統還原回去
+結果還原以後是很像之前的沒錯啦，不過因為ROM跟Flash上面太多檔案重複了(Windows下面有的程式其實之前也有灌過，64M的Flash用到只剩下2M)">
+<meta name="twitter:image" content="http://s.blog.xuite.net/_image/emotion/m20.gif">
+  
+    <link rel="alternate" href="/atom.xml" title="(MyLife)Population.FindControl(&quot;sujunmin&quot;)" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">(MyLife)Population.FindControl(&quot;sujunmin&quot;)</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">throw System.NullReferenceException.....</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-CHT9100解磚-unbrick-的方法" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2009/07/23/CHT9100解磚-unbrick-的方法/" class="article-date">
+  <time datetime="2009-07-23T04:04:07.000Z" itemprop="datePublished">2009-07-23</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      CHT9100解磚(unbrick)的方法
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>昨天同事義欽兄問我之前CHT9100刷WM6.5的ROM資訊，我就給他<a href="http://www.mobile01.com/topicdetail.php?f=224&amp;t=539086&amp;p=1" target="_blank" rel="external">這個</a>，想到我之前也抓了一個WM6.5的最新ROM還沒刷，就拿來刷看看</p>
+<p>刷完以後覺得不賴，用之前<a href="http://www.spbsoftwarehouse.com/products/backup/?en" target="_blank" rel="external">SPB Backup</a>備份的資料還原回去，因為以為都差不多吧，是用全系統還原回去</p>
+<p>結果還原以後是很像之前的沒錯啦，不過因為ROM跟Flash上面太多檔案重複了(Windows下面有的程式其實之前也有灌過，64M的Flash用到只剩下2M<img src="http://s.blog.xuite.net/_image/emotion/m20.gif" alt="">)</p>
+<p>想說再重新刷一次，下次不要再全系統還原回去(為什麼那時候不用Hard Reset呢<img src="http://s.blog.xuite.net/_image/emotion/m4.gif" alt="">)，可能是因為電量不足吧，刷到一半就當機重開了<img src="http://s.blog.xuite.net/_image/emotion/m14.gif" alt=""></p>
+<p>接下來就是慘痛的開始，怎麼刷機都沒法刷進去，Soft/Hard Reset也沒用，無法安裝程式，整個手機只能打電話跟用ROM裡面的程式<img src="http://s.blog.xuite.net/_image/emotion/m11.gif" alt=""></p>
+<p>上網找Solution(<a href="http://lmgtfy.com/?q=trinity+unbrick" target="_blank" rel="external">Google查trinity unbrick</a>)，其中有一個</p>
+<p><a href="http://forum.xda-developers.com/showthread.php?t=308691" target="_blank" rel="external">HTC Trinity Stack Overflow exploit - how to unbrick any Trinity stuck in bootloader!!</a></p>
+<p>這個，寫到如何解磚(unbrick)的方法，二話不說就下載來用</p>
+<p>我是下載<a href="http://forum.xda-developers.com/attachment.php?attachmentid=43847&amp;d=1184390360" target="_blank" rel="external">.Net</a>的版本，用<a href="http://forum.xda-developers.com/attachment.php?attachmentid=43539&amp;d=1184192788" target="_blank" rel="external">splxploit-windows.zip</a>的nb檔(TRIN_HardSPL.nb)，以下就是我的方法：</p>
+<ol>
+<li>CHT9100接上電腦，開三色模式</li>
+<li>選Connect，他會說Connected</li>
+<li>仔細看一下三色螢幕上面的SPL版本，先記起來(我的是SPL-3.08.00)</li>
+<li>接下來選Exploit!，會跑一下，訊息會出現在下面，因為你的SPL有問題，所以他會比對一下，比對完會跳一個確認視窗，叫你選要安裝的SPL nb</li>
+<li>選擇TRIN_HardSPL.nb(剛剛說的那個)</li>
+<li>接下來他會安裝，安裝完如果沒有當掉的話<span style="color: #fe0a00; font-size: 24pt;">不要</span>重開機，看看妳的SPL版本是不是變了(變成SPL-1.30.Olipro)，反正就跟剛剛不一樣就是了，接下來就直接進行ROM的刷機動作(這邊我試好幾次<img src="http://s.blog.xuite.net/_image/emotion/m16.gif" alt="">，開機完就會恢復成原來的SPL)</li>
+<li>完成刷機(SPL也會因為你刷的ROM變化)，解磚了<img src="http://s.blog.xuite.net/_image/emotion/m10.gif" alt=""></li>
+</ol>
+<p>如果上面的檔案沒法下載，這裡也有<a href="https://googledrive.com/host/0B6HWfJSgyadTRndkdHZiSk1sbzA/SPL Exploit Tool.zip" target="_blank" rel="external">SPL Exploit Tool(.Net版)</a></p>
+<p>還是希望以後能夠不要再變磚了<img src="http://s.blog.xuite.net/_image/emotion/m10.gif" alt=""><img src="http://s.blog.xuite.net/_image/emotion/m10.gif" alt=""><img src="http://s.blog.xuite.net/_image/emotion/m10.gif" alt=""><img src="http://s.blog.xuite.net/_image/emotion/m10.gif" alt=""></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2009/07/23/CHT9100解磚-unbrick-的方法/" data-id="cip0y8ync000gal5p1dts7il9" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Windows-Mobile/">Windows Mobile</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2009/07/28/Utopia-介紹/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Utopia 介紹
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2009/07/18/右腳拇指甲溝炎-凍甲-手術-Day-2/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">右腳拇指甲溝炎(凍甲)手術(Day 2)</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Net/">.Net</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Art/">Art</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Boutique/">Boutique</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Foods/">Foods</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Games/">Games</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Gossipings/">Gossipings</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Health/">Health</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kona/">Kona</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MSSQL/">MSSQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Marriage/">Marriage</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Movies/">Movies</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Networks/">Networks</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PMP/">PMP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Ruby/">Ruby</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Travel/">Travel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows-Mobile/">Windows Mobile</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/http-schemas-google-com-blogger-2008-kind-post/">http://schemas.google.com/blogger/2008/kind#post</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Net/" style="font-size: 16.25px;">.Net</a> <a href="/tags/Art/" style="font-size: 10px;">Art</a> <a href="/tags/Boutique/" style="font-size: 12.5px;">Boutique</a> <a href="/tags/Foods/" style="font-size: 10px;">Foods</a> <a href="/tags/Games/" style="font-size: 10px;">Games</a> <a href="/tags/Gossipings/" style="font-size: 13.75px;">Gossipings</a> <a href="/tags/Health/" style="font-size: 11.25px;">Health</a> <a href="/tags/Kona/" style="font-size: 10px;">Kona</a> <a href="/tags/MSSQL/" style="font-size: 10px;">MSSQL</a> <a href="/tags/Marriage/" style="font-size: 11.25px;">Marriage</a> <a href="/tags/Movies/" style="font-size: 15px;">Movies</a> <a href="/tags/Networks/" style="font-size: 11.25px;">Networks</a> <a href="/tags/PMP/" style="font-size: 17.5px;">PMP</a> <a href="/tags/Ruby/" style="font-size: 10px;">Ruby</a> <a href="/tags/Travel/" style="font-size: 18.75px;">Travel</a> <a href="/tags/Windows-Mobile/" style="font-size: 11.25px;">Windows Mobile</a> <a href="/tags/http-schemas-google-com-blogger-2008-kind-post/" style="font-size: 20px;">http://schemas.google.com/blogger/2008/kind#post</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/01/">January 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/03/">March 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/01/">January 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/12/">December 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/11/">November 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/10/">October 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/09/">September 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/08/">August 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/07/">July 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/06/">June 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/05/">May 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/04/">April 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/03/">March 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2010/01/">January 2010</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/12/">December 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/11/">November 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/10/">October 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/09/">September 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/08/">August 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/07/">July 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/06/">June 2009</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2009/05/">May 2009</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/06/04/hello-world/">Hello World</a>
+          </li>
+        
+          <li>
+            <a href="/2013/07/08/控制資料庫使用者的登入/">控制資料庫使用者的登入</a>
+          </li>
+        
+          <li>
+            <a href="/2012/01/18/R-D澳洲蜜月探險-Day-0-前言/">[R&amp;D澳洲蜜月探險][Day 0]前言</a>
+          </li>
+        
+          <li>
+            <a href="/2011/08/20/婚紗處理紀實-下/">婚紗處理紀實(下)</a>
+          </li>
+        
+          <li>
+            <a href="/2011/08/16/婚紗處理紀實-上/">婚紗處理紀實(上)</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
