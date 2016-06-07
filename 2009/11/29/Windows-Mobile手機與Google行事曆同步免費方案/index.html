@@ -17,7 +17,7 @@
 <ul>
 <li><em>….</em></li>
 <li><strong><span style="background-color: #ffd700;"><em>Sync Multiple Calendars (Pro version)</em></span></strong></li>
-<li><em>…</em>&nbsp;<br></li></ul></td><br><br><tr><br><td style="padding-left: 30px;"><br>至於Pro版要多少錢?OggSyncProYearly每年要$29.95USD…不太便宜，每年還要繳錢，有一些<a href="http://oggsync.com/volume.html" target="_blank" rel="external">優惠</a>啦，不過我不需要那麼多，不過我是覺得很蠻不錯的服務(我都拿它加<a href="http://www.sto-helit.de/index.php?module=page&amp;entry=ms_overview&amp;action=view" target="_blank" rel="external">MortScript</a>就可以做排程與開關網路了)。</td><br></tr><br><br><br>&nbsp; 
+<li><em>…</em>&nbsp;<br></li></ul></td><br><br><tr><br><td style="padding-left: 30px;"><br>至於Pro版要多少錢?OggSyncProYearly每年要$29.95USD…不太便宜，每年還要繳錢，有一些<a href="http://oggsync.com/volume.html" target="_blank" rel="external">優惠</a>啦，不過我不需要那麼多，不過我是覺得很蠻不錯的服務(我都拿它加<a href="http://www.sto-helit.de/index.php?module=page&amp;entry=ms_x.erview&amp;action=view" target="_blank" rel="external">MortScript</a>就可以做排程與開關網路了)。</td><br></tr><br><br><br>&nbsp; 
 
 <p>&nbsp;</p>
 <ul>
@@ -33,7 +33,7 @@
 </ul>
 <p>&nbsp;</p>
 <ul>
-<li>在網路上找ical同步的資料，忽然看到不知道哪篇說為何不使用<a href="https://www.nuevasync.com/" target="_blank" rel="external">NuevaSync</a>來做同步，想說連過去看看，結果看到竟然支援11個行事曆同步，實在太高興了，因為我的還沒那麼多，趕快來試試，現在在我的手機配合<a href="http://www.sto-helit.de/index.php?module=page&amp;entry=ms_overview&amp;action=view" target="_blank" rel="external">MortScript</a>就可以排程同步了，希望這個免費服務可以一直下去。</li>
+<li>在網路上找ical同步的資料，忽然看到不知道哪篇說為何不使用<a href="https://www.nuevasync.com/" target="_blank" rel="external">NuevaSync</a>來做同步，想說連過去看看，結果看到竟然支援11個行事曆同步，實在太高興了，因為我的還沒那麼多，趕快來試試，現在在我的手機配合<a href="http://www.sto-helit.de/index.php?module=page&amp;entry=ms_x.erview&amp;action=view" target="_blank" rel="external">MortScript</a>就可以排程同步了，希望這個免費服務可以一直下去。</li>
 </ul>
 <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="http://photo.xuite.net/_r9009/retsamsu/3423409/54.jpg" target="_blank" rel="external"><img src="http://e.share.photo.xuite.net/retsamsu/1e23294/3423409/139392739_m.jpg" alt=""></a></p>
 <p>這篇的剩下部分，就是使用<a href="https://www.nuevasync.com/" target="_blank" rel="external">NuevaSync</a>的心得，供大家參考(以下圖片皆各所屬公司所有)。</p>
@@ -55,7 +55,7 @@
 <p><a href="http://photo.xuite.net/_r9009/retsamsu/3423409/64.jpg" target="_blank" rel="external"><img src="http://e.share.photo.xuite.net/retsamsu/1e232ff/3423409/139400014_m.jpg" alt=""></a><br>&nbsp;</p>
 <p>接著ActiveSync會自動同步，看看結果就知道有沒有設對啦。</p>
 <p><a href="http://photo.xuite.net/_r9009/retsamsu/3423409/65.jpg" target="_blank" rel="external"><img src="http://e.share.photo.xuite.net/retsamsu/1e23248/3423409/139400343_m.jpg" alt=""></a></p>
-<p>配合<a href="http://www.sto-helit.de/index.php?module=page&amp;entry=ms_overview&amp;action=view" target="_blank" rel="external">MortScript</a>就可以排程同步+開關網路了，下面是我寫的Script(中華電信為連線的Profile，只有一個Exchange Server要連，所以直接按軟右鍵)：</p>
+<p>配合<a href="http://www.sto-helit.de/index.php?module=page&amp;entry=ms_x.erview&amp;action=view" target="_blank" rel="external">MortScript</a>就可以排程同步+開關網路了，下面是我寫的Script(中華電信為連線的Profile，只有一個Exchange Server要連，所以直接按軟右鍵)：</p>
 <p>If (NOT InternetConnected(“<a href="http://google.com/m" target="_blank" rel="external">http://google.com/m</a>“))<br>&nbsp;connect(“中華電信(internet)”)<br>&nbsp;Sleep 500<br>EndIf<br>Run( “\windows\async.lnk” )<br>WaitForActive( “ActiveSync”, -1 )<br>Sleep 3000<br>SendSpecial( “LeftSoft” )</p>
 <p>If (InternetConnected(“<a href="http://google.com/m" target="_blank" rel="external">http://google.com/m</a>“))<br>&nbsp;disconnect(“中華電信(internet)”)<br>&nbsp;Sleep 500<br>EndIf</p>
 <p>最後還是希望這個服務能夠一直下去，要不然我的手機又要到末日了。</p>
