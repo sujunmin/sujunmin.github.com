@@ -18,4 +18,4 @@ fancybox: true # set to true if you want to use it
 duoshuo: #duoshuo_shortname
 disqus: sujunmin
 
-google_analytics: true
+google_analytics: UA-78894509-1
