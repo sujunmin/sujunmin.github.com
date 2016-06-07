@@ -1,0 +1,84 @@
+---
+title: PMI月刊第一次讀書會 - The blame game
+tags:
+  - PMP
+date: 2010-08-20 10:34:16
+---
+
+這一次的讀書會，我選擇的第二篇是PMI月刊七月號裡的P23，**Viewpoints for the agile project manager: The blame game**，作者為**Jesse Fewell, CST, PMP**。
+
+詳細文章內容請至PMI網站觀看，以下是我的心得(黑色為翻譯，<span style="color: #0000ff;">藍色</span>為我加入的心得，<span style="color: #ba55d3;">紫色</span>為單字說明)。
+
+<center>
+<div style="width: 425px;" id="__ss_5017162">
+<object height="355" width="425" data="http://static.slidesharecdn.com/swf/ssplayer2.swf?doc=theblamegame-100820033656-phpapp02&amp;stripped_title=the-blame-game" type="application/x-shockwave-flash" id="__sse5017162">
+<param name="allowFullScreen" value="true" />
+<param name="allowScriptAccess" value="always" />
+<param name="src" value="http://static.slidesharecdn.com/swf/ssplayer2.swf?doc=theblamegame-100820033656-phpapp02&amp;stripped_title=the-blame-game" />
+</object>
+</div>
+</center>
+
+我對於專案經理老是對於不好的需求發牢騷感到厭煩，而且對於不好的需求這件事，其實也不會有人會覺得驚訝。從許多嚴重的災情研究中，一遍又一遍地聽到專案失敗的主要原因在於不正確的需求與很差的範疇管理。如果我們在專業上知道這是個經常的問題，為什麼我們要盲目的持續著那些不能用的事情呢?
+
+我分享一些讓我們老在同一個地方發生問題的建議。
+
+<span style="color: #0000ff;">這邊首先要說明一下[Agile Project Management](http://en.wikipedia.org/wiki/Agile_management)(敏捷專案管理，以下簡稱APM)，這個跟PMI的PMP概念有些[不一樣](http://140.99.29.241/images/uploads/APM_50min.pdf)，大概有下列的差別：</span>
+
+*   <span style="color: #0000ff; ">一定會常常生變得專案(如IT的SOA等需求變化大的案子)，對於PMP來說，修改是很花功夫且較難變化的(想想之前的變更1x條原則)，但對APM來說，變更是家常便飯，只算是一個cycle的工作而已。</span>
+*   <span style="color: #0000ff; ">PMP對於專案的規劃是尊重為聖旨，所以不管是規劃階段或是執行階段，規劃時就要生出一堆像法律的專案管理計劃書，而且要非常的詳盡(因為如果到執行階段變更又頭痛了)，也因此專案到執行階段如果有改變時的分析，往往都是在檢討是不是規劃的不好，或是計畫書寫的差。對於APM來說，專案的一些文件會快速的產生出來，所以那些文件品質部分不是很重要，也不是在規範專案怎麼做，而是每個cycle裡要做的工作的內容，每一個cycle都有產出，文件也會更新。</span>
+*   <span style="color: #0000ff; ">PMP每一個IPECC類似以瀑布式方式執行，每個階段都是做的好好以後，才會進到下一階段，每一個關卡都要有複雜的要求才能完成。對於APM來說，專案被分成很多個cycle完成，每個cycle只有大概2周到一個月的時間，目標都是完成那個cycle發生前約定要完成的工作(包含專案需求、變更、系統更新、系統優化等)，較有彈性。</span>
+*   <span style="color: #0000ff; ">PMP的專案經理掌控了大權，成敗也在他身上，一個人要負責很多流程，對於利害關係人來說，雖對專案有幫助，但專案經理仍掌控專案流動的重要人物。APM分成三種人員，沒有專案經理：一個是專案發起人(需求與期望提供者，接受最後交付標的的人)，一個是APM掌控cycle的經理(針對需求轉換成工作，發起人覺得的順序，加上一些分析，得到各項工作排入cycle與產出的時間，他是超然於專案的人，只看總和價值)，與執行人員(每個cycle根據工作列表依照一定時間去產生交付標的)。</span>
+*   <span style="color: #0000ff; ">PMP的規劃是對於時程、成本、範圍、品質一步一步規劃(有了範圍，產生時成與成本，兼顧品質)。APM規劃的方式一切都在於價值，取決於前項所述的一些因素(發起人的排序、成本、需求詳細度...等)，一切以價值高的先做。</span>
+
+<span style="color: #0000ff;">其他的請看這個[blog](http://www.wretch.cc/blog/kojenchieh&amp;category_id=13526775)，十分詳細的見解。</span>
+
+<span style="color: #ba55d3;">grow weary of: 困倦的。
+whining: 發牢騷。
+rote: 死記硬背。
+stumbling: 絆腳。</span>
+
+<span style="color: #ba55d3;"><span style="color: #000000; ">**有完整的需求這件事是個白日夢(Surrender the pipe dream of complete requirements)**</span></span>
+
+<span style="color: #ba55d3;"><span style="color: #000000; ">總是有相關連的東西沒算進去，總有利害關係人沒有訪談，一個小的東西被藏起來，一些事情總是希望我們知道。不要掉到知道多就是好或是妳因為這樣而不能開始的陷阱裡。</span></span>
+
+<span style="color: #0000ff;">這句話對我來說真是一針見血。我拿最近的一個專案來說，到了要驗收的時候還是在更改需求，需求不確定。後來的案子收集需求後，也不會一直想一定要收集完全，畢竟，有時候政府單位又有人"青睞"，就會很難過了。</span>
+
+<span style="color: #ba55d3; ">pipe dream: 白日夢。
+nuance: 意義。
+</span>
+
+<span style="color: #ba55d3; "><span style="color: #000000; ">**總是假設起始需求都是錯的(Always assume the initial requirements are wrong)**</span></span>
+
+有時候範疇不適當的符合某個利害關係人的想法，或是沒有好好被審核。有一些需求變成了"有會更好"的結果。現在的專案經理都被期待能夠有組織才能與簡便的方法找出問題的根源。為了保證能夠在適當的時機決定正確的優先度，在開始的時候定下初始範疇聲明，然後與發起人一起逐步完善。
+
+<span style="color: #0000ff;">這個我就想到一個例子，一個案子說某個需求只要做個連結就好，到中間就要做個表單讓他填，最後要變成一個子系統，業主臉不紅氣不喘的凹，就是有人那麼不要臉，也用這個來箝制結案流程。</span>
+
+<span style="color: #ba55d3; ">slant toward: 傾向。
+vet: 審核。
+nice-to-haves: 有會更好。
+organizational savvy: 組織才能。</span>
+
+<span style="color: #ba55d3; "><span style="color: #000000; ">**接受所有的需求變更(Accept that all requirements change)**</span></span>
+
+標準的專案管理文化說變更是必要之惡，就像交通規則：如果司機都做的好，那我們就不需要交通規則了。我們使用嚴謹的變更控制委員會與財務懲罰來減輕變更發生的風險。但如果你在兩年前根據當時的範疇實作出來的東西，不再與市場有相關了呢?讓你的發起人持續支付當時需要但現在沒有用的交付標的是否有意義呢?這不在我的估算之中。
+
+如果我們能接受我們的需求都是不完全且不正確，需要去修改它們去反應現實。PMBOK上警告：由於潛在的變化，專案管理計畫是反覆的且是在這個專案生命週期中逐步完善的。
+
+<span style="color: #0000ff;">這個在專案執行的時候，對我來說很困難。因為如果都接受，不但時程會延宕，下包商也會怨聲載道，但是一直檔業主也會不爽。這個Tradeoff有時候很難拿捏。</span>
+
+<span style="color: #ba55d3;">necessary evil: 必要之惡。
+intimidating: 恐嚇。
+progressive elaboration: 逐步完善。</span>
+
+<span style="color: #ba55d3;"><span style="color: #000000;">**變更管理過程簡單化(Simply your change-management approach)**</span></span>
+
+敏捷專案經理接受變更所回應的價值，並制定策略。從接受可被認可可變更的合約結構，而不要因為改變而懲罰它開始。在每個反覆的週期開始，對範疇的優先度做高階全盤的更版。如果發起人很難去設定優先度，教導他在各個權宜得失間找到平衡。當變更被接受了，至少每3或4個週期針對最新的範疇重新定義實獲值基準。當你這樣做時，週期性的與各個利害關係人說明最新的範疇。
+
+<span style="color: #0000ff;">我們的變更過程是很簡單的，電話打一通就好。但是後來實在是改的太多了，一定要發信或公文才可以，但基本上還是很簡單的。</span>
+
+<span style="color: #ba55d3;">embrace: 擁抱。
+mandate: 任務。
+</span>
+
+如果你常常因為持續的找出需求發生問題，應該試試上述的方法。專案經理的職責就是靈活的滿足發起人的需求。停止接受所謂的需求，開始用你的方法讓你的發起人選擇正確的範疇。
