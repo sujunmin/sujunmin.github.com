@@ -14,13 +14,13 @@ script:
 
 after_script:
   # Git Config 
+  - mkdir ${GH_REPO_NAME}
+  - cd ${GH_REPO_NAME}
+  - git init
   - git config user.name "sujunmin"
   - git config user.email "sujunmin@gmail.com"
   - git config core.sparseCheckout true
   # Checkout blog only
-  - mkdir ${GH_REPO_NAME}
-  - cd ${GH_REPO_NAME}
-  - git init
   - git remote add -f origin "https://${GH_REF}"
   - echo "blog/" >> .git/info/sparse-checkout
   - git pull origin master
@@ -29,7 +29,7 @@ after_script:
   # Git push
   - git add .
   - git commit -am "Update Docs"
-  - git subtree push --prefix blog "https://${GH_TOKEN}@${GH_REF}" master:master
+  - git push "https://${GH_TOKEN}@${GH_REF}" master:master
 # E: Build LifeCycle
 
 branches:
