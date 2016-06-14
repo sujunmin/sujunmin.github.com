@@ -1,0 +1,97 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>AI 轉 JPEG in .NET C# | 隨意記事</title><link rel="stylesheet" type="text/css" href="/blog//css/normalize.css"><link rel="stylesheet" type="text/css" href="/blog//css/highlight.css"><link rel="stylesheet" type="text/css" href="/blog//css/very-simple.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/blog/favicon.ico"></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>AI 轉 JPEG in .NET C#</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2009-06-23</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/Net/">.Net</a></div></div></div><article><div class="container post"><script type="text/javascript" src="https://googledrive.com/host/0B6HWfJSgyadTUzBPMzhVbWN0TzQ/scripts/shCore.js">
+
+</script> <script type="text/javascript" src="https://googledrive.com/host/0B6HWfJSgyadTUzBPMzhVbWN0TzQ/scripts/shBrushCSharp.js">
+
+</script> <link href="https://googledrive.com/host/0B6HWfJSgyadTUzBPMzhVbWN0TzQ/styles/shCore.css" type="text/css" rel="stylesheet"> <link href="https://googledrive.com/host/0B6HWfJSgyadTUzBPMzhVbWN0TzQ/styles/shThemeDefault.css" type="text/css" rel="stylesheet"> <script type="text/javascript">
+        SyntaxHighlighter.config.clipboardSwf = 'https://googledrive.com/host/0B6HWfJSgyadTUzBPMzhVbWN0TzQ/scripts/clipboard.swf';
+        SyntaxHighlighter.all();
+
+</script>
+
+<p><a href="http://www.plurk.com/p/13558a" target="_blank" rel="external">轉自己的噗</a></p>
+<p>不知道是bonnie公司電腦太爛還是Adobe Illustrator太肥大，每一次要轉檔的時候就會說記憶體不足，再不然就要開半天~</p>
+<p>上網找Solution都不太適合我的需求，於是就乾脆自己寫一個來幫幫她~</p>
+<p>結果發現到ai檔還真難轉成jpeg，後來找到下面的方法~</p>
+<p><span style="text-decoration: underline;"><span style="color: #0066cc;"><a href="http://www.lukiya.com/Blogs/2007/07/24/Post-557.html" target="_blank" rel="external">關於在.Net中矢量圖向位圖的轉換</a></span></span></p>
+<p>後記：對於大圖檔的使用仍然沒法很完善的轉檔，應該找一天來測測看。</p>
+<p>程式碼：</p>
+<pre class="brush: c-sharp;">using System;
+using System.Collections.Generic;
+using System.Text;
+
+using ImageMagickObject;
+using System.IO;
+
+namespace AIToJPEG
+{
+
+    class Program
+    {
+        static void Main(string[] args)
+
+        {
+            if (args.Length != 0)
+            {
+
+                try
+                {
+                    //抓字串
+                    String WorkPath = args[0].Remove(args[0].LastIndexOf(@"\"));
+
+                    String OrgFileName = args[0].Substring(args[0].LastIndexOf(@"\")+1);
+                    String NewFileName = OrgFileName.Remove(OrgFileName.Length - 3) + ".jpg";
+
+                    //設定工作目錄
+                    System.Environment.CurrentDirectory = WorkPath;
+                    //原始檔改檔名
+
+                    FileInfo OrgFile = new FileInfo(OrgFileName);
+                    OrgFile.MoveTo("test.ai");
+
+                    //轉檔
+                    object[] imgArray = { "test.ai", "test.jpg" };
+
+                    MagickImageClass img = new MagickImageClass();
+                    img.Convert(ref imgArray);
+
+                    //原始檔改回原檔名
+                    OrgFile.MoveTo(OrgFileName);
+                    //轉出的檔也改回原檔名
+                    FileInfo NewFile = new FileInfo("test.jpg");
+
+                    NewFile.MoveTo(NewFileName);
+
+                }
+                catch (Exception e)
+
+                {
+                    Console.WriteLine(e.ToString());
+                    Console.ReadKey();
+
+                }
+
+            }
+
+        }
+    }
+}
+</pre></div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'sujunmin';
+var disqus_identifier = '2009/06/23/AI-轉-JPEG-in-NET-C/';
+var disqus_title = 'AI 轉 JPEG in .NET C#';
+var disqus_url = 'https://sujunmin.github.io/blog/blog/2009/06/23/AI-轉-JPEG-in-NET-C/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><footer id="footer"><div class="container"><div class="bar"><div class="social"><a href="https://github.com/sujunmin" target="_blank"><i class="fa fa-github"></i></a><a href="https://plus.google.com/+JunMingSu" target="_blank"><i class="fa fa-google-plus"></i></a><a href="/atom.xml" target="_blank"><i class="fa fa-rss"></i></a></div><div class="footer">© 2016 <a href="/" rel="nofollow">隨意記事</a>. Powered by <a rel="nofollow" target="_blank" href="https://hexo.io">Hexo</a>. Theme <a target="_blank" href="https://github.com/lotabout/very-simple">very-simple</a>.</div></div></div></footer><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+    $(".fancybox").fancybox();
+});</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-78894509-1');ga('send','pageview');</script></body></html>
