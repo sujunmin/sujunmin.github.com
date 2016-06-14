@@ -21,11 +21,21 @@
 <li>這裡建議如果需要多台機器都會編輯的時候，blog 系統就需要一併放在 <a href="https://github.com/" target="_blank" rel="external">github</a> 上</li>
 <li>這篇文章提到如何透過 <a href="https://travis-ci.org/" target="_blank" rel="external">Travis-CI</a> 自動化上版流程，蠻不賴的，以後不管那台機器有沒有相同的環境，只要 clone 主體一份就能編輯了</li>
 <li><a href="http://www.jianshu.com/p/e22c13d85659" target="_blank" rel="external">手把手教你使用Travis CI自动部署你的Hexo博客到Github上</a></li>
+<li>[2016/06/14 更新] 這裡提到的方法是重建 master 以達到自動佈署的功能，如果原來的 github pages 已經有東西了怎麼辦? 參考<a href="http://stackoverflow.com/questions/600079/is-there-any-way-to-clone-a-git-repositorys-sub-directory-only" target="_blank" rel="external">這裡</a>修改一下 <a href="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/blog-source/.travis.yml" target="_blank" rel="external">travis.yml</a> 來處理。<ul>
+<li>hexo 設定 root (_config.yml)</li>
+<li>Git 設定</li>
+<li><code>git config core.sparseCheckout true</code></li>
+<li><code>git remote add -f origin</code> 下載 git 資料</li>
+<li><code>echo &quot;blog/&quot; &gt;&gt; .git/info/sparse-checkout</code> 設定只 checkout <code>blog</code> 資料夾</li>
+<li>複製要佈署的資料到 <code>blog</code></li>
+<li>git push</li>
+</ul>
+</li>
 <li>其他的 <a href="https://hexo.io/" target="_blank" rel="external">hexo</a> 跟 theme 教學網路上寫的都不賴</li>
 </ul>
 </li>
 <li>hexo-migrator-rss<ul>
-<li>在 blog 裡頭的 package.json 加一行<br>“hexo-migrator-rss”: “^0.1.2”,</li>
+<li>在 blog 裡頭的 package.json 加一行 <code>&quot;hexo-migrator-rss&quot;: &quot;^0.1.2&quot;,</code></li>
 <li>npm install</li>
 <li>hexo migrate rss 網址A</li>
 <li>可以看它應該會自動匯入了</li>
