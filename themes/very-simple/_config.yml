@@ -1,7 +1,7 @@
 # Header
 menu:
   ## If your site is put in a subdirectory, set Home as '/child/'
-  Home: /blog/
+  Home: /
   Archives: archives
 
 social:
