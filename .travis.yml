@@ -19,7 +19,7 @@ after_script:
   - mkdir ${GH_REPO_NAME}
   - cd ${GH_REPO_NAME}
   - git init
-  - git remote add -f origin "${GH_REF}"
+  - git remote add -f origin "https://${GH_REF}"
   - echo "blog/" >> .git/info/sparse-checkout
   - git pull origin master
   - mv -f ../public/* blog/*
