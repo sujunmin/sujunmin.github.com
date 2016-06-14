@@ -4,7 +4,7 @@
 
 # Site
 title: 隨意記事      
-subtitle: 
+subtitle:  
 description: 
 author: Su, Jun-Ming
 language:
@@ -12,8 +12,8 @@ timezone:
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: http://sujunmin.github.io
-root: /
+url: http://sujunmin.github.io/blog
+root: /blog/
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 
