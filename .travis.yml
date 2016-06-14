@@ -25,7 +25,7 @@ after_script:
   - echo "blog/" >> .git/info/sparse-checkout
   - git pull origin master
   # Refresh blog data
-  - mv ../public/* blog/*
+  - cp -rf ../public/* blog/*
   # Git push
   - git add .
   - git commit -am "Update Docs"
