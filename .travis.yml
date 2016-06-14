@@ -23,6 +23,7 @@ after_script:
   - echo "blog/" >> .git/info/sparse-checkout
   - git pull origin master
   - mv -f ../public/* blog/*
+  - git add .
   - git commit -am "Update Docs"
   - git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" master:master
 # E: Build LifeCycle
