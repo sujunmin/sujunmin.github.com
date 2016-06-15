@@ -1,0 +1,42 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>Windows 7 忘記密碼不用透過密碼忘記磁碟 | 隨意記事</title><link rel="stylesheet" type="text/css" href="/blog//css/normalize.css"><link rel="stylesheet" type="text/css" href="/blog//css/highlight.css"><link rel="stylesheet" type="text/css" href="/blog//css/very-simple.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/blog/favicon.ico"><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script>(adsbygoogle = window.adsbygoogle || []).push({
+ google_ad_client: ca-pub-0187888667607442,
+ enable_page_level_ads: true
+ });</script></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>Windows 7 忘記密碼不用透過密碼忘記磁碟</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2016-01-27</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/MIS/">MIS</a></div></div></div><article><div class="container post"><p>今天幫同事解決 Windows 7 忘記密碼的問題，原來是想要用<a href="http://pogostick.net/~pnh/ntpasswd/" target="_blank" rel="external">這個</a>來解決，但是開機會 Kernel Panic @@，網路上找到的一些程式都要 $$，忽然發現到<a href="http://www.oxhow.com/reset-windows-7-password-without-password-reset-disk/" target="_blank" rel="external">一篇</a>寫得不賴，拿來用也成功，特別紀錄一下如何使用的。雖然覺得之前看過一樣的方法，今天算是第一次使用XD<br>這個方法是把 sethc.exe (<a href="http://windows.microsoft.com/zh-tw/windows/make-keyboard-easier-to-use#1TC=windows-7" target="_blank" rel="external">Windows 相黏鍵</a>) 功能替換成 cmd.exe (Shell)，進而使用指令修改密碼。</p>
+<ul>
+<li>重開機到 Windows 修復</li>
+<li>讓她修復一下</li>
+<li>修復完成後，點選更多問題選項</li>
+<li>點選最下面的 Offline Policy 說明</li>
+<li>會跑出 notepad，我們拿它來替換 sethc.exe</li>
+<li>開啟檔案到 Windows\system32 底下，選全部檔案</li>
+<li>找到 sethc.exe，修改為sethc_bak.exe</li>
+<li>在同個目錄找 cmd.exe，複製一份副本</li>
+<li>把 cmd.exe 的副本修改為 sethc.exe</li>
+<li>修改完畢，重開機到登入畫面</li>
+<li>按 5 次 shift 會跑出 cmd 畫面</li>
+<li>這個 cmd 有時間性的 (因為原來相黏鍵的說明也有時間性)，所以要趕快輸入</li>
+<li>執行 net users  看帳號名稱</li>
+<li>執行 net users &lt;帳號名稱&gt; * 改密碼</li>
+<li>登入以後再把之前修改的 sethc_bak.exe  修改回來 (如不能修改可複製一份再改回原檔名 sethc.exe )</li>
+<li>收工</li>
+</ul>
+</div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'sujunmin';
+var disqus_identifier = '2016/01/27/Windows 7 忘記密碼不用透過密碼忘記磁碟/';
+var disqus_title = 'Windows 7 忘記密碼不用透過密碼忘記磁碟';
+var disqus_url = 'https://sujunmin.github.io/blog/blog/2016/01/27/Windows 7 忘記密碼不用透過密碼忘記磁碟/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><footer id="footer"><div class="container"><div class="bar"><div class="social"><a href="https://github.com/sujunmin" target="_blank"><i class="fa fa-github"></i></a><a href="https://plus.google.com/+JunMingSu" target="_blank"><i class="fa fa-google-plus"></i></a><a href="/atom.xml" target="_blank"><i class="fa fa-rss"></i></a></div><div class="footer">© 2016 <a href="/" rel="nofollow">隨意記事</a>. Powered by <a rel="nofollow" target="_blank" href="https://hexo.io">Hexo</a>. Theme <a target="_blank" href="https://github.com/lotabout/very-simple">very-simple</a>.</div></div></div></footer><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+    $(".fancybox").fancybox();
+});</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-78894509-1');ga('send','pageview');</script></body></html>
