@@ -4,17 +4,6 @@ tags:
   - .Net
 date: 2009-06-23 05:37:44
 ---
-
-<script type="text/javascript" src="https://googledrive.com/host/0B6HWfJSgyadTUzBPMzhVbWN0TzQ/scripts/shCore.js">
-
-</script> <script type="text/javascript" src="https://googledrive.com/host/0B6HWfJSgyadTUzBPMzhVbWN0TzQ/scripts/shBrushCSharp.js">
-
-</script> <link href="https://googledrive.com/host/0B6HWfJSgyadTUzBPMzhVbWN0TzQ/styles/shCore.css" type="text/css" rel="stylesheet" /> <link href="https://googledrive.com/host/0B6HWfJSgyadTUzBPMzhVbWN0TzQ/styles/shThemeDefault.css" type="text/css" rel="stylesheet" /> <script type="text/javascript">
-		SyntaxHighlighter.config.clipboardSwf = 'https://googledrive.com/host/0B6HWfJSgyadTUzBPMzhVbWN0TzQ/scripts/clipboard.swf';
-		SyntaxHighlighter.all();
-
-</script>
-
 [轉自己的噗](http://www.plurk.com/p/13558a)
 
 不知道是bonnie公司電腦太爛還是Adobe Illustrator太肥大，每一次要轉檔的時候就會說記憶體不足，再不然就要開半天~
@@ -29,7 +18,8 @@ date: 2009-06-23 05:37:44
 
 程式碼：
 
-<pre class="brush: c-sharp;">using System;
+```cs
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -89,4 +79,4 @@ namespace AIToJPEG
         }
     }
 }
-</pre>
+```

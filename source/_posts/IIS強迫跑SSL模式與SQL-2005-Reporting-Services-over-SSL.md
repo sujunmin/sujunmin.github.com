@@ -5,18 +5,6 @@ tags:
 date: 2009-12-18 11:51:43
 ---
 
-<script type="text/javascript" src="https://googledrive.com/host/0B6HWfJSgyadTUzBPMzhVbWN0TzQ/scripts/shCore.js">
-
-</script> <script type="text/javascript" src="https://googledrive.com/host/0B6HWfJSgyadTUzBPMzhVbWN0TzQ/scripts/shBrushVb.js">
-
-</script> <link href="https://googledrive.com/host/0B6HWfJSgyadTUzBPMzhVbWN0TzQ/styles/shCore.css" type="text/css" rel="stylesheet" /> <link href="https://googledrive.com/host/0B6HWfJSgyadTUzBPMzhVbWN0TzQ/styles/shThemeDefault.css" type="text/css" rel="stylesheet" /> <script type="text/javascript">
-		SyntaxHighlighter.config.clipboardSwf = 'https://googledrive.com/host/0B6HWfJSgyadTUzBPMzhVbWN0TzQ/scripts/clipboard.swf';
-		SyntaxHighlighter.all();
-
-</script>
-
-<div></div>
-
 公司裡負責的系統有[Web Server Uses Plain Text Authentication Forms](http://www.nessus.org/plugins/index.php?view=single&amp;id=26194)缺失，今天想說把它解決掉。原來覺得可能很簡單的，不過變成要改一些Code，特此記錄下來供以後與網友參考。
 
 原來的環境是這樣，某個AP Server上面跑IIS(http and https)，被nessus偵測出來某個AP的default.aspx，帳號密碼登入是用明碼傳送，可能會有資安風險。
@@ -89,15 +77,17 @@ Nessus ID : [26194](http://www.nessus.org/plugins/index.php?view=single&amp;id=2
 
 這個的原因是因為我們是一個憑證很多伺服器在用，但是在連接時會檢查這個憑證是否有問題，在瀏覽器瀏覽的時候可以按掉解決，這時候就不行了。再上網找解決方案，找到這個[大大](http://sanchen.blogspot.com/2008/04/httpwebrequest-https.html#links)寫的方法，修改自己的程式。不過我是用VB.NET寫的，所以再找一下MSDN，提供解法如下。
 
-<pre class="brush: vb;">Public Shared Function ValidateCert(ByVal sender As Object, ByVal certificate As System.Security.Cryptography.X509Certificates.X509Certificate, ByVal chain As System.Security.Cryptography.X509Certificates.X509Chain, ByVal sslPolicyErrors As System.Net.Security.SslPolicyErrors) As Boolean
+```vb
+Public Shared Function ValidateCert(ByVal sender As Object, ByVal certificate As System.Security.Cryptography.X509Certificates.X509Certificate, ByVal chain As System.Security.Cryptography.X509Certificates.X509Chain, ByVal sslPolicyErrors As System.Net.Security.SslPolicyErrors) As Boolean
        Return True
 End Function
-</pre>
+```
 
 然後在進入報表之前做下面的[ 動作](http://msdn.microsoft.com/zh-tw/library/system.net.servicepointmanager.servercertificatevalidationcallback%28VS.80%29.aspx)(每次登入只需做一次)即可。
 
-<pre class="brush: vb;">System.Net.ServicePointManager.ServerCertificateValidationCallback = New System.Net.Security.RemoteCertificateValidationCallback(AddressOf ValidateCert)
-</pre>
+```vb
+System.Net.ServicePointManager.ServerCertificateValidationCallback = New System.Net.Security.RemoteCertificateValidationCallback(AddressOf ValidateCert)
+```
 
 其實就是避掉錯誤的回傳這樣，詳情請看MSDN相關[函式](http://msdn.microsoft.com/en-us/library/system.net.security.remotecertificatevalidationcallback.aspx)介紹。
 
