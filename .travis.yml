@@ -29,6 +29,7 @@ after_script:
   # Git push
   - git add .
   - git mv blog/tags/Net blog/tags/.Net
+  - git mv blog/tags/tags/Net blog/tags/tags/.Net
   - git commit -am "Update Docs"
   - git push "https://${GH_TOKEN}@${GH_REF}" master:master
 # E: Build LifeCycle
