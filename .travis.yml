@@ -27,7 +27,8 @@ after_script:
   # Refresh blog data
   - cp -rf ../public/* blog/
   # Git push
-  - git rm blog/tags/.Net
+  - git rm -rf blog/tags/.Net
+  - git rm -rf blog/tags/tags/.Net
   - sed -i 's/.Net"/Net"/g' blog/archives/index.html
   - git add .
   - git commit -am "Update Docs"
