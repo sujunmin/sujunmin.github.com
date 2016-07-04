@@ -13,10 +13,10 @@
 <li><a href="https://github.com/vmware/photon/issues/205" target="_blank" rel="external">設定 IP</a> /etc/systemd/network/10-dhcp-en.network 裡頭修改 <a href="http://www.linuxfromscratch.org/lfs/view/systemd/chapter07/network.html" target="_blank" rel="external">Network</a>。</li>
 <li>開始玩 docker，<a href="https://github.com/vmware/photon/wiki/Frequently-Asked-Questions#q-i-just-booted-into-freshly-installed-photon-os-instance-why-isnt-docker-ps-working" target="_blank" rel="external">Q. I just booted into freshly installed Photon OS instance, why isn’t “docker ps” working?</a></li>
 <li><p>啟動 docker 與 port exposed。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -it -p 8000:8000 microsoft/dotnet:latest</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker run -it -p 8000:8000 microsoft/dotnet:latest</div></pre></td></tr></table></figure>
 </li>
 <li><p>在上面起 asp.net core 1.0 程式，推荐<a href="https://www.sesispla.net/blog/language/en/2016/05/running-asp-net-core-1-0-rc2-in-docker/" target="_blank" rel="external">這個</a>，記得 Program.cs 裡頭要多加東西再 build。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.UseUrls(<span class="string">"http://conatiner_ip:8000"</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">.UseUrls(<span class="string">"http://conatiner_ip:8000"</span>)</div></pre></td></tr></table></figure>
 </li>
 <li><p>用瀏覽器測試一下。</p>
 </li>
