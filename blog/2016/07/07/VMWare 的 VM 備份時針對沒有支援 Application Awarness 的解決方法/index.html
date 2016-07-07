@@ -10,10 +10,15 @@
 <li>Acronis vm Protect 9 備份環境</li>
 </ul>
 <h1 id="測試方式"><a href="#測試方式" class="headerlink" title="測試方式"></a>測試方式</h1><ul>
-<li>在該台 VM 的 <figure class="highlight plain"><figcaption><span>下新增兩個檔案，內容如下</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">   </div><div class="line">   ``` C:\WINDOWS\&lt;pre-freeze-script.bat&gt; ``` 裡頭是 ``` echo Start &gt; C:\backup.txt ``` (寫個東西到檔案裡)</div><div class="line"></div><div class="line">   ``` C:\WINDOWS\&lt;post-thaw-script.bat&gt; ``` 裡頭是 ``` echo End &gt;&gt; C:\backup.txt ``` (加個東西到原來的檔案裡)</div><div class="line">* 執行備份</div><div class="line">* 看一下 ``` C:\backup.txt ```，裏頭應該是</div><div class="line">  </div><div class="line">  ``` Start</div></pre></td></tr></table></figure></li>
-</ul>
-<p>  <code>End</code></p>
-<ul>
+<li><p>在該台 VM 的 <code>C:\WINDOWS</code> 下新增兩個檔案，內容如下</p>
+<p> <code>C:\WINDOWS\&lt;pre-freeze-script.bat&gt;</code> 裡頭是 <code>echo Start &gt; C:\backup.txt</code> (寫個東西到檔案裡)</p>
+<p> <code>C:\WINDOWS\&lt;post-thaw-script.bat&gt;</code> 裡頭是 <code>echo End &gt;&gt; C:\backup.txt</code> (加個東西到原來的檔案裡)</p>
+</li>
+<li>執行備份</li>
+<li><p>看一下 <code>C:\backup.txt</code>，裏頭應該是</p>
+<p><code>Start</code></p>
+<p><code>End</code></p>
+</li>
 <li><p>如此一來，就可以利用這兩個 Script 先把 Application 的資料 (Cache, Memory Data…) Sync 到 Disk 上(譬如說手動暫停服務)，就不會因為資料的關係造成備份出來的系統有問題了</p>
 </li>
 <li><p>另外這兩個 Script 的執行時間不能超過 10 分鐘，要不然會導致備份失敗 (Quiece 失敗) </p>
