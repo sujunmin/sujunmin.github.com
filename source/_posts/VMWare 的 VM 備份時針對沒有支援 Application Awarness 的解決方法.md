@@ -14,17 +14,17 @@ date: 2016-07-07 13:51:09
 * Acronis vm Protect 9 備份環境
 
 # 測試方式
-* 在該台 VM 的 ```C:\WINDOWS``` 下新增兩個檔案，內容如下
+* 在該台 VM 的 `C:\WINDOWS` 下新增兩個檔案，內容如下
    
-   ``` C:\WINDOWS\<pre-freeze-script.bat> ``` 裡頭是 ``` echo Start > C:\backup.txt ``` (寫個東西到檔案裡)
+   ` C:\WINDOWS\<pre-freeze-script.bat> ` 裡頭是 ` echo Start > C:\backup.txt ` (寫個東西到檔案裡)
 
-   ``` C:\WINDOWS\<post-thaw-script.bat> ``` 裡頭是 ``` echo End >> C:\backup.txt ``` (加個東西到原來的檔案裡)
+   ` C:\WINDOWS\<post-thaw-script.bat> ` 裡頭是 ` echo End >> C:\backup.txt ` (加個東西到原來的檔案裡)
 * 執行備份
-* 看一下 ``` C:\backup.txt ```，裏頭應該是
+* 看一下 ` C:\backup.txt `，裏頭應該是
   
-  ``` Start ```
+  ` Start `
   
-  ``` End ```
+  ` End `
 * 如此一來，就可以利用這兩個 Script 先把 Application 的資料 (Cache, Memory Data...) Sync 到 Disk 上(譬如說手動暫停服務)，就不會因為資料的關係造成備份出來的系統有問題了
 
 * 另外這兩個 Script 的執行時間不能超過 10 分鐘，要不然會導致備份失敗 (Quiece 失敗) 
