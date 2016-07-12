@@ -8,6 +8,7 @@ tags: MIS
 1. 在一個目錄裡的檔案 Syslogyyyy-mm-dd-hh.txt 檔案分時間壓縮成一個檔案，並放在同名的資料夾裡面。
 假設 Syslogyyyy-mm-dd-hh.txt 在 $src_dir，要放到 $dst_dir 裡，壓縮程式是 $7zexe
 ```powershell
+    $ErrorActionPreference = "Stop" #20160712 修改，當有發生錯誤馬上停止
     $src_dir = "C:\Users\sujunmin\Desktop\x"
     $dst_dir = "C:\Users\sujunmin\Desktop\y"
     $7zexe = "C:\Program Files\7-Zip\7z.exe"
@@ -20,6 +21,7 @@ tags: MIS
 2. 每天將前一天的 Syslogyyyy-mm-dd-*.txt 壓起來放在並放在同名的資料夾裡面。
 假設 Syslogyyyy-mm-dd-hh.txt 在 $src_dir，要放到 $dst_dir 裡，壓縮程式是 $7zexe
 ```powershell
+    $ErrorActionPreference = "Stop" #20160712 修改，當有發生錯誤馬上停止
     $src_dir = "C:\Users\sujunmin\Desktop\x"
     $dst_dir = "C:\Users\sujunmin\Desktop\y"
     $7zexe = "C:\Program Files\7-Zip\7z.exe"
