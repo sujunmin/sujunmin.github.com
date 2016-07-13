@@ -16,6 +16,7 @@ script:
   - echo "password_hash:${BLOG_ADMIN_PASSWORD}\n" >> _config.yml
   - echo "secret:${BLOG_ADMIN_SECRET}\n" >> _config.yml
   - hexo g
+  
 
 after_script:
   # Git Config 
