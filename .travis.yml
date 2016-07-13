@@ -10,11 +10,6 @@ install:
  # - npm install -g gulp
 
 script:
-  # build hexo-admin security
-  #- echo "admin:\n" >> _config.yml
-  #- echo "username:\ sujunmin\n" >> _config.yml
-  #- echo "password_hash:\ ${BLOG_ADMIN_PASSWORD}\n" >> _config.yml
-  #- echo "secret:\ ${BLOG_ADMIN_SECRET}\n" >> _config.yml
   - hexo g
   
 
