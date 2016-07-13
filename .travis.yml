@@ -11,14 +11,10 @@ install:
 
 script:
   # build hexo-admin security
-  - echo -e "admin:" >> _config.yml
-  - echo -e "" >> _config.yml
-  - echo -e "username: sujunmin" >> _config.yml
-  - echo -e "" >> _config.yml
-  - echo -e "password_hash: ${BLOG_ADMIN_PASSWORD}" >> _config.yml
-  - echo -e "" >> _config.yml
-  - echo -e "secret: ${BLOG_ADMIN_SECRET}" >> _config.yml
-  - echo -e "" >> _config.yml
+  - echo "admin\:\n" >> _config.yml
+  - echo "username\: sujunmin\n" >> _config.yml
+  - echo "password_hash\: ${BLOG_ADMIN_PASSWORD}\n" >> _config.yml
+  - echo "secret\: ${BLOG_ADMIN_SECRET}\n" >> _config.yml
   - hexo g
 
 after_script:
