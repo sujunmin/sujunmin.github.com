@@ -29,7 +29,7 @@
 <li>binlog_n+3 (到 time_B 結束)</li>
 </ol>
 <p>接下來就是來做個實驗。</p>
-<h2 id="實驗"><a href="#實驗" class="headerlink" title="實驗"></a>實驗</h2><p>a. 首先開啟 binlog 功能，在 my.ini 裡可以設定，重開 mariadb 就可以開始了</p>
+<h2 id="實驗"><a href="#實驗" class="headerlink" title="實驗"></a>實驗</h2><p>a. 首先開啟 binlog 功能，在 my.ini 裡可以設定，重開 mariadb 就可以開始了。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">log_bin</div></pre></td></tr></table></figure>
 <p>這個是沒加參數的，預設會放在 <code>%mariadb_root%\data\</code>，詳細可以加<a href="https://mariadb.com/kb/en/mariadb/replication-and-binary-log-server-system-variables/#log_bin" target="_blank" rel="external">路徑</a>。</p>
 <p>開完裡頭應該會出現 <code>XXX-bin.00001</code> 字樣的檔案， <code>XXX</code> 是 Hostname。</p>
