@@ -162,7 +162,7 @@ TRUNCATE `test1`
 g. 所以如果我們要恢復到 truncate table 之前的話，首先就是 restore full backup。
 
 ```msdos
-E:\backup>mysql -u sujunmin -p test2 < test1.sql
+E:\backup>mysql -u sujunmin -p test1 < test1.sql
 Enter password: ************
 
 E:\backup
