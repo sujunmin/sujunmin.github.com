@@ -49,7 +49,7 @@ MariaDB 提供一種與 MySQL 一樣的方式，稱之為 [Binary Log][2] (binlo
 
 ## 實驗
 
-a. 首先開啟 binlog 功能，在 my.ini 裡可以設定，重開 mariadb 就可以開始了
+a. 首先開啟 binlog 功能，在 my.ini 裡可以設定，重開 mariadb 就可以開始了。
 
 ``` 
 log_bin
