@@ -53,7 +53,7 @@ a. 首先開啟 binlog 功能，在 my.ini 裡可以設定，重開 mariadb 就�
 ``` 
 log_bin
 ```
-這個是沒加參數的，預設會放在```mariadb root\data\```，詳細可以加[路徑][5]。
+這個是沒加參數的，預設會放在```mariadb_root\data\```，詳細可以加[路徑][5]。
 
 開完裡頭應該會出現```XXX-bin.00001```字樣的檔案，```XXX```是 Hostname。
 
@@ -185,7 +185,7 @@ i. 看一下 ```test1.test1```，資料應該又回來了。
 
 1. 當定時的時間一到，呼叫 [mysqlbinlogrotate][6] 切斷 log。
 2. 之前的 log 複製到安全的地方處理。
-3. 每次 Full Backup 完 [PURGE LOG]。
+3. 每次 Full Backup 完 [PURGE LOG][7]。
 
 
 
