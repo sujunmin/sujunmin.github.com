@@ -149,6 +149,7 @@ END;
 ```
 * `select idx into @idx from master.loginmain where username = SUBSTRING_INDEX(SUBSTRING_INDEX(user(), '@', 1), '@', -1) and srcip like CONCAT('%', SUBSTRING_INDEX(SUBSTRING_INDEX(user(), '@', 2), '@', -1), '%') ;` 
    這段是把 username@host 拆開來分別比對。
+* 可以看到無法對應用程式名稱 (`apname`) 來比較，因為沒辦法拿到資料。不過原來的需求這項本來就是非必要的，加上微軟也提到[不要][9]把這個參數拿來做 security check，就不在這次轉換的需求中了。
 * `SIGNAL SQLSTATE '45000' SET MYSQL_ERRNO=30001, MESSAGE_TEXT='無法在資料庫中找到您的登入帳號、來源IP、或是使用之程式不正確。';`
 	 這段就是如果找不到就[拋錯][7]。
 	 
@@ -289,3 +290,4 @@ C:\Users\Administrator>
 [6]: http://www.techonthenet.com/mariadb/triggers/before_update.php
 [7]: https://mariadb.com/kb/en/mariadb/signal/
 [8]: https://mariadb.com/kb/en/mariadb/server-system-variables/#init_connect
+[9]: https://msdn.microsoft.com/en-us/library/ms189770.aspx
