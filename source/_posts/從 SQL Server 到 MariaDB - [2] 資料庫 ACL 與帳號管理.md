@@ -154,6 +154,9 @@ END;
 	 
 塞點資料進去測試。
 
+<img src = "https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/acl_1.png" />
+<img src = "https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/acl_2.png" />
+
 
 最後是修改 logon trigger 發動的設定。在[之前][4]找到的文章裡有說到可以在 `init_connect` [做][8] logon trigger，所以到 `my.ini` 加一行
 
@@ -221,6 +224,7 @@ Bye
 ```
 
 調整一下登入時間設定。
+<img src = "https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/acl_3.png" />
 
 再測試一下。
 ```msdos
@@ -246,7 +250,7 @@ MariaDB [(none)]> quit
 Bye
 ```
 當然還是不行，因為 host 是錯的，調整一下。
-
+<img src = "https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/acl_4.png" />
 
 再測試看看。
 ```msdos
