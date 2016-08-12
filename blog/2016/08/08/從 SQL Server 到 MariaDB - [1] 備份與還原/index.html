@@ -53,6 +53,13 @@
 <li>之前的 log 複製到安全的地方處理。</li>
 <li>每次 Full Backup 完 <a href="https://mariadb.com/kb/en/mariadb/sql-commands-purge-logs/" target="_blank" rel="external">PURGE LOG</a>。</li>
 </ol>
+<p>##　更新</p>
+<h3 id="2016-08-12"><a href="#2016-08-12" class="headerlink" title="2016/08/12"></a>2016/08/12</h3><p>感謝<a href="https://www.facebook.com/sam0737" target="_blank" rel="external">Sam Wong</a>提供資訊</p>
+<blockquote>
+<p>sync_binlog = 1 (&lt;5.7.7 默認竟是 0，不是最保守的設定)</p>
+<p>innodb_flush_log_at_trx_commit = 1 (默認就是 1)</p>
+</blockquote>
+<p>相關資料在<a href="https://mariadb.com/kb/en/mariadb/binlog-group-commit-and-innodb_flush_log_at_trx_commit/" target="_blank" rel="external">此</a>。　</p>
 </div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">
 var disqus_shortname = 'sujunmin';
 var disqus_identifier = '2016/08/08/從 SQL Server 到 MariaDB - [1] 備份與還原/';
