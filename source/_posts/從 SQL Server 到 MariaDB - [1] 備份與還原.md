@@ -188,7 +188,16 @@ i. 看一下 `test1.test1`，資料應該又回來了。
 2. 之前的 log 複製到安全的地方處理。
 3. 每次 Full Backup 完 [PURGE LOG][7]。
 
+##　更新
 
+### 2016/08/12
+感謝[Sam Wong][8]提供資訊
+
+>sync_binlog = 1 (<5.7.7 默認竟是 0，不是最保守的設定)
+
+>innodb_flush_log_at_trx_commit = 1 (默認就是 1)
+
+相關資料在[此][9]。　
 
 [1]: https://mariadb.com/kb/en/mariadb/backup-and-restore-overview/
 [2]: https://mariadb.com/kb/en/mariadb/binary-log/
@@ -197,3 +206,5 @@ i. 看一下 `test1.test1`，資料應該又回來了。
 [5]: https://mariadb.com/kb/en/mariadb/replication-and-binary-log-server-system-variables/#log_bin
 [6]: https://dev.mysql.com/doc/mysql-utilities/1.6/en/mysqlbinlogrotate.html
 [7]: https://mariadb.com/kb/en/mariadb/sql-commands-purge-logs/
+[8]: https://www.facebook.com/sam0737
+[9]: https://mariadb.com/kb/en/mariadb/binlog-group-commit-and-innodb_flush_log_at_trx_commit/
