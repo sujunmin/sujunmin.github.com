@@ -62,7 +62,7 @@
 <td>… limit N</td>
 </tr>
 <tr>
-<td>HashBytes(md5, …)</td>
+<td>HashBytes(‘md5’, …)</td>
 <td>MD5(…)</td>
 </tr>
 <tr>
@@ -79,7 +79,7 @@
 <p>這個問題的發生是這樣的，當遇到某些欄位的時候就會發生這個錯誤<br><figure class="highlight cmd"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[ma-<span class="number">2</span>.<span class="number">0</span>.<span class="number">11</span>][mariadb-<span class="number">10</span>.<span class="number">1</span>.<span class="number">16</span>] Invalid string or buffer length</div></pre></td></tr></table></figure></p>
 <p>這還不是一直發生，有的時候會有，有的時候很正常，功能的部份有的會發生，有的不會，這樣就要去看看程式碼有關那些欄位的存取情形與資料庫狀態，但是這就跟基本需求裏面說的相違背 (需要了解更多的 Code)，所以首先懷疑是 ODBC 的關係。</p>
 <p>換了 1.0 版本更慘，連原來 SQL Statement 都會被截斷，基本上是不能退到 1.0 版了</p>
-<p>只好硬著頭皮看 Codes 跟 資料庫，終於發現到問題</p>
+<p>只好硬著頭皮看 Codes 跟資料庫，終於發現到問題</p>
 <p>當欄位是空字串 (不是 Null 喔) 時，透過 ODBC Select 到 ADODB.RecordSet 會有問題 (在其他 client 都沒問題)，無論有幾個欄位有這樣的情形，只要有一個它就 Error 給你看</p>
 <p>所以就要改寫那些 SQL 語法 (通常都是 select *) 為明確欄位且要先轉為 Null 或是其他的值</p>
 <p>原來 (有 a b c d e 5 個欄位，其中 c d e 有可能是空字串)</p>
