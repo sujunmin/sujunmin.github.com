@@ -61,7 +61,7 @@ lines terminated by '|'
 | getdate()                                                                                           | now()                                                         | 
 | dateadd()                                                                                           | adddate()                                                     |
 | top N ...                                                                                           | ... limit N                                                   |
-| HashBytes(md5, ...)                                                                                 | MD5(...)                                                      |
+| HashBytes('md5', ...)                                                                                 | MD5(...)                                                      |
 | open symmetric key ... by password=passprase ...<br>encryptbykey(key, ...)<br>decryptbykey(key, ...)| aes_encrypt(passphrase, ...)<br> aes_decrypt(passphrase, ...) |
 
 ### limit 的問題
@@ -90,7 +90,7 @@ select ... from table where idx not in (select idx from (select idx from table2 
 
 換了 1.0 版本更慘，連原來 SQL Statement 都會被截斷，基本上是不能退到 1.0 版了
 
-只好硬著頭皮看 Codes 跟 資料庫，終於發現到問題
+只好硬著頭皮看 Codes 跟資料庫，終於發現到問題
 
 當欄位是空字串 (不是 Null 喔) 時，透過 ODBC Select 到 ADODB.RecordSet 會有問題 (在其他 client 都沒問題)，無論有幾個欄位有這樣的情形，只要有一個它就 Error 給你看
 
