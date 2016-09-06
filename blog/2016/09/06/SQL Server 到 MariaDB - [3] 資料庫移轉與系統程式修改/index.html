@@ -31,7 +31,7 @@
 <p>所以後來是自己寫 Script 處理</p>
 <ol>
 <li><p>使用 bcp 匯出資料，用 tab 分隔資料欄位，用 | 分隔資料行</p>
-<figure class="highlight cmd"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">bcp "select * from table" queryout "query.csv" -c -t"\t" -r"|" -S Server -U username -P password</div><div class="line">...</div><div class="line">bcp "open symmetric key ...; select cast(descryptby key(key, ...) as nvarchar) ... from table2" queryout "table2.csv" -c -t"\t" -r"|" -S Server -U username -P password </div><div class="line">...</div></pre></td></tr></table></figure>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">bcp "select * from table" queryout "query.csv" -c -t"\t" -r"|" -S Server -U username -P password</div><div class="line">...</div><div class="line">bcp "open symmetric key ...; select cast(descryptbykey(key, ...) as nvarchar) ... from table2" queryout "table2.csv" -c -t"\t" -r"|" -S Server -U username -P password </div><div class="line">...</div></pre></td></tr></table></figure>
 </li>
 <li><p>因為 bcp 不支援 Unicode 輸出 (SQL Server does not support code page 65001 (UTF-8 encoding).)，只支援雙字元輸出 (-w)，但那看起來會十分奇怪，所以要轉檔成為 UTF-8</p>
 </li>
