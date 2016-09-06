@@ -38,7 +38,7 @@ date: 2016-09-06 09:39:47
 ```cmd
 bcp "select * from table" queryout "query.csv" -c -t"\t" -r"|" -S Server -U username -P password
 ...
-bcp "open symmetric key ...; select cast(descryptby key(key, ...) as nvarchar) ... from table2" queryout "table2.csv" -c -t"\t" -r"|" -S Server -U username -P password 
+bcp "open symmetric key ...; select cast(descryptbykey(key, ...) as nvarchar) ... from table2" queryout "table2.csv" -c -t"\t" -r"|" -S Server -U username -P password 
 ...
 ```
 2. 因為 bcp 不支援 Unicode 輸出 (SQL Server does not support code page 65001 (UTF-8 encoding).)，只支援雙字元輸出 (-w)，但那看起來會十分奇怪，所以要轉檔成為 UTF-8
