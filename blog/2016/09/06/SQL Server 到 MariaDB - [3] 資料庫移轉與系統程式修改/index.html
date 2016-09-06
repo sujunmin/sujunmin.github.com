@@ -1,0 +1,112 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>從 SQL Server 到 MariaDB - [3] 資料庫移轉與系統程式修改 | 隨意記事</title><link rel="stylesheet" type="text/css" href="/blog//css/normalize.css"><link rel="stylesheet" type="text/css" href="/blog//css/highlight.css"><link rel="stylesheet" type="text/css" href="/blog//css/very-simple.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/blog/favicon.ico"><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script>(adsbygoogle = window.adsbygoogle || []).push({
+ google_ad_client: "ca-pub-0187888667607442",
+ enable_page_level_ads: true
+ });
+</script></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>從 SQL Server 到 MariaDB - [3] 資料庫移轉與系統程式修改</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2016-09-06</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/MSSQL/">MSSQL</a>/<a class="post-tag-link" href="/blog/tags/MariaDB/">MariaDB</a></div></div></div><article><div class="container post"><h2 id="需求說明"><a href="#需求說明" class="headerlink" title="需求說明"></a>需求說明</h2><p>在資料庫移轉的部份，原來的資料庫有廠商使用的部份，然後也有我們自己維護的系統的部份。廠商的部份使用 <a href="https://www.mysql.com/products/workbench/" target="_blank" rel="external">MySQL Workbench</a> 的 Database Migrate 功能，花了一點時間轉置，基本上沒有太大的問題，系統程式都能正常運行，因此我想我們這邊的程式應該也可以如法泡製吧。</p>
+<p>結果花了一個星期的時間才完成進入測試，相關的過程紀錄如下。</p>
+<p>系統架構</p>
+<ol>
+<li>Classic ASP，程式跟 Html 寫在一起</li>
+<li>Windows 2008 R2 64 bits </li>
+<li>IIS 7.5</li>
+<li><a href="https://downloads.mariadb.org/connector-odbc/" target="_blank" rel="external">MariaDB ODBC 2.0.11</a></li>
+<li>SQL Server 2008 R2</li>
+<li>使用 SQL Server 基本欄位</li>
+<li>加密資料使用對稱式金鑰加密</li>
+<li>登入系統密碼用 MD5 Hash</li>
+</ol>
+<p>基本需求</p>
+<ol>
+<li>程式的流程與架構不要被修改</li>
+<li>著重於語法與使用方式的轉換</li>
+<li>最快方法處理完畢</li>
+</ol>
+<h2 id="資料庫移轉"><a href="#資料庫移轉" class="headerlink" title="資料庫移轉"></a>資料庫移轉</h2><p>如同前面所說，原來是想用 <a href="https://www.mysql.com/products/workbench/" target="_blank" rel="external">MySQL Workbench</a> 的 Database Migrate 功能轉換即可，結果碰到釘子，原因如下。</p>
+<ol>
+<li>資料庫裡的資料有 Html Codes (上傳活動網頁使用)，有換行符號，匯入工具的換行符號辨識只有幾種 (CR, LF)，會被截斷</li>
+<li>時間欄位問題 (不過其實沒什麼問題，這邊走了一點冤枉路，研究了一下 SQL Server 怎麼存時間的)</li>
+<li>字碼問題</li>
+<li>加密欄位問題(要先解密才匯出來，不然到 MariaDB 也解不開)</li>
+</ol>
+<p>所以後來是自己寫 Script 處理</p>
+<ol>
+<li><p>使用 bcp 匯出資料，用 tab 分隔資料欄位，用 | 分隔資料行</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">bcp "select * from table" queryout "query.csv" -c -t"\t" -r"|" -S Server -U username -P password</div><div class="line">...</div><div class="line">bcp "open symmetric key ...; select cast(descryptby key(key, ...) as nvarchar) ... from table2" queryout "table2.csv" -c -t"\t" -r"|" -S Server -U username -P password </div><div class="line">...</div></pre></td></tr></table></figure>
+</li>
+<li><p>因為 bcp 不支援 Unicode 輸出 (SQL Server does not support code page 65001 (UTF-8 encoding).)，只支援雙字元輸出 (-w)，但那看起來會十分奇怪，所以要轉檔成為 UTF-8</p>
+</li>
+<li><p>使用 load data local infile 來匯入資料</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">truncate</span> <span class="keyword">table</span> tab_name;</div><div class="line">...</div><div class="line"><span class="keyword">load</span> <span class="keyword">data</span> <span class="keyword">local</span> <span class="keyword">infile</span> <span class="string">'query.csv'</span> <span class="keyword">into</span> <span class="keyword">table</span> tab_name</div><div class="line"><span class="keyword">fields</span> <span class="keyword">terminated</span> <span class="keyword">by</span> <span class="string">'\t'</span></div><div class="line"><span class="keyword">lines</span> <span class="keyword">terminated</span> <span class="keyword">by</span> <span class="string">'|'</span></div><div class="line">...</div></pre></td></tr></table></figure>
+</li>
+<li><p>細部調整一些資料</p>
+</li>
+</ol>
+<h2 id="語法轉換"><a href="#語法轉換" class="headerlink" title="語法轉換"></a>語法轉換</h2><table>
+<thead>
+<tr>
+<th>T-SQL</th>
+<th>MariaDB SQL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>getdate()</td>
+<td>now()</td>
+</tr>
+<tr>
+<td>dateadd()</td>
+<td>adddate()</td>
+</tr>
+<tr>
+<td>top N …</td>
+<td>… limit N</td>
+</tr>
+<tr>
+<td>HashBytes(md5, …)</td>
+<td>MD5(…)</td>
+</tr>
+<tr>
+<td>open symmetric key … by password=passprase …<br>encryptbykey(key, …)<br>decryptbykey(key, …)</td>
+<td>aes_encrypt(passphrase, …)<br> aes_decrypt(passphrase, …)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="limit-的問題"><a href="#limit-的問題" class="headerlink" title="limit 的問題"></a>limit 的問題</h3><p>基本上不會有什麼問題，但是在程式裡有類似這樣的動作<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">select</span> ... <span class="keyword">from</span> <span class="keyword">table</span> <span class="keyword">where</span> idx <span class="keyword">not</span> <span class="keyword">in</span> (<span class="keyword">select</span> idx <span class="keyword">from</span> table2 <span class="keyword">where</span> ... <span class="keyword">limit</span> <span class="number">10</span>)</div></pre></td></tr></table></figure></p>
+<p>會有如下的錯誤<br><figure class="highlight cmd"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">This version of MariaDB doesn't yet support 'LIMIT &amp; <span class="keyword">IN</span>/ALL/ANY/SOME subquery'</div></pre></td></tr></table></figure></p>
+<p>不過有神人<a href="http://stackoverflow.com/questions/7124418/mysql-subquery-limit" target="_blank" rel="external">幫忙</a>，這個是有解的<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">select</span> ... <span class="keyword">from</span> <span class="keyword">table</span> <span class="keyword">where</span> idx <span class="keyword">not</span> <span class="keyword">in</span> (<span class="keyword">select</span> idx <span class="keyword">from</span> (<span class="keyword">select</span> idx <span class="keyword">from</span> table2 <span class="keyword">where</span> ... <span class="keyword">limit</span> <span class="number">10</span>) <span class="keyword">as</span> i)</div></pre></td></tr></table></figure></p>
+<p>只要多一層 select，不要直接接上 in 就可以解決了</p>
+<h2 id="Invalid-string-or-buffer-length-錯誤"><a href="#Invalid-string-or-buffer-length-錯誤" class="headerlink" title="Invalid string or buffer length 錯誤"></a>Invalid string or buffer length 錯誤</h2><p>在上面的基本語法轉換以後，基本上 99% 的功能已經是沒有問題了，但是在這最後的 1% 卻花了我好幾天的時間。</p>
+<p>這個問題的發生是這樣的，當遇到某些欄位的時候就會發生這個錯誤<br><figure class="highlight cmd"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[ma-<span class="number">2</span>.<span class="number">0</span>.<span class="number">11</span>][mariadb-<span class="number">10</span>.<span class="number">1</span>.<span class="number">16</span>] Invalid string or buffer length</div></pre></td></tr></table></figure></p>
+<p>這還不是一直發生，有的時候會有，有的時候很正常，功能的部份有的會發生，有的不會，這樣就要去看看程式碼有關那些欄位的存取情形與資料庫狀態，但是這就跟基本需求裏面說的相違背 (需要了解更多的 Code)，所以首先懷疑是 ODBC 的關係。</p>
+<p>換了 1.0 版本更慘，連原來 SQL Statement 都會被截斷，基本上是不能退到 1.0 版了</p>
+<p>只好硬著頭皮看 Codes 跟 資料庫，終於發現到問題</p>
+<p>當欄位是空字串 (不是 Null 喔) 時，透過 ODBC Select 到 ADODB.RecordSet 會有問題 (在其他 client 都沒問題)，無論有幾個欄位有這樣的情形，只要有一個它就 Error 給你看</p>
+<p>所以就要改寫那些 SQL 語法 (通常都是 select *) 為明確欄位且要先轉為 Null 或是其他的值</p>
+<p>原來 (有 a b c d e 5 個欄位，其中 c d e 有可能是空字串)</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">select</span> * <span class="keyword">from</span> <span class="keyword">table</span> <span class="keyword">where</span> ...</div></pre></td></tr></table></figure>
+<p>改寫成</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">select</span> *, (<span class="keyword">case</span> c <span class="keyword">when</span> <span class="string">''</span> <span class="keyword">then</span> <span class="literal">NULL</span> <span class="keyword">else</span> c <span class="keyword">end</span>) <span class="keyword">as</span> c, (<span class="keyword">case</span> d <span class="keyword">when</span> <span class="string">''</span> <span class="keyword">then</span> <span class="string">' '</span> <span class="keyword">else</span> d <span class="keyword">end</span>) <span class="keyword">as</span> d, (<span class="keyword">case</span> e <span class="keyword">when</span> <span class="string">''</span> <span class="keyword">then</span> <span class="string">'x'</span> <span class="keyword">else</span> e <span class="keyword">end</span>) <span class="keyword">as</span> e <span class="keyword">from</span> <span class="keyword">table</span> <span class="keyword">where</span> ...</div></pre></td></tr></table></figure>
+<p>Codes 馬上暴增超多的，Debug 更困難了</p>
+<p>以前的 SQL Server ADODB 不會這樣，所以都沒有任何轉換機制，現在就要為了這個寫一堆多餘的 Codes</p>
+<p>這個問題我有發個 <a href="https://jira.mariadb.org/browse/ODBC-52" target="_blank" rel="external">issue</a>，希望未來能解決</p>
+<p>另外有個錯誤訊息，也是一樣的<br><figure class="highlight cmd"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Data provider or other service returned an E_FAIL status</div></pre></td></tr></table></figure></p>
+</div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'sujunmin';
+var disqus_identifier = '2016/09/06/SQL Server 到 MariaDB - [3] 資料庫移轉與系統程式修改/';
+var disqus_title = '從 SQL Server 到 MariaDB - [3] 資料庫移轉與系統程式修改';
+var disqus_url = 'https://sujunmin.github.io/blog/blog/2016/09/06/SQL Server 到 MariaDB - [3] 資料庫移轉與系統程式修改/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><footer id="footer"><div class="container"><div class="bar"><div class="social"><a href="https://github.com/sujunmin" target="_blank"><i class="fa fa-github"></i></a><a href="https://plus.google.com/+JunMingSu" target="_blank"><i class="fa fa-google-plus"></i></a><a href="/atom.xml" target="_blank"><i class="fa fa-rss"></i></a></div><div class="footer">© 2016 <a href="/" rel="nofollow">隨意記事</a>. Powered by <a rel="nofollow" target="_blank" href="https://hexo.io">Hexo</a>. Theme <a target="_blank" href="https://github.com/lotabout/very-simple">very-simple</a>.</div></div></div></footer><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+    $(".fancybox").fancybox();
+});</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-78894509-1');ga('send','pageview');</script></body></html>
