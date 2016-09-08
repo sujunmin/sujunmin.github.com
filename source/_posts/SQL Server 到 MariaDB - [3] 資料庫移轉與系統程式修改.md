@@ -83,7 +83,7 @@ select ... from table where idx not in (select idx from (select idx from table2 
 
 這個錯誤已經在 2.0.12 版後更新了，感謝神人!
 
-<del>
+<strike>
 
 在上面的基本語法轉換以後，基本上 99% 的功能已經是沒有問題了，但是在這最後的 1% 卻花了我好幾天的時間。
 
@@ -123,4 +123,4 @@ Codes 馬上暴增超多的，Debug 更困難了
 ```cmd
 Data provider or other service returned an E_FAIL status
 ```
-</del>
+</strike>
