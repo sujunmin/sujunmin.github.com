@@ -80,6 +80,11 @@ select ... from table where idx not in (select idx from (select idx from table2 
 只要多一層 select，不要直接接上 in 就可以解決了
 
 ## Invalid string or buffer length 錯誤
+
+這個錯誤已經在 2.0.12 版後更新了，感謝神人!
+
+<del>
+
 在上面的基本語法轉換以後，基本上 99% 的功能已經是沒有問題了，但是在這最後的 1% 卻花了我好幾天的時間。
 
 這個問題的發生是這樣的，當遇到某些欄位的時候就會發生這個錯誤
@@ -118,4 +123,4 @@ Codes 馬上暴增超多的，Debug 更困難了
 ```cmd
 Data provider or other service returned an E_FAIL status
 ```
-
+</del>
