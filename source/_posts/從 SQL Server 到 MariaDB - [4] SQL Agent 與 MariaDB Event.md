@@ -15,7 +15,7 @@ date: 2016-09-10 14:11:42
 因此每天的檢查大部份都是看這些 Log 的狀態，希望在 MariaDB 上面希望也有類似的方法實作。
 
 ## Job System 的選擇
-在 MariaDB 上有 `[Event]`(https://mariadb.com/kb/en/mariadb/events/) 可以用，在 Windows 裡有 Windows Tasks 可以用，但他們跟 SQL Server Agent Service 真的是差太多了，這兩個服務 MariaDB 的 `Event` 幾乎是射後不理，Windows 的 Tasks 也只有少少的 Log 可以用，基本上直接用是沒法達到原來維運的要求的，最後仍然是選擇 MariaDB 的 `Event` 配合一點紀錄來實作 Job System。
+在 MariaDB 上有 [`Event`](https://mariadb.com/kb/en/mariadb/events/) 可以用，在 Windows 裡有 Windows Tasks 可以用，但他們跟 SQL Server Agent Service 真的是差太多了，這兩個服務 MariaDB 的 `Event` 幾乎是射後不理，Windows 的 Tasks 也只有少少的 Log 可以用，基本上直接用是沒法達到原來維運的要求的，最後仍然是選擇 MariaDB 的 `Event` 配合一點紀錄來實作 Job System。
 
 ## MariaDB 的 `Event`
 詳細資料可以參考[這個](https://mariadb.com/kb/en/mariadb/events/)，基本上很簡單，就是設定某個 Schema 的什麼時候做什麼事情，用 `Show events;` 可以看到 `Event` 的內容，不過這邊要來說明的是 `mysql.event` 這個[資料表](https://mariadb.com/kb/en/mariadb/mysqlevent-table/)，因為所有的 `Event` 資料都是從這個地方加工的。
