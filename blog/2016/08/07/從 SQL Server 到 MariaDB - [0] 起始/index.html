@@ -1,0 +1,37 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>從 SQL Server 到 MariaDB - [0] 起始 | 隨意記事</title><link rel="stylesheet" type="text/css" href="/blog//css/normalize.css"><link rel="stylesheet" type="text/css" href="/blog//css/highlight.css"><link rel="stylesheet" type="text/css" href="/blog//css/very-simple.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/blog/favicon.ico"><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script>(adsbygoogle = window.adsbygoogle || []).push({
+ google_ad_client: "ca-pub-0187888667607442",
+ enable_page_level_ads: true
+ });
+</script></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>從 SQL Server 到 MariaDB - [0] 起始</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2016-08-07</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/MSSQL/">MSSQL</a>/<a class="post-tag-link" href="/blog/tags/MariaDB/">MariaDB</a></div></div></div><article><div class="container post"><h2 id="需求說明"><a href="#需求說明" class="headerlink" title="需求說明"></a>需求說明</h2><p>公司因為 SQL Server 的支援快要到期，加上資料的等級與加值性不如預期，所以開始有從 SQL Server 轉到 MariaDB 的計劃。</p>
+<h2 id="測試環境"><a href="#測試環境" class="headerlink" title="測試環境"></a>測試環境</h2><ol>
+<li>SQL Server 2008 R2 64 bits (要汰換的)</li>
+<li>MariaDB 10.1.16 64 bits</li>
+<li>Windows Server 2012 64 bits (上面的資料庫都跑在這個上面)</li>
+<li>MariaDB ODBC 2.0.12 64bits</li>
+</ol>
+<h2 id="移轉紀錄"><a href="#移轉紀錄" class="headerlink" title="移轉紀錄"></a>移轉紀錄</h2><ol>
+<li><a href="https://sujunmin.github.io/blog/2016/08/08/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[1]%20%E5%82%99%E4%BB%BD%E8%88%87%E9%82%84%E5%8E%9F/">從 SQL Server 到 MariaDB - [1] 備份與還原</a></li>
+<li><a href="https://sujunmin.github.io/blog/2016/08/10/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[2]%20%E8%B3%87%E6%96%99%E5%BA%AB%20ACL%20%E8%88%87%E5%B8%B3%E8%99%9F%E7%AE%A1%E7%90%86/">從 SQL Server 到 MariaDB - [2] 資料庫 ACL 與帳號管理</a></li>
+<li><a href="https://sujunmin.github.io/blog/2016/09/06/SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[3]%20%E8%B3%87%E6%96%99%E5%BA%AB%E7%A7%BB%E8%BD%89%E8%88%87%E7%B3%BB%E7%B5%B1%E7%A8%8B%E5%BC%8F%E4%BF%AE%E6%94%B9/">從 SQL Server 到 MariaDB - [3] 資料庫移轉與系統程式修改</a></li>
+<li><a href="https://sujunmin.github.io/blog/2016/09/10/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[4]%20SQL%20Agent%20%E8%88%87%20MariaDB%20Event/">從 SQL Server 到 MariaDB - [4] SQL Agent 與 MariaDB Event</a></li>
+</ol>
+</div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'sujunmin';
+var disqus_identifier = '2016/08/07/從 SQL Server 到 MariaDB - [0] 起始/';
+var disqus_title = '從 SQL Server 到 MariaDB - [0] 起始';
+var disqus_url = 'https://sujunmin.github.io/blog/blog/2016/08/07/從 SQL Server 到 MariaDB - [0] 起始/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><footer id="footer"><div class="container"><div class="bar"><div class="social"><a href="https://github.com/sujunmin" target="_blank"><i class="fa fa-github"></i></a><a href="https://plus.google.com/+JunMingSu" target="_blank"><i class="fa fa-google-plus"></i></a><a href="/atom.xml" target="_blank"><i class="fa fa-rss"></i></a></div><div class="footer">© 2016 <a href="/" rel="nofollow">隨意記事</a>. Powered by <a rel="nofollow" target="_blank" href="https://hexo.io">Hexo</a>. Theme <a target="_blank" href="https://github.com/lotabout/very-simple">very-simple</a>.</div></div></div></footer><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+    $(".fancybox").fancybox();
+});</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-78894509-1');ga('send','pageview');</script></body></html>
