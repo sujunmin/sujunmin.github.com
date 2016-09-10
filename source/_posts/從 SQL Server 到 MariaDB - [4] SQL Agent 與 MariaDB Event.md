@@ -54,7 +54,8 @@ CREATE TABLE event_history (
 COLLATE='utf8_general_ci'
 ENGINE=InnoDB
 ;
-```  
+```
+
 |  欄位名              | 意義                                              | 
 |---------------------|--------------------------------------------------|
 | `db`            | `mysql.event.db`                             |
@@ -111,7 +112,7 @@ END
 
 ## 實驗
 
-1. `Event 系統要打開
+1. `Event` 系統要打開
 
    `SET Global event_schedular=1`
    
