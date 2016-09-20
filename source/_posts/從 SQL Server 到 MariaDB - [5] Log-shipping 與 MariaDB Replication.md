@@ -48,7 +48,7 @@ GTID 的規格部份就不解釋了，上面的文件寫的很清楚。
      else 
        gtid_current_pos = gtid_slave_pos (同 ServerID 與 DomainID 狀態下)
      end if
-``` 
+```
 
 官方文件有說到一個例子，假設 A 為 Master，B 為 Slave，參數為 `slave_pos`，把 A 先關一會兒，讓 B 成為 Master，最後回復 A 並成為 B 的 Slave。
 
