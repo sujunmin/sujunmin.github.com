@@ -12,6 +12,7 @@ date: 2016-08-07 13:32:43
 ## 測試環境
 1. SQL Server 2008 R2 64 bits (要汰換的)
 2. MariaDB 10.1.16 64 bits
+3. MariaDB 10.1.17 64 bits
 3. Windows Server 2012 64 bits (上面的資料庫都跑在這個上面)
 4. MariaDB ODBC 2.0.12 64bits
 
@@ -21,3 +22,4 @@ date: 2016-08-07 13:32:43
 2. [從 SQL Server 到 MariaDB - [2] 資料庫 ACL 與帳號管理](https://sujunmin.github.io/blog/2016/08/10/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[2]%20%E8%B3%87%E6%96%99%E5%BA%AB%20ACL%20%E8%88%87%E5%B8%B3%E8%99%9F%E7%AE%A1%E7%90%86/)
 3. [從 SQL Server 到 MariaDB - [3] 資料庫移轉與系統程式修改](https://sujunmin.github.io/blog/2016/09/06/SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[3]%20%E8%B3%87%E6%96%99%E5%BA%AB%E7%A7%BB%E8%BD%89%E8%88%87%E7%B3%BB%E7%B5%B1%E7%A8%8B%E5%BC%8F%E4%BF%AE%E6%94%B9/)
 4. [從 SQL Server 到 MariaDB - [4] SQL Agent 與 MariaDB Event](https://sujunmin.github.io/blog/2016/09/10/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[4]%20SQL%20Agent%20%E8%88%87%20MariaDB%20Event/)
+5. [從 SQL Server 到 MariaDB - [5] Log-shipping 與 MariaDB Replication](https://sujunmin.github.io/blog/2016/09/19/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[5]%20Log-shipping%20%E8%88%87%20MariaDB%20Replication/)
