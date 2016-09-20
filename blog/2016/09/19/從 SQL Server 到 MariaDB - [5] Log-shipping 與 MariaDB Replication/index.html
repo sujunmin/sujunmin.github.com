@@ -77,11 +77,37 @@
 <li><p>接下來備份 Master</p>
 <figure class="highlight cmd"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="function">E:\<span class="title">backup</span>&gt;<span class="title">mysqldump</span> -<span class="title">u</span> <span class="title">sujunmin</span> -<span class="title">p</span> --<span class="title">master</span>-<span class="title">data</span> --<span class="title">all</span>-<span class="title">databases</span> --<span class="title">events</span> --<span class="title">routines</span> --<span class="title">gtid</span> &gt; <span class="title">all_db.sql</span></span></div><div class="line"><span class="title">Enter</span> <span class="title">password</span>: ************</div></pre></td></tr></table></figure>
 <p>其中幾個重要參數</p>
-<p>| 參數           | 意義                                        |<br>|—————|———————————————|<br>| <code>master-data</code> | dump 出來的掛 master ID                      |<br>| <code>events</code>      | 包含 events                                 |<br>| <code>routines</code>    | 包含 functions 與 store procedures           |<br>| <code>gtid</code>        | 產生 <code>CHANGE MASTER TO master_use_gtid</code> 語法 |</p>
-<p>觀察一下 <code>all_db.sql</code> 的內容</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="comment">-- MySQL dump 10.16  Distrib 10.1.17-MariaDB, for Win64 (AMD64)</span></div><div class="line">(中間省略)</div><div class="line"><span class="comment">--</span></div><div class="line"><span class="comment">-- Position to start replication or point-in-time recovery from</span></div><div class="line"><span class="comment">--</span></div><div class="line"></div><div class="line"><span class="comment">-- CHANGE MASTER TO MASTER_LOG_FILE='WSTest-bin.000002', MASTER_LOG_POS=3732;</span></div><div class="line"></div><div class="line"><span class="comment">--</span></div><div class="line"><span class="comment">-- GTID to start replication from</span></div><div class="line"><span class="comment">--</span></div><div class="line"></div><div class="line"><span class="keyword">CHANGE</span> <span class="keyword">MASTER</span> <span class="keyword">TO</span> MASTER_USE_GTID=slave_pos;</div><div class="line"><span class="keyword">SET</span> <span class="keyword">GLOBAL</span> gtid_slave_pos=<span class="string">'0-1-770'</span>;</div><div class="line"></div><div class="line"><span class="comment">--</span></div><div class="line"><span class="comment">-- Current Database: 'master'</span></div><div class="line"><span class="comment">--</span></div><div class="line">(後面省略)</div></pre></td></tr></table></figure>
-<p>可以看到如果要用舊的方式(兼容 MySQL Replication) 與新的方式。</p>
 </li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>參數</th>
+<th>意義</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>master-data</code></td>
+<td>dump 出來的掛 master ID</td>
+</tr>
+<tr>
+<td><code>events</code></td>
+<td>包含 events</td>
+</tr>
+<tr>
+<td><code>routines</code></td>
+<td>包含 functions 與 store procedures</td>
+</tr>
+<tr>
+<td><code>gtid</code></td>
+<td>產生 <code>CHANGE MASTER TO master_use_gtid</code> 語法</td>
+</tr>
+</tbody>
+</table>
+<p>  觀察一下 <code>all_db.sql</code> 的內容<br>  <figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="comment">-- MySQL dump 10.16  Distrib 10.1.17-MariaDB, for Win64 (AMD64)</span></div><div class="line">(中間省略)</div><div class="line"><span class="comment">--</span></div><div class="line"><span class="comment">-- Position to start replication or point-in-time recovery from</span></div><div class="line"><span class="comment">--</span></div><div class="line"></div><div class="line"><span class="comment">-- CHANGE MASTER TO MASTER_LOG_FILE='WSTest-bin.000002', MASTER_LOG_POS=3732;</span></div><div class="line"></div><div class="line"><span class="comment">--</span></div><div class="line"><span class="comment">-- GTID to start replication from</span></div><div class="line"><span class="comment">--</span></div><div class="line"></div><div class="line"><span class="keyword">CHANGE</span> <span class="keyword">MASTER</span> <span class="keyword">TO</span> MASTER_USE_GTID=slave_pos;</div><div class="line"><span class="keyword">SET</span> <span class="keyword">GLOBAL</span> gtid_slave_pos=<span class="string">'0-1-770'</span>;</div><div class="line"></div><div class="line"><span class="comment">--</span></div><div class="line"><span class="comment">-- Current Database: 'master'</span></div><div class="line"><span class="comment">--</span></div><div class="line">(後面省略)</div></pre></td></tr></table></figure></p>
+<p>  可以看到如果要用舊的方式(兼容 MySQL Replication) 與新的方式。</p>
+<ul>
 <li>啟動 Slave 的 Instance。  </li>
 <li>把 <code>all_db.sql</code> 倒到 Slave (3307) 上面。</li>
 <li>在 Master 上開一個 User <code>lsuser</code> 作為 Replication 用，權限是 <code>REPLICATION SLAVE</code> 與 <code>SUPER</code> (這個我不設定會沒權限登入，但是官方網站沒有這個權限)。</li>
@@ -135,7 +161,7 @@
 <li><p><code>SHOW SLAVE STATUS;</code></p>
  <figure class="highlight cmd"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">MariaDB [(none)]&gt; show slave status\G</div><div class="line">*************************** <span class="number">1</span>. row ***************************</div><div class="line"><span class="function">            Slave_IO_State: <span class="title">Waiting</span> <span class="title">for</span> <span class="title">master</span> <span class="title">to</span> <span class="title">send</span> <span class="title">event</span></span></div><div class="line">               <span class="title">Master_Host</span>: <span class="title">localhost</span></div><div class="line">               <span class="title">Master_User</span>: <span class="title">lsuser</span></div><div class="line">               <span class="title">Master_Port</span>: 3306</div><div class="line">             <span class="title">Connect_Retry</span>: 60</div><div class="line">           <span class="title">Master_Log_File</span>: <span class="title">WSTest</span>-<span class="title">bin</span>.000003</div><div class="line">       <span class="title">Read_Master_Log_Pos</span>: 7177</div><div class="line">            <span class="title">Relay_Log_File</span>: <span class="title">WSTest</span>-<span class="title">relay</span>-<span class="title">bin</span>.000003</div><div class="line">             <span class="title">Relay_Log_Pos</span>: 7466</div><div class="line">     <span class="title">Relay_Master_Log_File</span>: <span class="title">WSTest</span>-<span class="title">bin</span>.000003</div><div class="line">          <span class="title">Slave_IO_Running</span>: <span class="title">Yes</span></div><div class="line">         <span class="title">Slave_SQL_Running</span>: <span class="title">Yes</span></div><div class="line">                        (省略)</div><div class="line">                <span class="title">Using_Gtid</span>: <span class="title">Slave_Pos</span></div><div class="line">               <span class="title">Gtid_IO_Pos</span>: 0-1-1167</div><div class="line">   <span class="title">Replicate_Do_Domain_Ids</span>:</div><div class="line"> <span class="title">Replicate_Ignore_Domain_Ids</span>:</div><div class="line">               <span class="title">Parallel_Mode</span>: <span class="title">conservative</span></div><div class="line">1 <span class="title">row</span> <span class="title">in</span> <span class="title">set</span> (0.00 <span class="title">sec</span>)</div></pre></td></tr></table></figure>
 <ul>
-<li>這兩個對應 (0-2-976, 0-1-1167) 都幫你做好了</li>
+<li>這兩個對應 (<code>0-2-976</code>, <code>0-1-1167</code>) 都幫你做好了</li>
 <li>完成</li>
 </ul>
 <h2 id="一些想法"><a href="#一些想法" class="headerlink" title="一些想法"></a>一些想法</h2><ul>
