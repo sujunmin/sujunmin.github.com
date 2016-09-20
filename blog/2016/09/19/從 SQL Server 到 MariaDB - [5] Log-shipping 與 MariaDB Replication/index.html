@@ -41,37 +41,47 @@
 <p>什麼叫作 “紀錄的最後一個 binlog GTID” 呢?</p>
 <p>對 <code>gtid_slave_pos</code> 來說，就是 master 的最後一筆 GTID。</p>
 <p>對 <code>gtid_current_pos</code> 來說，不管當下的 Instance 之前是 Master 還是 Slave</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div></pre></td><td class="code"><pre><div class="line">     if gtid_binlog_pos.ServerID = Instance.ServerID and gtid_binlog_pos.DomainID = Instance.DomainID and gtid_binlog_pos.SequenceID &gt; gtid_slave_pos.SequenceID (同 ServerID 與 DomainID 狀態下) then</div><div class="line">       gtid_current_pos = gtid_binlog_pos</div><div class="line">     else </div><div class="line">       gtid_current_pos = gtid_slave_pos (同 ServerID 與 DomainID 狀態下)</div><div class="line">     end if</div><div class="line">``` </div><div class="line"></div><div class="line">官方文件有說到一個例子，假設 A 為 Master，B 為 Slave，參數為 `slave_pos`，把 A 先關一會兒，讓 B 成為 Master，最後回復 A 並成為 B 的 Slave。</div><div class="line"></div><div class="line">&lt;img src = &quot;https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/MariaDB_Replication_1.png&quot; /&gt;</div><div class="line"></div><div class="line">* 一開始 A 的 `gtid_binlog_pos` 與 `gtid_current_pos` 相同（`1-1-123`, `1-1-137`, `1-1-145`），`gtid_slave_pos` 是空值。</div><div class="line">* B 的 `gtid_slave_pos` 記著 A 的最後一個 GTID。</div><div class="line">* 在 A 的 `1-1-145` 的時候把 A 先關掉，中間 B 的修改先忽略不看(假設沒發生)，現在資料庫停在 `1-1-145`。</div><div class="line">* 在 A 恢復以後，設定 A 為 B 的 Slave，但是這個時候的 `gtid_slave_pos` 是空值，所以設成 `current_pos` (就是 `1-1-145`)。</div><div class="line">* 到 B 的 `1-1-147` 的時候，最新的就是 `1-1-147`，B 就知道怎麼恢復了 (`145`-`147`)，正式加成 A 的 Slave。</div><div class="line"></div><div class="line">這個的假設前提是在那個中斷時間內沒 B 沒有任何的 binlog 紀錄交易，這樣能確保 `1-1-145` 到 `1-1-147` 都只有在有 Slave 的狀態下 Master 產生的交易，假設 B 中間原來忽略的的 `2-2-138` 被產生了，那麼 binlog 的順序就會在 `1-1-145` 與 `1-1-147` 中間夾一個 `2-2-138`，奇怪的交易紀錄，會導致 A 的加入失敗。</div><div class="line"></div><div class="line">所以官方建議在 Slave 上不要有任何的 binlog 紀錄 (Session 中 `@@sql_log_bin=0`)，避免當這個 Slave 有機會變成 Master 或是再 Slave 到其他地方時有交易紀錄異常的問題。</div><div class="line"></div><div class="line">如果還是要修改 Slave 的資料造成 binlog 會有變動，還是要把參數設為 `slave_pos`，確保 Slave 會從 Master 看的 binlog 資料不會因為 Slave 的變動而異常，不能像 `current_pos` 那樣兩邊都有可能取值，不管是什麼角色。</div><div class="line"></div><div class="line">在 B 當 Slave 的時候如果沒有開 binlog，那麼 `current_pos` 與 `slave_pos` 是同一件事，當然後續的切換是不會發生的 (B 沒 binlog 不能當 Master)。</div><div class="line"></div><div class="line">## 最後的設計</div><div class="line">剛剛最後有說到在 Slave 沒有開 binlog 的方式，我原來是想要用這個的，因為這蠻像現在的維運模式。</div><div class="line">1. 當 Master 壞了就停掉 Slave 的 Service</div><div class="line">2. 等到 Master 好的時候停機備份到 Master 上</div><div class="line">3. 在 Slave 重新建 Replication</div><div class="line"></div><div class="line">如果 Slave 有開 binlog，第2步的停機備份似乎可以把時間縮短</div><div class="line">1. 當 Master 壞了就停掉 Slave 的 Service</div><div class="line">2. 等到 Master 好的時候倒回 Slave 的備份</div><div class="line">3. 同步完成後重新建立 Master / Slave 順序 </div><div class="line"></div><div class="line">## 測試</div><div class="line">### 在同一個機器上開新的 Instance</div><div class="line">* 有一個不錯用的工具 [mysql_install_db.exe](https://mariadb.com/kb/en/mariadb/mysql_install_dbexe/) 可以直接開新的 Instance。</div><div class="line">  </div><div class="line">  我們用這個先開一個 Instance 在 Port 3307。</div><div class="line"></div><div class="line">* 設定原來在 3306 的為 Master (`server-id=1`)，3307 的為 Slave (`server-id=2`)，都開啟 binlog (`log-bin`)。 </div><div class="line">* Event 記得設成 Disabled on Slave。</div><div class="line">* 接下來備份 Master</div><div class="line">  </div><div class="line">  ```cmd</div><div class="line">  E:\backup&gt;mysqldump -u sujunmin -p --master-data --all-databases --events --routines --gtid &gt; all_db.sql</div><div class="line">  Enter password: ************</div></pre></td></tr></table></figure>
-<p>  其中幾個重要參數</p>
-<table>
-<thead>
-<tr>
-<th>參數</th>
-<th>意義</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>master-data</code></td>
-<td>dump 出來的掛 master ID</td>
-</tr>
-<tr>
-<td><code>events</code></td>
-<td>包含 events</td>
-</tr>
-<tr>
-<td><code>routines</code></td>
-<td>包含 functions 與 store procedures</td>
-</tr>
-<tr>
-<td><code>gtid</code></td>
-<td>產生 <code>CHANGE MASTER TO master_use_gtid</code> 語法</td>
-</tr>
-</tbody>
-</table>
-<p>  觀察一下 <code>all_db.sql</code> 的內容<br>  <figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="comment">-- MySQL dump 10.16  Distrib 10.1.17-MariaDB, for Win64 (AMD64)</span></div><div class="line">(中間省略)</div><div class="line"><span class="comment">--</span></div><div class="line"><span class="comment">-- Position to start replication or point-in-time recovery from</span></div><div class="line"><span class="comment">--</span></div><div class="line"></div><div class="line"><span class="comment">-- CHANGE MASTER TO MASTER_LOG_FILE='WSTest-bin.000002', MASTER_LOG_POS=3732;</span></div><div class="line"></div><div class="line"><span class="comment">--</span></div><div class="line"><span class="comment">-- GTID to start replication from</span></div><div class="line"><span class="comment">--</span></div><div class="line"></div><div class="line"><span class="keyword">CHANGE</span> <span class="keyword">MASTER</span> <span class="keyword">TO</span> MASTER_USE_GTID=slave_pos;</div><div class="line"><span class="keyword">SET</span> <span class="keyword">GLOBAL</span> gtid_slave_pos=<span class="string">'0-1-770'</span>;</div><div class="line"></div><div class="line"><span class="comment">--</span></div><div class="line"><span class="comment">-- Current Database: 'master'</span></div><div class="line"><span class="comment">--</span></div><div class="line">(後面省略)</div></pre></td></tr></table></figure></p>
-<p>  可以看到如果要用舊的方式(兼容 MySQL Replication) 與新的方式。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">if gtid_binlog_pos.ServerID = Instance.ServerID and gtid_binlog_pos.DomainID = Instance.DomainID and gtid_binlog_pos.SequenceID &gt; gtid_slave_pos.SequenceID (同 ServerID 與 DomainID 狀態下) then</div><div class="line">  gtid_current_pos = gtid_binlog_pos</div><div class="line">else </div><div class="line">  gtid_current_pos = gtid_slave_pos (同 ServerID 與 DomainID 狀態下)</div><div class="line">end if</div></pre></td></tr></table></figure>
+<p>官方文件有說到一個例子，假設 A 為 Master，B 為 Slave，參數為 <code>slave_pos</code>，把 A 先關一會兒，讓 B 成為 Master，最後回復 A 並成為 B 的 Slave。</p>
+<p><img src="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/MariaDB_Replication_1.png"></p>
 <ul>
+<li>一開始 A 的 <code>gtid_binlog_pos</code> 與 <code>gtid_current_pos</code> 相同（<code>1-1-123</code>, <code>1-1-137</code>, <code>1-1-145</code>），<code>gtid_slave_pos</code> 是空值。</li>
+<li>B 的 <code>gtid_slave_pos</code> 記著 A 的最後一個 GTID。</li>
+<li>在 A 的 <code>1-1-145</code> 的時候把 A 先關掉，中間 B 的修改先忽略不看(假設沒發生)，現在資料庫停在 <code>1-1-145</code>。</li>
+<li>在 A 恢復以後，設定 A 為 B 的 Slave，但是這個時候的 <code>gtid_slave_pos</code> 是空值，所以設成 <code>current_pos</code> (就是 <code>1-1-145</code>)。</li>
+<li>到 B 的 <code>1-1-147</code> 的時候，最新的就是 <code>1-1-147</code>，B 就知道怎麼恢復了 (<code>145</code>-<code>147</code>)，正式加成 A 的 Slave。</li>
+</ul>
+<p>這個的假設前提是在那個中斷時間內沒 B 沒有任何的 binlog 紀錄交易，這樣能確保 <code>1-1-145</code> 到 <code>1-1-147</code> 都只有在有 Slave 的狀態下 Master 產生的交易，假設 B 中間原來忽略的的 <code>2-2-138</code> 被產生了，那麼 binlog 的順序就會在 <code>1-1-145</code> 與 <code>1-1-147</code> 中間夾一個 <code>2-2-138</code>，奇怪的交易紀錄，會導致 A 的加入失敗。</p>
+<p>所以官方建議在 Slave 上不要有任何的 binlog 紀錄 (Session 中 <code>@@sql_log_bin=0</code>)，避免當這個 Slave 有機會變成 Master 或是再 Slave 到其他地方時有交易紀錄異常的問題。</p>
+<p>如果還是要修改 Slave 的資料造成 binlog 會有變動，還是要把參數設為 <code>slave_pos</code>，確保 Slave 會從 Master 看的 binlog 資料不會因為 Slave 的變動而異常，不能像 <code>current_pos</code> 那樣兩邊都有可能取值，不管是什麼角色。</p>
+<p>在 B 當 Slave 的時候如果沒有開 binlog，那麼 <code>current_pos</code> 與 <code>slave_pos</code> 是同一件事，當然後續的切換是不會發生的 (B 沒 binlog 不能當 Master)。</p>
+<h2 id="最後的設計"><a href="#最後的設計" class="headerlink" title="最後的設計"></a>最後的設計</h2><p>剛剛最後有說到在 Slave 沒有開 binlog 的方式，我原來是想要用這個的，因為這蠻像現在的維運模式。</p>
+<ol>
+<li>當 Master 壞了就停掉 Slave 的 Service</li>
+<li>等到 Master 好的時候停機備份到 Master 上</li>
+<li>在 Slave 重新建 Replication</li>
+</ol>
+<p>如果 Slave 有開 binlog，第2步的停機備份似乎可以把時間縮短</p>
+<ol>
+<li>當 Master 壞了就停掉 Slave 的 Service</li>
+<li>等到 Master 好的時候倒回 Slave 的備份</li>
+<li>同步完成後重新建立 Master / Slave 順序 </li>
+</ol>
+<h2 id="測試"><a href="#測試" class="headerlink" title="測試"></a>測試</h2><h3 id="在同一個機器上開新的-Instance"><a href="#在同一個機器上開新的-Instance" class="headerlink" title="在同一個機器上開新的 Instance"></a>在同一個機器上開新的 Instance</h3><ul>
+<li><p>有一個不錯用的工具 <a href="https://mariadb.com/kb/en/mariadb/mysql_install_dbexe/" target="_blank" rel="external">mysql_install_db.exe</a> 可以直接開新的 Instance。</p>
+<p>我們用這個先開一個 Instance 在 Port 3307。</p>
+</li>
+<li><p>設定原來在 3306 的為 Master (<code>server-id=1</code>)，3307 的為 Slave (<code>server-id=2</code>)，都開啟 binlog (<code>log-bin</code>)。 </p>
+</li>
+<li>Event 記得設成 Disabled on Slave。</li>
+<li><p>接下來備份 Master</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="function">E:\<span class="title">backup</span>&gt;<span class="title">mysqldump</span> -<span class="title">u</span> <span class="title">sujunmin</span> -<span class="title">p</span> --<span class="title">master</span>-<span class="title">data</span> --<span class="title">all</span>-<span class="title">databases</span> --<span class="title">events</span> --<span class="title">routines</span> --<span class="title">gtid</span> &gt; <span class="title">all_db.sql</span></span></div><div class="line"><span class="title">Enter</span> <span class="title">password</span>: ************</div></pre></td></tr></table></figure>
+<p>其中幾個重要參數</p>
+<p>| 參數           | 意義                                        |<br>|—————|———————————————|<br>| <code>master-data</code> | dump 出來的掛 master ID                      |<br>| <code>events</code>      | 包含 events                                 |<br>| <code>routines</code>    | 包含 functions 與 store procedures           |<br>| <code>gtid</code>        | 產生 <code>CHANGE MASTER TO master_use_gtid</code> 語法 |</p>
+<p>觀察一下 <code>all_db.sql</code> 的內容</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="comment">-- MySQL dump 10.16  Distrib 10.1.17-MariaDB, for Win64 (AMD64)</span></div><div class="line">(中間省略)</div><div class="line"><span class="comment">--</span></div><div class="line"><span class="comment">-- Position to start replication or point-in-time recovery from</span></div><div class="line"><span class="comment">--</span></div><div class="line"></div><div class="line"><span class="comment">-- CHANGE MASTER TO MASTER_LOG_FILE='WSTest-bin.000002', MASTER_LOG_POS=3732;</span></div><div class="line"></div><div class="line"><span class="comment">--</span></div><div class="line"><span class="comment">-- GTID to start replication from</span></div><div class="line"><span class="comment">--</span></div><div class="line"></div><div class="line"><span class="keyword">CHANGE</span> <span class="keyword">MASTER</span> <span class="keyword">TO</span> MASTER_USE_GTID=slave_pos;</div><div class="line"><span class="keyword">SET</span> <span class="keyword">GLOBAL</span> gtid_slave_pos=<span class="string">'0-1-770'</span>;</div><div class="line"></div><div class="line"><span class="comment">--</span></div><div class="line"><span class="comment">-- Current Database: 'master'</span></div><div class="line"><span class="comment">--</span></div><div class="line">(後面省略)</div></pre></td></tr></table></figure>
+<p>可以看到如果要用舊的方式(兼容 MySQL Replication) 與新的方式。</p>
+</li>
 <li>啟動 Slave 的 Instance。  </li>
 <li>把 <code>all_db.sql</code> 倒到 Slave (3307) 上面。</li>
 <li>在 Master 上開一個 User <code>lsuser</code> 作為 Replication 用，權限是 <code>REPLICATION SLAVE</code> 與 <code>SUPER</code> (這個我不設定會沒權限登入，但是官方網站沒有這個權限)。</li>
