@@ -239,7 +239,7 @@ static int log_statement_ex(const struct connection_info *cn,
                     cn->user, cn->user_length,cn->host, cn->host_length,
                     cn->ip, cn->ip_length, thd_id, query_id, modtype);
     ...  
-```    
+```
 #### Build Plugin
 接下來要來 Build Plugin，根據這個[文件](https://mariadb.com/kb/en/mariadb/Building_MariaDB_on_Windows/)，安裝該安裝的函式庫與工具，以下紀錄一下
 1. Visual Studio 2015 Community 版
