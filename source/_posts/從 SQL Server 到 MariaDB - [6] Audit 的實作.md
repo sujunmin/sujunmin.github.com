@@ -161,7 +161,7 @@ struct sa_keyword passwd_keywords[]=
   {6, "CHANGE", &master_word, SQLCOM_CHANGE_MASTER},
   {0, NULL, 0, SQLCOM_NOTHING}
 };
-``` 
+```
 這邊說明什麼時候會碰到密碼 (在 log 裡會紀錄動作，然後把密碼用星號表示)。
 
 接下來找到以下的程式碼
