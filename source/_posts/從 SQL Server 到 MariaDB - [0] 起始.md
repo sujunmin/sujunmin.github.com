@@ -25,3 +25,4 @@ date: 2016-08-07 13:32:43
 4. [從 SQL Server 到 MariaDB - [4] SQL Agent 與 MariaDB Event](https://sujunmin.github.io/blog/2016/09/10/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[4]%20SQL%20Agent%20%E8%88%87%20MariaDB%20Event/)
 5. [從 SQL Server 到 MariaDB - [5] Log-shipping 與 MariaDB Replication](https://sujunmin.github.io/blog/2016/09/19/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[5]%20Log-shipping%20%E8%88%87%20MariaDB%20Replication/)
 6. [從 SQL Server 到 MariaDB - [6] Audit 的實作](https://sujunmin.github.io/blog/2016/10/03/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[6]%20Audit%20%E7%9A%84%E5%AF%A6%E4%BD%9C/)
+7. [從 SQL Server 到 MariaDB - [7] Linked Server 與 FederatedX Storage Engine](https://sujunmin.github.io/blog/2016/10/05/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[7]%20Linked%20Server%20%E8%88%87%20FederatedX%20Storage%20Engine/)
