@@ -14,7 +14,8 @@ date: 2016-10-21 11:15:29
 * 被修改過的或是想要自己做 Livepatch 很[複雜](http://chrisarges.net/2015/09/21/livepatch-on-ubuntu.html)。
 * 支援 x86_64，amd64。
 * 支援 16.04 LTS 的 4.4 Kernel。
-* 要裝 snapd。
+* 要裝 snapd，沒更新到最新就會有錯。
+  <img src=https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/ubuntu_livekernelpatch_04.png />
 * 對象是 CVE 的 Patch，所以效能或是其他增進的還是要走老路 (update and reboot)。
 
 首先要有個 Ubuntu SSO 帳號，登入後就可以獲得 Token 了。
