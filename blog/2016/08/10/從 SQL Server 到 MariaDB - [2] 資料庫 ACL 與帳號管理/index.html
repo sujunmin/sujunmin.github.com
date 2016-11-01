@@ -57,9 +57,11 @@
 <p>可以登入了。</p>
 <h2 id="後記"><a href="#後記" class="headerlink" title="後記"></a>後記</h2><h3 id="2016-11-1"><a href="#2016-11-1" class="headerlink" title="2016/11/1"></a>2016/11/1</h3><p>正式上線的時候發現到有兩個問題。(其實都是自己耍蠢不看文件)</p>
 <ol>
-<li>有 <code>SUPER</code>  權限的人不受此種方法管理，請見 <a href="https://mariadb.com/kb/en/mariadb/grant/" target="_blank" rel="external">GRANT</a> 的 <code>SUPER</code> 說明。<blockquote>
-<p>If a statement has been specified for the init-connect mysqld option, that command will not be executed when a user with SUPER privileges connects to the server.<br>難怪發現怎麼我的帳號鎖不住@@</p>
+<li><p>有 <code>SUPER</code>  權限的人不受此種方法管理，請見 <a href="https://mariadb.com/kb/en/mariadb/grant/" target="_blank" rel="external">GRANT</a> 的 <code>SUPER</code> 說明。</p>
+<blockquote>
+<p>If a statement has been specified for the init-connect mysqld option, that command will not be executed when a user with SUPER privileges connects to the server.  </p>
 </blockquote>
+<p>難怪發現怎麼我的帳號鎖不住@@</p>
 </li>
 <li>在 MariaDB 裡沒有 <a href="https://mariadb.com/kb/en/mariadb/alter-procedure/" target="_blank" rel="external">alter procedure</a> 內容這回事，要的話就要先 DROP 再 CREATE，記得權限要重給。<br>也造成服務兩次中斷 (忘了給回權限)</li>
 </ol>
