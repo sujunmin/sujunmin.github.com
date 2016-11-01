@@ -290,6 +290,8 @@ C:\Users\Administrator>
    
    難怪發現怎麼我的帳號鎖不住@@
 2. 在 MariaDB 裡沒有 [alter procedure](https://mariadb.com/kb/en/mariadb/alter-procedure/) 內容這回事，要的話就要先 DROP 再 CREATE，記得權限要重給。
+   >However, you cannot change the parameters or body of a stored procedure using this statement; to make such changes, you must drop and re-create the procedure using `DROP PROCEDURE` and `CREATE PROCEDURE`.
+   
    也造成服務兩次中斷 (忘了給回權限)
 
 
