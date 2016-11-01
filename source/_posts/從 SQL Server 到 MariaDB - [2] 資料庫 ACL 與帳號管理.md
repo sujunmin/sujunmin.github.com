@@ -280,6 +280,17 @@ C:\Users\Administrator>
 ```
 可以登入了。
 
+## 後記
+
+### 2016/11/1
+正式上線的時候發現到有兩個問題。(其實都是自己耍蠢不看文件)
+
+1. 有 `SUPER`  權限的人不受此種方法管理，請見 [GRANT](https://mariadb.com/kb/en/mariadb/grant/) 的 `SUPER` 說明。
+   >If a statement has been specified for the init-connect mysqld option, that command will not be executed when a user with SUPER privileges connects to the server.  
+   難怪發現怎麼我的帳號鎖不住@@
+2. 在 MariaDB 裡沒有 [alter procedure](https://mariadb.com/kb/en/mariadb/alter-procedure/) 內容這回事，要的話就要先 DROP 再 CREATE，記得權限要重給。
+   也造成服務兩次中斷 (忘了給回權限)
+
 
 
 [1]: https://sujunmin.github.io/blog/2013/07/08/%E6%8E%A7%E5%88%B6%E8%B3%87%E6%96%99%E5%BA%AB%E4%BD%BF%E7%94%A8%E8%80%85%E7%9A%84%E7%99%BB%E5%85%A5/
