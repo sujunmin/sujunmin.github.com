@@ -62,7 +62,7 @@ CREATE FUNCTION sys_get RETURNS string SONAME 'lib_mysqludf_sys.dll';
 CREATE FUNCTION sys_set RETURNS int SONAME 'lib_mysqludf_sys.dll';
 CREATE FUNCTION sys_exec RETURNS int SONAME 'lib_mysqludf_sys.dll';
 CREATE FUNCTION sys_eval RETURNS string SONAME 'lib_mysqludf_sys.dll';
-``` 
+```
 
 ### 使用
 可以看 [`lib_mysqludf_sys.html`](https://github.com/mysqludf/lib_mysqludf_sys/blob/master/lib_mysqludf_sys.html)，基本上很簡單。
