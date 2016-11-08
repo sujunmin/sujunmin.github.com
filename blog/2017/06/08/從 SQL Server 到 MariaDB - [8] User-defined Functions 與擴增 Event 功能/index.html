@@ -19,7 +19,46 @@
 <p>MariaDB 的是 <code>&lt;MariaDB&gt;\lib</code> 。</p>
 <h4 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h4><p>編譯的時候會一直有 <code>snprintf</code> 重複定義的問題，為了減少麻煩，直接把 MariaDB 的 Include Files 裡有相關的定義先拿掉，待編譯完再改回來。</p>
 <h3 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h3><p>將產生出來的 dll 與 pdf 檔複製到 <code>&lt;MariaDB&gt;\lib\plugin</code>，透過 github 裡的 <a href="https://github.com/mysqludf/lib_mysqludf_sys/blob/master/lib_mysqludf_sys.sql" target="_blank" rel="external"><code>lib_mysqludf_sys.sql</code></a> 安裝，記得 so 要改成 dll。</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">DROP FUNCTION IF EXISTS lib_mysqludf_sys_info;</div><div class="line">DROP FUNCTION IF EXISTS sys_get;</div><div class="line">DROP FUNCTION IF EXISTS sys_set;</div><div class="line">DROP FUNCTION IF EXISTS sys_exec;</div><div class="line">DROP FUNCTION IF EXISTS sys_eval;</div><div class="line"></div><div class="line">CREATE FUNCTION lib_mysqludf_sys_info RETURNS string SONAME 'lib_mysqludf_sys.dll';</div><div class="line">CREATE FUNCTION sys_get RETURNS string SONAME 'lib_mysqludf_sys.dll';</div><div class="line">CREATE FUNCTION sys_set RETURNS int SONAME 'lib_mysqludf_sys.dll';</div><div class="line">CREATE FUNCTION sys_exec RETURNS int SONAME 'lib_mysqludf_sys.dll';</div><div class="line">CREATE FUNCTION sys_eval RETURNS string SONAME 'lib_mysqludf_sys.dll';</div><div class="line">``` </div><div class="line"></div><div class="line">### 使用</div><div class="line">可以看 [`lib_mysqludf_sys.html`](https://github.com/mysqludf/lib_mysqludf_sys/blob/master/lib_mysqludf_sys.html)，基本上很簡單。</div><div class="line"></div><div class="line">|Function Name| Input | Output|</div><div class="line">|-------------|-------|-------|</div><div class="line">|`lib_mysqludf_sys_info`| N/A| 版本號碼|</div><div class="line">|`sys_get`|系統變數名稱|系統變數值|</div><div class="line">|`sys_set`|系統變數名稱&lt;br /&gt; 要設定的系統變數值 |0 為成功，其他為失敗|</div><div class="line">|`sys_exec`|需執行的指令|該指令執行的 Process 傳回值|</div><div class="line">|`sys_eval`|需執行的指令|指令在 Standard Output 產生內容|</div><div class="line"></div><div class="line">來跑一下試試看</div><div class="line"></div><div class="line">```sql</div><div class="line">select sys_eval('ipconfig');</div></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">DROP</span> <span class="keyword">FUNCTION</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> lib_mysqludf_sys_info;</div><div class="line"><span class="keyword">DROP</span> <span class="keyword">FUNCTION</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> sys_get;</div><div class="line"><span class="keyword">DROP</span> <span class="keyword">FUNCTION</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> sys_set;</div><div class="line"><span class="keyword">DROP</span> <span class="keyword">FUNCTION</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> sys_exec;</div><div class="line"><span class="keyword">DROP</span> <span class="keyword">FUNCTION</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> sys_eval;</div><div class="line"></div><div class="line"><span class="keyword">CREATE</span> <span class="keyword">FUNCTION</span> lib_mysqludf_sys_info <span class="keyword">RETURNS</span> <span class="keyword">string</span> <span class="keyword">SONAME</span> <span class="string">'lib_mysqludf_sys.dll'</span>;</div><div class="line"><span class="keyword">CREATE</span> <span class="keyword">FUNCTION</span> sys_get <span class="keyword">RETURNS</span> <span class="keyword">string</span> <span class="keyword">SONAME</span> <span class="string">'lib_mysqludf_sys.dll'</span>;</div><div class="line"><span class="keyword">CREATE</span> <span class="keyword">FUNCTION</span> sys_set <span class="keyword">RETURNS</span> <span class="built_in">int</span> <span class="keyword">SONAME</span> <span class="string">'lib_mysqludf_sys.dll'</span>;</div><div class="line"><span class="keyword">CREATE</span> <span class="keyword">FUNCTION</span> sys_exec <span class="keyword">RETURNS</span> <span class="built_in">int</span> <span class="keyword">SONAME</span> <span class="string">'lib_mysqludf_sys.dll'</span>;</div><div class="line"><span class="keyword">CREATE</span> <span class="keyword">FUNCTION</span> sys_eval <span class="keyword">RETURNS</span> <span class="keyword">string</span> <span class="keyword">SONAME</span> <span class="string">'lib_mysqludf_sys.dll'</span>;</div></pre></td></tr></table></figure>
+<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><p>可以看 <a href="https://github.com/mysqludf/lib_mysqludf_sys/blob/master/lib_mysqludf_sys.html" target="_blank" rel="external"><code>lib_mysqludf_sys.html</code></a>，基本上很簡單。</p>
+<table>
+<thead>
+<tr>
+<th>Function Name</th>
+<th>Input</th>
+<th>Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>lib_mysqludf_sys_info</code></td>
+<td>N/A</td>
+<td>版本號碼</td>
+</tr>
+<tr>
+<td><code>sys_get</code></td>
+<td>系統變數名稱</td>
+<td>系統變數值</td>
+</tr>
+<tr>
+<td><code>sys_set</code></td>
+<td>系統變數名稱<br> 要設定的系統變數值</td>
+<td>0 為成功，其他為失敗</td>
+</tr>
+<tr>
+<td><code>sys_exec</code></td>
+<td>需執行的指令</td>
+<td>該指令執行的 Process 傳回值</td>
+</tr>
+<tr>
+<td><code>sys_eval</code></td>
+<td>需執行的指令</td>
+<td>指令在 Standard Output 產生內容</td>
+</tr>
+</tbody>
+</table>
+<p>來跑一下試試看</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">select</span> sys_eval(<span class="string">'ipconfig'</span>);</div></pre></td></tr></table></figure>
 <p><img src="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/lib_mysqludf_sys_01.png"></p>
 <p>竟然是亂碼，但是 cmd 的沒有問題</p>
 <p><img src="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/lib_mysqludf_sys_02.png"></p>
