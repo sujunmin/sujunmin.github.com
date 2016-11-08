@@ -98,11 +98,15 @@ BEGIN
      prepare stmt from @sql;
     
      select now() into @start from dual;
-     execute stmt;
-     select sleep(10);
-     insert into master.event_history (db, name, start, end, sqlstate, errno, message_text) values (idb, iname, @start, now(), NULL, NULL, 'OK');
-
-     DEALLOCATE PREPARE stmt;
+     set @outs := '';
+	  execute stmt;
+      select sleep(10);
+	  if instr(@sql, '@outv') <> 0 then
+      select concat('OK ', @outv) into @outs;
+     else
+      select 'OK' into @outs;
+     end if;
+  	  insert into master.event_history (`db`, `name`, `start`, `end`, `sqlstate`, `errno`, `message_text`) values (idb, iname, @start, now(), NULL, NULL, @outs); 
 END
 ```
 
@@ -174,3 +178,7 @@ message_text: OK
 2. 該次真正開始執行時間
 3. 下一次開始執行時間
 
+## 修改
+
+### 2016/11/7 
+透過 `@outv` 收 SQL 訊息，傳到 `@outs` 給 Event 紀錄系統。
