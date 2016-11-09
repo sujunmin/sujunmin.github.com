@@ -312,3 +312,19 @@ GTID 的規格部份就不解釋了，上面的文件寫的很清楚。
   * 如果是 Multi-Master 的這個系統會很好做 (`CREATE MASTER to ..., master_use_gtid=slave_pos;`)，因為 `slave_pos` 可以是多個的，例如 `gtid_slave_pos='0-1-123,1-2-456,...'`
   * Slave 如果要快速完復，不需要備份還原的話，那麼就只能當 Snapshot 來用 (不能動他讓他產生自己的 binlog)
   * 對於原來的需求 (單一 Master 單一 Slave) 基本上設定一下就完成了
+
+  ## 上線紀錄
+  ### 2016/11/8
+  有時候會碰到有些指令沒法傳過去的問題(如建立 FederatedX Table)，這時候 Slave 會卡在 Error 的地方不能過去，所以要手動 bypass 它。
+
+  但是不太清楚要 skip 幾個的狀態下，就一個一個看了。
+
+  ```sql
+  stop slave;
+  set global sql_slave_skip_counter=1;
+  start slave;
+
+  select sleep(10);
+
+  show slave status;
+  ```
