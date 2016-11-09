@@ -74,10 +74,9 @@
 <h2 id="資安問題"><a href="#資安問題" class="headerlink" title="資安問題"></a>資安問題</h2><p>網路上有很多使用 MySQL UDF 透過這些 UDF 來存取系統的<a href="https://securitypentester.ninja/mysql-udf-injection/" target="_blank" rel="external">資安問題</a>，所以要確保以下的防護是否有達成。</p>
 <ol>
 <li>Web 連資料庫不能是 root 等級的帳號，權限愈小愈好。</li>
-<li><code>sys_*</code> 的 function 建立不能在 user 資料庫或是 <code>mysql</code> 資料庫。</li>
-<li>其他 user 不可以存取該 function。</li>
 <li>AppArmor 或是 UAC 的設定。</li>
 </ol>
+<h2 id="其他紀錄"><a href="#其他紀錄" class="headerlink" title="其他紀錄"></a>其他紀錄</h2><h3 id="2016-11-08"><a href="#2016-11-08" class="headerlink" title="2016/11/08"></a>2016/11/08</h3><p>安裝的時候如果碰到不能載入，除了之前那篇寫的內容之外，有可能是 Visual C++ Redistributable 套件需要安裝，我是在 Visual Studio 2015 編譯的，找 <a href="https://www.microsoft.com/en-us/download/details.aspx?id=48145" target="_blank" rel="external">Visual C++ Redistributable for Visual Studio 2015</a> 安裝就可以了。</p>
 </div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">
 var disqus_shortname = 'sujunmin';
 var disqus_identifier = '2017/06/08/從 SQL Server 到 MariaDB - [8] User-defined Functions 與擴增 Event 功能/';
