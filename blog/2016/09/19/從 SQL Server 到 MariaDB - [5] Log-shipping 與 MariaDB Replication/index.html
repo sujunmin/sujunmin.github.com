@@ -169,6 +169,9 @@
 <li>Slave 如果要快速完復，不需要備份還原的話，那麼就只能當 Snapshot 來用 (不能動他讓他產生自己的 binlog)</li>
 <li>對於原來的需求 (單一 Master 單一 Slave) 基本上設定一下就完成了</li>
 </ul>
+<h2 id="上線紀錄"><a href="#上線紀錄" class="headerlink" title="上線紀錄"></a>上線紀錄</h2><h3 id="2016-11-8"><a href="#2016-11-8" class="headerlink" title="2016/11/8"></a>2016/11/8</h3><p>有時候會碰到有些指令沒法傳過去的問題(如建立 FederatedX Table)，這時候 Slave 會卡在 Error 的地方不能過去，所以要手動 bypass 它。</p>
+<p>但是不太清楚要 skip 幾個的狀態下，就一個一個看了。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">stop</span> <span class="keyword">slave</span>;</div><div class="line"><span class="keyword">set</span> <span class="keyword">global</span> sql_slave_skip_counter=<span class="number">1</span>;</div><div class="line"><span class="keyword">start</span> <span class="keyword">slave</span>;</div><div class="line"></div><div class="line"><span class="keyword">select</span> <span class="keyword">sleep</span>(<span class="number">10</span>);</div><div class="line"></div><div class="line"><span class="keyword">show</span> <span class="keyword">slave</span> <span class="keyword">status</span>;</div></pre></td></tr></table></figure>
 </li>
 </ul>
 </div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">
