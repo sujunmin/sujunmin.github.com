@@ -125,6 +125,9 @@ END
 網路上有很多使用 MySQL UDF 透過這些 UDF 來存取系統的[資安問題](https://securitypentester.ninja/mysql-udf-injection/)，所以要確保以下的防護是否有達成。
 
 1. Web 連資料庫不能是 root 等級的帳號，權限愈小愈好。
-2. `sys_*` 的 function 建立不能在 user 資料庫或是 `mysql` 資料庫。
-3. 其他 user 不可以存取該 function。
-4. AppArmor 或是 UAC 的設定。
+2. AppArmor 或是 UAC 的設定。
+
+## 其他紀錄
+
+### 2016/11/08
+安裝的時候如果碰到不能載入，除了之前那篇寫的內容之外，有可能是 Visual C++ Redistributable 套件需要安裝，我是在 Visual Studio 2015 編譯的，找 [Visual C++ Redistributable for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145) 安裝就可以了。
