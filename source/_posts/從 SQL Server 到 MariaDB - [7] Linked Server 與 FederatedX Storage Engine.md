@@ -120,3 +120,17 @@ execute stmt;
 
 <img src=https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/ls_3.png />
 
+## 上線紀錄
+
+### 2016/11/14
+實際執行的時候，發現到有很大的問題，不管是怎麼調整都會有一樣的錯。
+
+1. 網路很通暢 (之前 MSSQL 的 Linked Server 的路)
+2. 資料庫 loading 很低 (挑選沒有人使用資料庫的作業時間)
+3. 減少 access Federated Table 的次數 (原來 `insert into federated_table select * from local_table ...;` -> `insert into local_staged_table select * from local_table ...; insert into federated_table select * from local_staged_table;`)
+
+錯誤的訊息 `Got error 10000 'Error on remote system: 2006: MySQL server has gone away' from FEDERATED`。
+
+這個也是一個蠻久的 [bug](https://jira.mariadb.org/browse/MDEV-4452)，我也發了[一個](https://jira.mariadb.org/browse/MDEV-11276)，希望未來有解。
+
+現在的方法改成是 `mysqldump ... DB.table | mysql ... DB ...`，透過 [`sys_exec`](https://sujunmin.github.io/blog/2017/06/08/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[8]%20User-defined%20Functions%20%E8%88%87%E6%93%B4%E5%A2%9E%20Event%20%E5%8A%9F%E8%83%BD/) 執行。
