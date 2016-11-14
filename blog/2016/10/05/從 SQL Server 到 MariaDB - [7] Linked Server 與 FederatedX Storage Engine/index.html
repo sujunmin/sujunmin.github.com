@@ -79,6 +79,15 @@
 <p>然後因為是 Table Level 的關係，Linked Server 只要做一個 Database Link 即可，但是這個就要每個 Table 都要建一次。</p>
 <p>最後的架構</p>
 <p><img src="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/ls_3.png"></p>
+<h2 id="上線紀錄"><a href="#上線紀錄" class="headerlink" title="上線紀錄"></a>上線紀錄</h2><h3 id="2016-11-14"><a href="#2016-11-14" class="headerlink" title="2016/11/14"></a>2016/11/14</h3><p>實際執行的時候，發現到有很大的問題，不管是怎麼調整都會有一樣的錯。</p>
+<ol>
+<li>網路很通暢 (之前 MSSQL 的 Linked Server 的路)</li>
+<li>資料庫 loading 很低 (挑選沒有人使用資料庫的作業時間)</li>
+<li>減少 access Federated Table 的次數 (原來 <code>insert into federated_table select * from local_table ...;</code> -&gt; <code>insert into local_staged_table select * from local_table ...; insert into federated_table select * from local_staged_table;</code>)</li>
+</ol>
+<p>錯誤的訊息 <code>Got error 10000 &#39;Error on remote system: 2006: MySQL server has gone away&#39; from FEDERATED</code>。</p>
+<p>這個也是一個蠻久的 <a href="https://jira.mariadb.org/browse/MDEV-4452" target="_blank" rel="external">bug</a>，我也發了<a href="https://jira.mariadb.org/browse/MDEV-11276" target="_blank" rel="external">一個</a>，希望未來有解。</p>
+<p>現在的方法改成是 <code>mysqldump ... DB.table | mysql ... DB ...</code>，透過 <a href="https://sujunmin.github.io/blog/2017/06/08/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[8]%20User-defined%20Functions%20%E8%88%87%E6%93%B4%E5%A2%9E%20Event%20%E5%8A%9F%E8%83%BD/"><code>sys_exec</code></a> 執行。</p>
 </div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">
 var disqus_shortname = 'sujunmin';
 var disqus_identifier = '2016/10/05/從 SQL Server 到 MariaDB - [7] Linked Server 與 FederatedX Storage Engine/';
