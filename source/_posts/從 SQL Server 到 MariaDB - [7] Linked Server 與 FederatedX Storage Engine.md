@@ -134,3 +134,25 @@ execute stmt;
 這個也是一個蠻久的 [bug](https://jira.mariadb.org/browse/MDEV-4452)，我也發了[一個](https://jira.mariadb.org/browse/MDEV-11276)，希望未來有解。
 
 現在的方法改成是 `mysqldump ... DB.table | mysql ... DB ...`，透過 [`sys_exec`](https://sujunmin.github.io/blog/2017/06/08/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[8]%20User-defined%20Functions%20%E8%88%87%E6%93%B4%E5%A2%9E%20Event%20%E5%8A%9F%E8%83%BD/) 執行。
+
+### 2016/11/23
+感謝[神人](https://jira.mariadb.org/secure/ViewProfile.jspa?name=elenst)幫忙，終於解開疑惑了，他的解釋十分清楚，也不厭其煩的解釋每個動作。
+
+原因在於遠端連線的問題。
+
+基本上一個 Federated Table 的存取大概是這樣
+
+|動作|到遠端連線狀態|結果|
+|---|------------|---|
+|`Create Server`| N/A| OK|
+|`Create Table` | 會測試連線是否正常，測試完即結束連線| OK |
+|1st DMLs for Federate Table|第一個動作會建起到遠端連線的 session，並做相關紀錄| OK |
+|Other DMLs for Federate Table|順利透過剛剛建立的 session 繼續作業| OK |
+|遠端的 session 的 idle 時間大於 session `wait_timeout` 導致被 Kill 掉 <br />遠端重開機或是一些緣故導致之前建立的 session 斷掉| N/A| N/A|
+|斷掉後的第一個 DMLs for Federate Table| N/A| 必定失敗(因為原來紀錄的 session 不見了)|
+|重做 DMLs for Federate Table 或是下一個 | 建起到遠端連線的 session，並做相關紀錄| OK |
+
+我的問題是每天做一次的排程匯入資料從 A 地到 B 地，在預設的情況下遠端的 session 的 idle 時間大於 session `wait_timeout` (28800 秒，8小時) 導致被 Kill 掉，下一次作業時就會因為必定失敗的問題而無法繼續，所以有以下兩個解法。
+
+1. 設大一點的 `wait_timeout`，但我覺得比較不切實際，因為如果重開機了 session 不在還是得失敗一次才能完成。
+2. 每個小時 select federated table 一次，這個我覺得可以把問題縮短到一個小時就能發現，比較實際。
