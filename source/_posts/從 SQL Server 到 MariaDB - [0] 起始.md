@@ -11,8 +11,10 @@ date: 2016-08-07 13:32:43
 
 ## 測試環境
 1. SQL Server 2008 R2 64 bits (要汰換的)
+1. Oracle DB 12c (要汰換的)
 2. MariaDB 10.1.16 64 bits
 3. MariaDB 10.1.17 64 bits
+3. MariaDB 10.1.18 64 bits
 3. Windows Server 2012 64 bits (上面的資料庫都跑在這個上面)
 4. MariaDB ODBC 2.0.12 64bits
 5. Visual Studio 2015 Community
@@ -27,3 +29,5 @@ date: 2016-08-07 13:32:43
 6. [從 SQL Server 到 MariaDB - [6] Audit 的實作](https://sujunmin.github.io/blog/2016/10/03/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[6]%20Audit%20%E7%9A%84%E5%AF%A6%E4%BD%9C/)
 7. [從 SQL Server 到 MariaDB - [7] Linked Server 與 FederatedX Storage Engine](https://sujunmin.github.io/blog/2016/10/05/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[7]%20Linked%20Server%20%E8%88%87%20FederatedX%20Storage%20Engine/)
 8. [從 SQL Server 到 MariaDB - [8] User-defined Functions 與擴增 Event 功能](https://sujunmin.github.io/blog/2017/06/08/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[8]%20User-defined%20Functions%20%E8%88%87%E6%93%B4%E5%A2%9E%20Event%20%E5%8A%9F%E8%83%BD/)
+9. [從 SQL Server 到 MariaDB - [9] DBA Daily Check Report 的製作 [1]](https://sujunmin.github.io/blog/2016/12/27/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[9]%20DBA%20Daily%20Check%20Report%20%E7%9A%84%E8%A3%BD%E4%BD%9C%20[1]/)
+10. [從 SQL Server 到 MariaDB - [10] DBA Daily Check Report 的製作 [2]](https://sujunmin.github.io/blog/2016/12/27/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[10]%20DBA%20Daily%20Check%20Report%20%E7%9A%84%E8%A3%BD%E4%BD%9C%20[2]/)
