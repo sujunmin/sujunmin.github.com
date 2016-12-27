@@ -143,7 +143,7 @@ SLAVE_RUNNING` 看該台機器是 Master 還是 Slave (在 [`CheckSlave.sql`](ht
 
 ```sql
 select case variable_value when 'ON' then 'O' else '' end from information_schema.GLOBAL_STATUS where variable_name='SLAVE_RUNNING';
-````
+```
 
 如果是的話就是 Slave。
 
