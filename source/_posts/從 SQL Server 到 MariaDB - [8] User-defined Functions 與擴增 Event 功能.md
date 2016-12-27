@@ -3,7 +3,7 @@ title: 從 SQL Server 到 MariaDB - [8] User-defined Functions 與擴增 Event �
 tags:
   - MariaDB
   - MSSQL
-date: 2016-18-08 09:47:22
+date: 2016-08-18 09:47:22
 ---
 
 ## 需求說明
