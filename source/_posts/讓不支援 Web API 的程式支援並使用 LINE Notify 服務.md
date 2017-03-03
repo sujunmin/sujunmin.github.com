@@ -31,11 +31,11 @@ date: 2017-03-03 13:31:42
 
 ```
 
-其中 [`ShellExecuteW`](https://msdn.microsoft.com/en-us/library/windows/desktop/bb762153(v=vs.85).aspx) 是拿來執行外部程式的函數。
+其中 [`ShellExecuteW`](https://goo.gl/mhpXpg) 是拿來執行外部程式的函數。
 
 接下來使用 [curl](https://curl.haxx.se/download.html) 來作為發動 Http Request 的外部程式，這個 curl 支援多種平台，真的很方便。
 
-因為環境在 Windows 上，所以下載 Windows 版的 (記得裡頭的檔案都要在同個目錄下才能運作)上面。
+因為環境在 Windows 上，所以下載 Windows 版的 (記得裡頭的檔案都要在同個目錄下才能運作)。
 
 最後在要使用 Web API 的地方加
 
@@ -47,7 +47,7 @@ date: 2017-03-03 13:31:42
           ...
 ```
 
-其中 `imageFile` 的格式是 jpeg/png ，自己電腦裡的路徑 `@C:/test/abc.png`，所以就是 `imageFile=@C:/test/abc.png`上面。
+其中 `imageFile` 的格式是 jpeg/png ，自己電腦裡的路徑 `@C:/test/abc.png`，所以就是 `imageFile=@C:/test/abc.png`。
 
 另外這個服務是每個小時有一個[上限](https://notify-bot.line.me/doc/en/)，API Rate Limit，可以參考一下。
 
