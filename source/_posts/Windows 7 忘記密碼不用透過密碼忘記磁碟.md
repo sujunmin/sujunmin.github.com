@@ -24,6 +24,19 @@ tags: MIS
 - 登入以後再把之前修改的 sethc_bak.exe  修改回來 (如不能修改可複製一份再改回原檔名 sethc.exe )
 - 收工
 
+[20170405] 更新
+
+今天改了本機密碼以後，就三不五時帳號被鎖定，可能是有其他需要密碼的程式(例如系統排程)因為一直輸入舊的密碼導致一直被鎖定，本機是 Windows 10，跟 Windows 7 的作法比較不一樣，紀錄如下
+- 登入畫面點選重開機，記得按著 Shift
+- 會跑出[選擇選項]，點選[疑難排解]\[進階選項]\[命令提示字元] (連修復都不需要了)
+- 開始如同之前的複製修改
+
+  `c:\windows\system32>copy sethc.exe sethc_bak.exe`
+  
+  `c:\windows\system32>copy cmd.exe sethc.exe`
+- 重新啟動電腦
+- 接下來都跟之前一樣
+
 [1]: http://pogostick.net/~pnh/ntpasswd/
 [2]: http://www.oxhow.com/reset-windows-7-password-without-password-reset-disk/
 [3]: http://windows.microsoft.com/zh-tw/windows/make-keyboard-easier-to-use#1TC=windows-7
