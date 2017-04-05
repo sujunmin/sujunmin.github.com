@@ -21,11 +21,23 @@
 <li>登入以後再把之前修改的 sethc_bak.exe  修改回來 (如不能修改可複製一份再改回原檔名 sethc.exe )</li>
 <li>收工</li>
 </ul>
+<p>[20170405] 更新</p>
+<p>今天改了本機密碼以後，就三不五時帳號被鎖定，可能是有其他需要密碼的程式(例如系統排程)因為一直輸入舊的密碼導致一直被鎖定，本機是 Windows 10，跟 Windows 7 的作法比較不一樣，紀錄如下</p>
+<ul>
+<li>登入畫面點選重開機，記得按著 Shift</li>
+<li>會跑出[選擇選項]，點選[疑難排解][進階選項][命令提示字元] (連修復都不需要了)</li>
+<li><p>開始如同之前的複製修改</p>
+<p><code>c:\windows\system32&gt;copy sethc.exe sethc_bak.exe</code></p>
+<p><code>c:\windows\system32&gt;copy cmd.exe sethc.exe</code></p>
+</li>
+<li>重新啟動電腦</li>
+<li>接下來都跟之前一樣</li>
+</ul>
 </div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">
 var disqus_shortname = 'sujunmin';
 var disqus_identifier = '2016/01/27/Windows 7 忘記密碼不用透過密碼忘記磁碟/';
 var disqus_title = 'Windows 7 忘記密碼不用透過密碼忘記磁碟';
-var disqus_url = 'https://sujunmin.github.io/blog/blog/2016/01/27/Windows 7 忘記密碼不用透過密碼忘記磁碟/';
+var disqus_url = 'https://sujunmin.github.io/blog/2016/01/27/Windows 7 忘記密碼不用透過密碼忘記磁碟/';
 (function() {
    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
