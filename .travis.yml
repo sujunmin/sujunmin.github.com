@@ -4,6 +4,7 @@ node_js: stable
 # S: Build Lifecycle
 install:
   - npm install --unsafe-perm node-sass
+  - npm install
 
 
 #before_script:
