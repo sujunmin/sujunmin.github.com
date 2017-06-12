@@ -52,7 +52,7 @@ Master Binlog 寫入依照 OS 的處理處理之 (`innodb_flush_log_at_trx_commi
 >On the other hand, if set **too low**, the SQL thread might **not** have sufficient space for queuing enough events to keep the worker threads busy, which could **reduce performance**.
 
 ## 監控 Replication 的相關參數與 `Seconds_Behind_Master` ##
-`show slave status` 應該是大家一定會用到的，不外乎 `Master_Log_File`，`Relay_Log_File`，`Last_IO[SQL]_Error[Erron]`，`Gtid_IO_Pos` 這些，其中有一個參數 `Seconds_Behind_Master` 原來我是把它當作是大海裡的一塊浮木，想說已經有這麼方便的參數可以拿來看了，應該是很方便監控了，經過幾天看的經驗其實不然。首先來看他的[定義](https://mariadb.com/kb/en/mariadb/show-slave-status/)。
+`show slave status` 應該是大家一定會用到的，不外乎 `Master_Log_File`，`Relay_Log_File`，`Last_IO[SQL]_Error[Errno]`，`Gtid_IO_Pos` 這些，其中有一個參數 `Seconds_Behind_Master` 原來我是把它當作是大海裡的一塊浮木，想說已經有這麼方便的參數可以拿來看了，應該是很方便監控了，經過幾天看的經驗其實不然。首先來看他的[定義](https://mariadb.com/kb/en/mariadb/show-slave-status/)。
 
 >Difference between the timestamp logged on the master for the event that the slave is currently processing, and the current timestamp on the slave. Zero if the slave is not currently processing an event. From MariaDB 10.0.23 and MariaDB 10.1.9, with parallel replication, seconds_behind_master is updated only after transactions commit.
 
