@@ -41,9 +41,3 @@ date: 2017-06-29 10:20:18
 拆機的照片，因為用膠帶粘著，小心撕開的時候動到了手寫版的排線，所以不能用，插好就可以用了。
 <img src=https://sujunmin.github.io/test/pinebook_09.jpg />
 
-# 設定
-
-## 作業系統
-使用 ayufan 大的 [linux](https://github.com/ayufan-pine64/linux-build)，追到最新。
-
-
