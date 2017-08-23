@@ -8,6 +8,7 @@ include(dirname(__FILE__) . '/include/global.php');
 
 //取出相關的資料
 //fixme: retry 次數未考慮
+//fixme: TCP ping only
 $need_to_ping_hosts = db_fetch_assoc('SELECT id, hostname, ping_port, ping_timeout, status FROM host WHERE ping_method = '. PING_TCP);
 
 if (sizeof($need_to_ping_hosts)) {
