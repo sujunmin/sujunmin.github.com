@@ -1,0 +1,60 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>Ubuntu 16.04 安裝與使用 Flashcache 流程紀錄 | 隨意記事</title><link rel="stylesheet" type="text/css" href="/blog//css/normalize.css"><link rel="stylesheet" type="text/css" href="/blog//css/highlight.css"><link rel="stylesheet" type="text/css" href="/blog//css/very-simple.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/blog/favicon.ico"><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script>(adsbygoogle = window.adsbygoogle || []).push({
+ google_ad_client: "ca-pub-0187888667607442",
+ enable_page_level_ads: true
+ });
+</script></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>Ubuntu 16.04 安裝與使用 Flashcache 流程紀錄</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2017-08-31</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/MIS/">MIS</a>/<a class="post-tag-link" href="/blog/tags/Ubuntu/">Ubuntu</a></div></div></div><article><div class="container post"><p>因為系統效能的關係，嘗試一下在 Ubuntu 16.04 下用 SSD 當硬碟的快取碟，看效能有沒有比較好，<a href="http://wubx.net/ubuntu-flashcache/" target="_blank" rel="external">這篇</a>已經寫的十分清楚，但是有一些我做起來不太一樣的，以下紀錄安裝與使用方式。</p>
+<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p>原文中使用原碼編譯安裝，但其實 Ubuntu 16.04 裡頭已經有這個 Package 了。</p>
+<p><code>sudo apt install flashcache-dkms flashcache-utils</code></p>
+<p>載入 flashcache</p>
+<p><code>sudo modprobe flashcache</code></p>
+<p>看有沒有成功</p>
+<p><code>sudo lsmod |grep flashcache</code></p>
+<p>開機自動載入</p>
+<p><code>echo &#39;flashcache&#39; | sudo tee --append /etc/modules</code></p>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>如同原文方式，首先要確認 Partitions，原來的磁碟跟要作為快取的 SSD 磁碟。</p>
+<p>假設原來的狀態如下</p>
+<p>原來的磁碟 <code>/dev/sdb1</code>，UUID 為 <code>[UUID_sdb1]</code> (可從<code>ls -la /dev/disk/by-uuid/</code>查看對應) mount 在 <code>/test</code> 上</p>
+<p>要做快取的 SSD 磁碟 <code>/dev/sdc1</code>，未來名稱為 <code>sdb1_cache</code></p>
+<ol>
+<li>把 <code>/test</code> 裡頭的資料移到其他地方，因為要清空</li>
+<li><p>對 SSD 磁碟做 <code>flash_create</code>，這個會依照大小等一段時間</p>
+<p><code>sudo flashcache_create -v -p back sdb1_cache /dev/sdc1 /dev/disk/by-uuid/[UUID_sdb1]</code></p>
+</li>
+<li><p>試著 mount 看看</p>
+<p><code>sudo mount /dev/mapper/sdb1_cache /test</code></p>
+</li>
+<li>成功就可以試著寫寫看 (把先前移到別的地方的資料移回來)，透過 <code>flashstat</code> 可以看使用狀況</li>
+<li><p>如果要開機可以 mount，寫入 <code>/etc/fstab</code> 就可以了 (範例)</p>
+<p><code>/dev/mapper/sdb1_cache /test ext4 defaults 0 0</code></p>
+</li>
+</ol>
+<p>如果要打掉的話就</p>
+<ol>
+<li><code>/test</code> 的資料移動到別的地方</li>
+<li><code>sudo umount /test</code></li>
+<li><code>sudo dmsetup remove sdb1_cache</code> </li>
+<li><code>sudo flashcache_destory /dev/sdc1</code></li>
+<li><code>/test</code> 的 mounting point 改回原來的 (<code>/dev/sdb1</code>)</li>
+<li>資料搬回 <code>/test</code></li>
+</ol>
+<h2 id="後記"><a href="#後記" class="headerlink" title="後記"></a>後記</h2><p>我覺得這個還蠻好用的，它是對 Partition 做 cache，都不用管實際怎麼運作就能用了，十分方便好用。</p>
+</div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'sujunmin';
+var disqus_identifier = '2017/08/31/Ubuntu 16.04 安裝與使用 Flashcache 流程紀錄/';
+var disqus_title = 'Ubuntu 16.04 安裝與使用 Flashcache 流程紀錄';
+var disqus_url = 'https://sujunmin.github.io/blog/2017/08/31/Ubuntu 16.04 安裝與使用 Flashcache 流程紀錄/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><footer id="footer"><div class="container"><div class="bar"><div class="social"><a href="http://twitter.com/sujunmin_" target="_blank"><i class="fa fa-twitter"></i></a><a href="https://github.com/sujunmin" target="_blank"><i class="fa fa-github"></i></a><a href="https://plus.google.com/+JunMingSu" target="_blank"><i class="fa fa-google-plus"></i></a><a href="/atom.xml" target="_blank"><i class="fa fa-rss"></i></a></div><div class="footer">© 2017 <a href="/" rel="nofollow">隨意記事</a>. Powered by <a rel="nofollow" target="_blank" href="https://hexo.io">Hexo</a>. Theme <a target="_blank" href="https://github.com/lotabout/very-simple">very-simple</a>.</div></div></div></footer><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+    $(".fancybox").fancybox();
+});</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-78894509-1');ga('send','pageview');</script></body></html>
