@@ -1,40 +1,89 @@
-extends base
-
-block title
-  title= page.title + " | " + config.title
-
-block main
-
-  // gallery that comes before the header
-  if page.photos
-     if page.photos.length
-      .article-gallery
-        .article-gallery-photos.container
-          for photo in page.photos
-            a.article-gallery-img.fancybox(href=url_for(photo), rel="gallery_" + page._id)
-              img(src=url_for(photo), itemprop="image")
-
-  .wrapper
-    .container.post-header
-      h1: = page.title
-
-  .wrapper
-    .container.meta
-      .post-time= page.date.format(config.date_format)
-      if (page.categories && page.categories.length)
-        .post-categories
-          != list_categories(page.categories, {show_count: false, class: 'post-category', style: 'none', separator: '>'})
-      if (page.tags && page.tags.length)
-        .post-tags
-          != list_tags(page.tags, {show_count: false, class: 'post-tag', style:'none', separator:'/'})
-
-
-  article
-    .container.post
-      != page.content
-
-    // comment system
-    .container
-      hr
-      include _partial/comments
-
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>用 Graylog 取代 Splunk 紀錄 (上) | 隨意記事</title><link rel="stylesheet" type="text/css" href="/blog//css/normalize.css"><link rel="stylesheet" type="text/css" href="/blog//css/highlight.css"><link rel="stylesheet" type="text/css" href="/blog//css/very-simple.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/blog/favicon.ico"><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script>(adsbygoogle = window.adsbygoogle || []).push({
+ google_ad_client: "ca-pub-0187888667607442",
+ enable_page_level_ads: true
+ });
+</script></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>用 Graylog 取代 Splunk 紀錄 (上)</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2018-05-31</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/MIS/">MIS</a>/<a class="post-tag-link" href="/blog/tags/Networks/">Networks</a></div></div></div><article><div class="container post"><h2 id="需求說明"><a href="#需求說明" class="headerlink" title="需求說明"></a>需求說明</h2><p>原來負責系統的 Log 架構是這樣的<br>&lt;img src=<a href="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/graylog_1.png" target="_blank" rel="noopener">https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/graylog_1.png</a> /&gt;</p>
+<p>因為 Splunk License 的關係，有時候會因為收的量太多而罷工了。</p>
+<p>這次就是想要利用 <a href="https://www.graylog.org/" target="_blank" rel="noopener">Graylog</a> 來取代原有的 Splunk，以避免有 Log 沒分析到的問題。</p>
+<h2 id="試用經過"><a href="#試用經過" class="headerlink" title="試用經過"></a>試用經過</h2><h1 id="請注意以下因為一些因素，只換-Splunk-的方式非真正最佳解法，僅提供有類似架構的朋友參考"><a href="#請注意以下因為一些因素，只換-Splunk-的方式非真正最佳解法，僅提供有類似架構的朋友參考" class="headerlink" title="(請注意以下因為一些因素，只換 Splunk 的方式非真正最佳解法，僅提供有類似架構的朋友參考)"></a>(請注意以下因為一些因素，只換 Splunk 的方式非真正最佳解法，僅提供有類似架構的朋友參考)</h1><p>因為一開始對 Graylog 不熟，所以當然要有一些測試。從官網上的 <a href="http://docs.graylog.org/en/latest/pages/installation/virtual_machine_appliances.html" target="_blank" rel="noopener">OVA</a> 開始，發現可以有 Log 進來，玩了一下界面，還蠻不錯的。</p>
+<p>不過有一個麻煩的事情(這個在之前系統有購買 Arcsight 的 Solution 也有碰到過)，就是資料是亂碼的問題。</p>
+<p>原因出在從 <a href="https://www.kiwisyslog.com/kiwi-syslog-server" target="_blank" rel="noopener">KIWI Syslog Server</a> 拋出來的 Syslog 是 Windows 編碼，到 Linux 上就會變亂碼了。</p>
+<p>找了一些<a href="https://community.graylog.org/t/syslog-encoding-problem/2253" target="_blank" rel="noopener">方法</a>，沒找到可以從 Graylog 直接 Conversion 的方法，只能前面加個 <a href="https://www.elastic.co/products/logstash" target="_blank" rel="noopener">logstash</a> 轉了。</p>
+<p>原來想裝在官網的 OVA 裡，不過官網的 OVA 一來是 Ubuntu 14.04，系統裡的 Ubuntu 16.04 外，裝好起來效能竟然差到沒法 Parsing 資料，於是就想辦法自己裝了。</p>
+<p>官網的<a href="http://docs.graylog.org/en/2.4/pages/installation/os/ubuntu.html" target="_blank" rel="noopener">手動安裝方法</a>寫得很詳細，照做就很容易完成了。</p>
+<h2 id="最後架構"><a href="#最後架構" class="headerlink" title="最後架構"></a>最後架構</h2><p>&lt;img src=<a href="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/graylog_2.png" target="_blank" rel="noopener">https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/graylog_2.png</a> /&gt;</p>
+<p>因為只有 Windows 傳過來的會亂碼，所以在 Graylog 前面多放一個 logstash 轉檔以後再丟到 Graylog 即可，網路設備的不會這樣，就直接送進 Graylog。</p>
+<h3 id="Graylog-Server"><a href="#Graylog-Server" class="headerlink" title="Graylog Server"></a>Graylog Server</h3><h4 id="Ubuntu-16-04"><a href="#Ubuntu-16-04" class="headerlink" title="Ubuntu 16.04"></a>Ubuntu 16.04</h4><figure class="highlight console"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> sudo apt-get update &amp;&amp; sudo apt-get upgrade</span><br><span class="line"><span class="meta">$</span> sudo apt-get install apt-transport-https openjdk-8-jre-headless uuid-runtime pwgen</span><br></pre></td></tr></table></figure>
+<p>測試一下 Java<br><figure class="highlight console"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sujunmin@graylog:~$ java -version</span><br><span class="line">java version "1.8.0_171"</span><br><span class="line">Java(TM) SE Runtime Environment (build 1.8.0_144-b01)</span><br><span class="line">Java HotSpot(TM) 64-Bit Server VM (build 25.144-b01, mixed mode)</span><br></pre></td></tr></table></figure></p>
+<h4 id="MongoDB"><a href="#MongoDB" class="headerlink" title="MongoDB"></a>MongoDB</h4><p>安裝最新版 MongoDB</p>
+<figure class="highlight console"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5</span><br><span class="line"><span class="meta">$</span> echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.6 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.6.list</span><br><span class="line"><span class="meta">$</span> sudo apt-get update</span><br><span class="line"><span class="meta">$</span> sudo apt-get install -y mongodb-org</span><br><span class="line"><span class="meta">$</span> sudo systemctl enable mongod.service</span><br><span class="line"><span class="meta">$</span> sudo systemctl restart mongod.service</span><br></pre></td></tr></table></figure>
+<h4 id="Elasticsearch"><a href="#Elasticsearch" class="headerlink" title="Elasticsearch"></a>Elasticsearch</h4><p>Elasticsearch 要用 5.x 版的 (是說我已經有這個了，然後前面又有 logstash，差一個 Kanban 就變成 <a href="https://www.elastic.co/webinars/introduction-elk-stack" target="_blank" rel="noopener">ELK</a> 了，還要用 Graylog 嗎 XD)</p>
+<figure class="highlight console"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -</span><br><span class="line"><span class="meta">$</span> echo "deb https://artifacts.elastic.co/packages/5.x/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-5.x.list</span><br><span class="line"><span class="meta">$</span> sudo apt-get update &amp;&amp; sudo apt-get install elasticsearch</span><br></pre></td></tr></table></figure>
+<p>安裝完以後記得設定檔 <code>/etc/elasticsearch/elasticsearch.yml</code> 裡頭的 <code>cluster.name</code> 要設為 <code>graylog</code>。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cluster.name: graylog</span><br></pre></td></tr></table></figure>
+<p>然後設定服務</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo systemctl enable elasticsearch.service</span><br><span class="line">$ sudo systemctl restart elasticsearch.service</span><br></pre></td></tr></table></figure>
+<p>測試一下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">sujunmin@graylog:~$ curl -XGET &apos;localhost:9200/?pretty&apos;</span><br><span class="line">&#123;</span><br><span class="line">  &quot;name&quot; : &quot;-kYzFA9&quot;,</span><br><span class="line">  &quot;cluster_name&quot; : &quot;graylog&quot;,</span><br><span class="line">  &quot;cluster_uuid&quot; : &quot;T3JQKehzSqmLThlVkEKPKg&quot;,</span><br><span class="line">  &quot;version&quot; : &#123;</span><br><span class="line">    &quot;number&quot; : &quot;5.5.1&quot;,</span><br><span class="line">    &quot;build_hash&quot; : &quot;19c13d0&quot;,</span><br><span class="line">    &quot;build_date&quot; : &quot;2018-05-18T20:44:24.823Z&quot;,</span><br><span class="line">    &quot;build_snapshot&quot; : false,</span><br><span class="line">    &quot;lucene_version&quot; : &quot;6.6.0&quot;</span><br><span class="line">  &#125;,</span><br><span class="line">  &quot;tagline&quot; : &quot;You Know, for Search&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="Nginx"><a href="#Nginx" class="headerlink" title="Nginx"></a>Nginx</h4><p>作為前端 Reverse Proxy 到 Graylog Web 的媒介</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt -y install nginx</span><br></pre></td></tr></table></figure>
+<p>修改設定檔</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo vi /etc/nginx/sites-available/default</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">server</span><br><span class="line">&#123;</span><br><span class="line">    listen 80 default_server;</span><br><span class="line">    listen [::]:80 default_server ipv6only=on;</span><br><span class="line">    server_name &lt;實際 IP&gt;;</span><br><span class="line"></span><br><span class="line">    location / &#123;</span><br><span class="line">      proxy_set_header Host $http_host;</span><br><span class="line">      proxy_set_header X-Forwarded-Host $host;</span><br><span class="line">      proxy_set_header X-Forwarded-Server $host;</span><br><span class="line">      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">      proxy_set_header X-Graylog-Server-URL http://$server_name/api;</span><br><span class="line">      proxy_pass       http://127.0.0.1:9000;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>設定服務與啟動</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo systemctl enable graylog-server.service</span><br><span class="line">$ sudo systemctl start graylog-server.service</span><br></pre></td></tr></table></figure>
+<h4 id="Graylog"><a href="#Graylog" class="headerlink" title="Graylog"></a>Graylog</h4><p>安裝最新版 Graylog</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ wget https://packages.graylog2.org/repo/packages/graylog-2.4-repository_latest.deb</span><br><span class="line">$ sudo dpkg -i graylog-2.4-repository_latest.deb</span><br><span class="line">$ sudo apt-get update &amp;&amp; sudo apt-get install graylog-server</span><br></pre></td></tr></table></figure>
+<p>以下的設定是一定要設的</p>
+<ol>
+<li><code>root_username</code>，預設是 <code>admin</code>，可以改喜歡的</li>
+<li><p><code>root_password_sha2</code>，root 的密碼，用以下方式產生</p>
+<p> <code>echo -n yourpassword | sha256sum</code></p>
+</li>
+<li><p><code>password_secret</code>，其他用戶的密碼從這個資料加料產生，用以下方式產生</p>
+<p> <code>pwgen -N 1 -s 96</code></p>
+</li>
+<li><p><code>rest_listen_uri</code>，預設是 <code>0.0.0.0:9000</code>，因為不管是 Web 還是其他應用程式，跟 Graylog 溝通都是透過 <a href="http://docs.graylog.org/en/2.4/pages/configuration/rest_api.html" target="_blank" rel="noopener">Graylog RESTFul API</a>，這個就是溝通的橋樑</p>
+</li>
+<li><p><code>rest_transport_uri</code>，這個通常跟上面的一樣，不一樣的部份是如果你想要 expose 這個服務到其他不同段的 IP，這邊就要特別設定再外面看到的 IP，前面 Nginx 的 <code>server_name</code> 會跟這個一樣</p>
+</li>
+<li><p><code>root_timezone</code> 設定時區</p>
+</li>
+<li><code>web_enable</code> 是 <code>true</code></li>
+<li><code>web_listen_uri</code> 跟 <code>rest_listen_uri</code> 一樣</li>
+</ol>
+<p>設定服務與啟動<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo systemctl enable graylog-server.service</span><br><span class="line">$ sudo systemctl start graylog-server.service</span><br></pre></td></tr></table></figure></p>
+<p>登入看看，記得把原來的預設收 514 的 syslog input 的 Port 改成 12345。</p>
+<h3 id="logstash"><a href="#logstash" class="headerlink" title="logstash"></a>logstash</h3><p>安裝 logstash</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install logstash</span><br></pre></td></tr></table></figure>
+<p>安裝 <code>logstash-output-syslog</code> (轉換過的 syslog 吐給 Graylog)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo /usr/share/logstash/bin/logstash-plugin install logstash-output-syslog</span><br></pre></td></tr></table></figure>
+<p>設定 pipeline.conf<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo vi /etc/logstash/conf.d/pipeline.conf</span><br></pre></td></tr></table></figure></p>
+<p>Input 從 514 的 syslog 編碼為 CP950 (Windows) 轉到 12345，編碼是 UTF-8<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">input &#123;</span><br><span class="line">    syslog &#123;</span><br><span class="line">      port =&gt; 514</span><br><span class="line">      codec =&gt; plain &#123;</span><br><span class="line">        charset =&gt; &quot;CP950&quot;</span><br><span class="line">      &#125;  </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">output &#123;</span><br><span class="line">    syslog &#123;</span><br><span class="line">        host =&gt; &quot;127.0.0.1&quot;</span><br><span class="line">        port =&gt; 12345</span><br><span class="line">        codec =&gt; plain &#123;</span><br><span class="line">          charset =&gt; &quot;UTF-8&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Input 設在 514 用預設的 logstash 使用者沒法聽，所以要改啟動參數</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo vi /etc/logstash/startup.options</span><br></pre></td></tr></table></figure>
+<p>找到 <code>LS_USER</code> 與 <code>LS_GROUP</code> 都設成 <code>root</code></p>
+<p>重新安裝設定檔</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo /usr/share/logstash/bin/system-install</span><br></pre></td></tr></table></figure>
+<p>設定服務與啟動<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl enable logstash.service</span><br><span class="line">sudo systemctl start logstash.service</span><br></pre></td></tr></table></figure></p>
+<h2 id="下一步"><a href="#下一步" class="headerlink" title="下一步"></a>下一步</h2><p>安裝測試完成以後，就是原來 Splunk 的報表能夠轉移。</p>
+<p>剛剛有說到所有跟 Graylog 溝通都是透過 Graylog RESTFul API 來做處理，下一篇文章就是要來說明如何透過 Graylog RESTFul API 來做簡單的報表。</p>
+</div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'sujunmin';
+var disqus_identifier = '2018/05/31/用 Graylog 取代 Splunk 紀錄 (上)/';
+var disqus_title = '用 Graylog 取代 Splunk 紀錄 (上)';
+var disqus_url = 'https://sujunmin.github.io/blog/2018/05/31/用 Graylog 取代 Splunk 紀錄 (上)/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><footer id="footer"><div class="container"><div class="bar"><div class="social"><a href="http://twitter.com/sujunmin_" target="_blank"><i class="fa fa-twitter"></i></a><a href="https://github.com/sujunmin" target="_blank"><i class="fa fa-github"></i></a><a href="https://plus.google.com/+JunMingSu" target="_blank"><i class="fa fa-google-plus"></i></a><a href="/atom.xml" target="_blank"><i class="fa fa-rss"></i></a></div><div class="footer">© 2018 <a href="/" rel="nofollow">隨意記事</a>. Powered by <a rel="nofollow" target="_blank" href="https://hexo.io">Hexo</a>. Theme <a target="_blank" href="https://github.com/lotabout/very-simple">very-simple</a>.</div></div></div></footer><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+    $(".fancybox").fancybox();
+});</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-78894509-1');ga('send','pageview');</script></body></html>

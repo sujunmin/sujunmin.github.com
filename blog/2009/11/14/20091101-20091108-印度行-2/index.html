@@ -1,40 +1,64 @@
-extends base
-
-block title
-  title= page.title + " | " + config.title
-
-block main
-
-  // gallery that comes before the header
-  if page.photos
-     if page.photos.length
-      .article-gallery
-        .article-gallery-photos.container
-          for photo in page.photos
-            a.article-gallery-img.fancybox(href=url_for(photo), rel="gallery_" + page._id)
-              img(src=url_for(photo), itemprop="image")
-
-  .wrapper
-    .container.post-header
-      h1: = page.title
-
-  .wrapper
-    .container.meta
-      .post-time= page.date.format(config.date_format)
-      if (page.categories && page.categories.length)
-        .post-categories
-          != list_categories(page.categories, {show_count: false, class: 'post-category', style: 'none', separator: '>'})
-      if (page.tags && page.tags.length)
-        .post-tags
-          != list_tags(page.tags, {show_count: false, class: 'post-tag', style:'none', separator:'/'})
-
-
-  article
-    .container.post
-      != page.content
-
-    // comment system
-    .container
-      hr
-      include _partial/comments
-
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>20091101-20091108 印度行 (2) | 隨意記事</title><link rel="stylesheet" type="text/css" href="/blog//css/normalize.css"><link rel="stylesheet" type="text/css" href="/blog//css/highlight.css"><link rel="stylesheet" type="text/css" href="/blog//css/very-simple.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/blog/favicon.ico"><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script>(adsbygoogle = window.adsbygoogle || []).push({
+ google_ad_client: "ca-pub-0187888667607442",
+ enable_page_level_ads: true
+ });
+</script></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>20091101-20091108 印度行 (2)</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2009-11-14</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/Travel/">Travel</a></div></div></div><article><div class="container post"><p>這篇是寫11/2發生的事情，今天除了第一次去會場以外，還看了很多地方，第一次的印度景色之旅開始了。</p>
+<p><iframe scrolling="no" marginwidth="0" width="425" frameborder="0" src="http://maps.google.com.tw/maps/ms?hl=zh-TW&amp;brcurrent=3,0x0:0x0,1&amp;ie=UTF8&amp;msa=0&amp;msid=110315272316057324713.000478556c6edeb07bc11&amp;ll=28.612555,77.219296&amp;spn=0.052744,0.072956&amp;z=13&amp;output=embed" marginheight="0" height="350"></iframe><br><small>在較大的地圖上查看<a href="http://maps.google.com.tw/maps/ms?hl=zh-TW&amp;brcurrent=3,0x0:0x0,1&amp;ie=UTF8&amp;msa=0&amp;msid=110315272316057324713.000478556c6edeb07bc11&amp;ll=28.612555,77.219296&amp;spn=0.052744,0.072956&amp;z=13&amp;source=embed" target="_blank" rel="noopener">20091102</a></small></p>
+<p>昨天晚上(11/1)調了鬧鐘，其實今天(11/2)應該是不用去的(委員會會議)，不過召集人昨晚吃飯的時候叫我們今天都要到，8點半在lobby集合。因此怕會遲到，調了鬧鐘6:30起來。可能是第一天在這邊睡覺吧，其實不太需要鬧鐘，自然就醒了。外面的景色每天都一樣，晴朗無雲，但是空氣都是霧霧的，火車站有些嗚嗚聲。穿上衣服，打個領帶，漱個口，就去吃早餐了。</p>
+<p>這邊早上都有早餐(每個房間111.11 Rs，其實還算便宜)，有西式的，當然最多就是印度式的。接續的每一天都是吃一樣的早餐，愛嚐鮮的我今天就吃完所有的菜了。後來就真的越吃越少，越來越不想吃了。</p>
+<p><a href="http://photo.xuite.net/_r9009/retsamsu/3625452/1.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e23281/3625452/137775509_m.jpg" alt=""></a></p>
+<p>在裡面吃飯的人還真的很多，什麼人都有，也開始看到很多東亞的人(日本，韓國，泰國之類的)，可能也跟我們一樣要開會吧。吃飯的地方有裡面跟外面，實在很繁忙，服務生也很辛苦，要坐下來吃的時候時常東缺一個西缺一個吃飯的東西，還是自助比較快些。不過整體來說，還是因為在高級飯店啦，實在是不賴。</p>
+<p><a href="http://photo.xuite.net/_r9009/retsamsu/3625452/2.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e23200/3625452/137775636_m.jpg" alt=""></a><br><a href="http://photo.xuite.net/_r9009/retsamsu/3625452/4.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e23267/3625452/137775739_m.jpg" alt=""></a></p>
+<p>最後一天要回台北的時候有去外面露天的位子吃飯，因為想說要走了，要不然其實在滿天空氣污染的地方吃飯，不是太愜意。吃完飯還有一些時間，就上去樓上休息一下。房間門上有份報紙。他們定的是叫做<a href="http://www.hindustantimes.com/Homepage/Homepage.aspx" target="_blank" rel="noopener">Hindustan Times</a>，接下來的每一天都有報紙，我都在看有沒有我們開會的消息，結果是沒有。裡面的內容有很多，英文為主，很多板球的新聞(這個我看了很多天了規則還是看不懂)，也有影劇消息，尋人的，找工作的，還有廣告。看了一下電視，台數不是很多(很多我也看不是很懂)，除了國際財經台，新聞台以外，就是戲劇台跟卡通台，幾乎全部都是用hindi語播出，字幕也是，所以完全看不懂。不過愛來愛去的劇情我想全世界都演的一樣的吧，俊男美女愛來愛去。卡通的話有些台灣有撥過了，大概知道要幹嘛。</p>
+<p>印度的女生其實還蠻漂亮的，應該說是輪廓非常的深，很有立體感，不過老是要穿鼻環我就會一直想到牛，真是糟糕。快到8點半了，就趕快下去坐車。因為這個是大會與飯店結合的會議，因此每天固定時間都會有車接送我們來回會場與飯店。</p>
+<p><a href="http://photo.xuite.net/_r9009/retsamsu/3625452/5.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e2327a/3625452/137775758_m.jpg" alt=""></a></p>
+<p>坐上車子，一段時間以後就往會場出發，路上看到很多很多的上班族，好像不怕車子撞似的，一直往車子靠。這段路程一直碰到圓環(看上面的地圖就知道)，為什麼這邊圓環那麼多呢?繞呀繞了，終於到會場，<a href="http://www.indiahabitat.org/main.htm" target="_blank" rel="noopener">India Habitat Centre</a>。一進去就看到很多的研討會廣告，很多會議都在這邊辦，這邊算是會議中心與辦公中心，很多公司行號也在這。</p>
+<p><a href="http://photo.xuite.net/_r9009/retsamsu/3625452/7.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e2328d/3625452/137775777_m.jpg" alt=""></a></p>
+<p>進去以後就直接去會場開會了。看到很多國家的人，挺新鮮的。我有帶電腦，想說來上個網(無線網路)，打發打發時間，結果這邊的網路是要錢的，收費比我們這邊的高級網咖還要貴，而且也像我們這邊一樣，用的時間少比較貴，因此後來我買一個5小時時數(24小時內要用完)，要505Rs(後來是算500Rs，因為會場沒人可以找零的)。開個這樣的國際會議，沒有這些設備還要自己掏錢出來用還真的很妙，回想起我們公司幫業主辦的教育訓練或是研討會，來了有吃又有拿，網路又是免費的，覺得我們辦應該更好吧(笑)。</p>
+<p><a href="http://photo.xuite.net/_r9009/retsamsu/3423409/43.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e23268/3423409/138125239_m.jpg" alt=""></a></p>
+<p>Coffee Break時間到了，吃了一些點心，這些點心每天還是重複上演，一些西點與素食三明治。也補上註冊受理小姐的照片。中午吃的東西，不外乎就是菜(沙拉)，一堆不同顏色的咖哩(紅的，白的)，跟雞肉，羊肉，還有印度烤餅，甜點實在有夠甜，香草冰淇淋不錯吃，不過當天吃起來很特別，因為沒吃過，後來就真的很膩了。下午的議程聽說跟我比較沒關係，因此就可以自行活動了，跟另外兩個團員一起出去冒險。不過呢，之前說過，他們那邊的司機都會帶你去買東西，這個也不例外，雖我們另兩個團員跟他舌戰，但是還是沒辦法，除了說我們為什麼聽不懂之外，就直接開車到賣場，熄火，把車丟在那邊，就是硬要我們進去看，實在是很盧的不可理喻。&nbsp;</p>
+<p><a href="http://photo.xuite.net/_r9009/retsamsu/3625452/18.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e23258/3625452/137776236_m.jpg" alt=""></a><br><a href="http://photo.xuite.net/_r9009/retsamsu/3625452/29.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e23242/3625452/137776470_m.jpg" alt=""></a></p>
+<p>&nbsp;我們第一個探險的目標原來是要去<a href="http://en.wikipedia.org/wiki/Qutb_Minar" target="_blank" rel="noopener">QutB Minar</a>，不過因為我們還要先回去會場跟大家一起回飯店，可能太遠了，後來我們就去<a href="http://en.wikipedia.org/wiki/Safdarjung%27s_Tomb" target="_blank" rel="noopener">Safdarjung’s Tomb</a>。到了那邊司機在那邊等我們，跟我們說有人要當你的嚮導，不要給他錢之類云云，就要去買票了。這邊買票(其他地方也一樣)，印度本國人跟外國人的差價實在是十分大(這邊是印度人5Rs，非印度人之外國人要100Rs)，都以為外國人很有錢的樣子吧。這邊是說很像泰姬嗎哈陵的建築風格，不過勒，我覺得進去感覺像是沒有在整理的公園，實在也沒什麼人，很荒涼。也放一張很盧的司機背影。</p>
+<p><a href="http://photo.xuite.net/_r9009/retsamsu/3625452/34.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e23258/3625452/137776492_m.jpg" alt=""></a><a href="http://photo.xuite.net/_r9009/retsamsu/3625452/35.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e2325e/3625452/137776498_m.jpg" alt=""></a><a href="http://photo.xuite.net/_r9009/retsamsu/3625452/36.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e2328c/3625452/137776544_m.jpg" alt=""></a></p>
+<p>陵墓裡面是用大理石作的，很涼爽，然後有位”好心”的警衛幫我們做很難懂得講解，也幫我們拍了一些不錯的照片，結果給他兩塊美金。</p>
+<p><a href="http://photo.xuite.net/_r9009/retsamsu/3625452/57.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e232b4/3625452/137777096_m.jpg" alt=""></a></p>
+<p>看完這邊，往下一站<a href="http://en.wikipedia.org/wiki/India_Gate" target="_blank" rel="noopener">India Gate</a>，為了紀念二戰印度死去的將士們。停了車司機也告誡我們不要亂買東西，亂給人錢(他不是也要我們去亂買東西嘛?)，走進去看看雄偉的門。人真的很多，人山人海，殊不知今天可是星期一上班日。我在這邊買了要寄回家的明信片(100Rs4本，一本大概10張，有兩本後來賣給其他團員了)，但是可能是太害羞還是如何，不是很敢殺價，也殺的不多。這邊就看到小孩子跟你要錢了，實在很可憐。另一個塔型的紀念不知道是為什麼紀念的。</p>
+<p><a href="http://photo.xuite.net/_r9009/retsamsu/3625452/61.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e23283/3625452/137777303_m.jpg" alt=""></a><a href="http://photo.xuite.net/_r9009/retsamsu/3625452/69.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e23212/3625452/137777702_m.jpg" alt=""></a></p>
+<p>這邊還有鎮暴車跟警察，實在是不知道該說什麼。印度女生的服裝都非常的鮮豔，我們看起來有些俗氣，不過當地真的很多人都穿這樣。團員中有個女生，當時穿的比較短，比較涼快。不管是大的小的男的女的，都一直注意著我們。後來問問司機，他說這樣穿在印度不是沒有，這是一種流行(Fashion)，而要追求流行就要有錢(Rich)，大概是我們很有錢的意思吧。離開這邊以後，被凹要去Shopping Center，沒辦法以後進去虛晃一遭，趕快回到會場中。&nbsp;</p>
+<p><a href="http://photo.xuite.net/_r9009/retsamsu/3625452/64.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e23219/3625452/137777453_m.jpg" alt=""></a><a href="http://photo.xuite.net/_r9009/retsamsu/3625452/71.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e23225/3625452/137777721_m.jpg" alt=""></a></p>
+<p>結果回去以後，會議還在進行。等了一下以後今天的委員會結束，大會先招待我們做個City Bus Tour，繞的點跟我們今天去的一樣。還以為在有生之年能去印度一個景點兩次的(笑)。晚上有個晚宴，是8:30才開飯，大家都快餓死了，猛喀會場有提供的小點心(炸雞，春捲，啤酒之類的)，大家雖然肚子餓，但是還是一起聊天，越來越熟悉了，還問服務生來個hindi教學，十分有趣。</p>
+<p>終於可以回去已是10點多了，還記得前一篇提及的，我們團員裡還有一位是今天生日，不過太晚了，等明天再吃。另外上一篇說的笑話，這邊就發生了。我跟同寢的團員對於沒有牙膏牙刷感到麻煩，每一次自己帶了飯店都有，這次沒帶飯店就沒有了，因此在先前吃飯的時候大家給了我們很多意見，叫司機幫忙買啦，叫服務生啦，自己看看旁邊有沒有超市之類的啦等等。後來回去，就找個一個女服務員來問。我們問說，這邊哪邊有在賣牙膏跟牙刷呢?她歪歪頭，說道為何要買，我們就說因為房間裡沒有，她就說不好意思，要幫我們叫客房服務，還以為我們覺得哪邊服務不好，要買外面的東西(笑)，害的我們不知道說什麼，就一直笑。</p>
+<p>今天就這樣結束了，寄了一堆明信片回去(一張15Rs的郵票，交給飯店人員會幫你寄)，打電話報平安，接下來的兩天，是我去參加的會議重頭戲，也比較沒有出去亂晃(沒時間)，印度人覺得同意的時候，是搖頭(或是傾一邊)覺得同意，這個明天會議也有因這個問題的爆笑之處，就到那篇再說吧。</p>
+<p><a href="http://photo.xuite.net/retsamsu/3625452" target="_blank" rel="noopener">那天拍的照片。</a></p>
+<hr>
+<ul>
+<li>留言者: 也是第一次出國就去印度的人</li>
+<li>Email:<em>   網址:</em>   日期: 2009-11-20 21:43:14</li>
+</ul>
+<p>嗯~果真出差就不一樣，2美金的小費，那個人應該很高興吧!</p>
+<hr>
+<ul>
+<li>留言者: 哈哈哈</li>
+<li>Email:<em>   網址:</em>   日期: 2009-11-20 21:53:26</li>
+</ul>
+<p>呵呵~這樣會太多嘛?因為我想我們有三個人，然後…第一次出國嘛:D</p>
+</div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'sujunmin';
+var disqus_identifier = '2009/11/14/20091101-20091108-印度行-2/';
+var disqus_title = '20091101-20091108 印度行 (2)';
+var disqus_url = 'https://sujunmin.github.io/blog/2009/11/14/20091101-20091108-印度行-2/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><footer id="footer"><div class="container"><div class="bar"><div class="social"><a href="http://twitter.com/sujunmin_" target="_blank"><i class="fa fa-twitter"></i></a><a href="https://github.com/sujunmin" target="_blank"><i class="fa fa-github"></i></a><a href="https://plus.google.com/+JunMingSu" target="_blank"><i class="fa fa-google-plus"></i></a><a href="/atom.xml" target="_blank"><i class="fa fa-rss"></i></a></div><div class="footer">© 2018 <a href="/" rel="nofollow">隨意記事</a>. Powered by <a rel="nofollow" target="_blank" href="https://hexo.io">Hexo</a>. Theme <a target="_blank" href="https://github.com/lotabout/very-simple">very-simple</a>.</div></div></div></footer><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+    $(".fancybox").fancybox();
+});</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-78894509-1');ga('send','pageview');</script></body></html>

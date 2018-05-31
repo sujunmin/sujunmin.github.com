@@ -1,40 +1,83 @@
-extends base
-
-block title
-  title= page.title + " | " + config.title
-
-block main
-
-  // gallery that comes before the header
-  if page.photos
-     if page.photos.length
-      .article-gallery
-        .article-gallery-photos.container
-          for photo in page.photos
-            a.article-gallery-img.fancybox(href=url_for(photo), rel="gallery_" + page._id)
-              img(src=url_for(photo), itemprop="image")
-
-  .wrapper
-    .container.post-header
-      h1: = page.title
-
-  .wrapper
-    .container.meta
-      .post-time= page.date.format(config.date_format)
-      if (page.categories && page.categories.length)
-        .post-categories
-          != list_categories(page.categories, {show_count: false, class: 'post-category', style: 'none', separator: '>'})
-      if (page.tags && page.tags.length)
-        .post-tags
-          != list_tags(page.tags, {show_count: false, class: 'post-tag', style:'none', separator:'/'})
-
-
-  article
-    .container.post
-      != page.content
-
-    // comment system
-    .container
-      hr
-      include _partial/comments
-
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>從 SQL Server 到 MariaDB - [1] 備份與還原 | 隨意記事</title><link rel="stylesheet" type="text/css" href="/blog//css/normalize.css"><link rel="stylesheet" type="text/css" href="/blog//css/highlight.css"><link rel="stylesheet" type="text/css" href="/blog//css/very-simple.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/blog/favicon.ico"><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script>(adsbygoogle = window.adsbygoogle || []).push({
+ google_ad_client: "ca-pub-0187888667607442",
+ enable_page_level_ads: true
+ });
+</script></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>從 SQL Server 到 MariaDB - [1] 備份與還原</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2016-08-08</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/MSSQL/">MSSQL</a>/<a class="post-tag-link" href="/blog/tags/MariaDB/">MariaDB</a></div></div></div><article><div class="container post"><h2 id="需求說明"><a href="#需求說明" class="headerlink" title="需求說明"></a>需求說明</h2><p>從 SQL Server 要轉到 MariaDB 第一件碰到管理上的轉變，就是備份與還原。</p>
+<p>在 SQL Server 管理備份這回事，有幾個方式達成最少資料遺失的方式：</p>
+<ol>
+<li>Full Backups 完整備份</li>
+<li>Differencial Backups 差異備份</li>
+<li>Transation Data Backups 交易紀錄備份</li>
+</ol>
+<p>基本上這三個配合運用可達到幾乎 0 資料遺失的結果，這個在網路上應該有一大堆的說明，沒什麼太大的問題。</p>
+<p>但是到了 MariaDB 這邊該如何處理呢?</p>
+<p>在 MariaDB 這邊提供與 MySQL 一樣的<a href="https://mariadb.com/kb/en/mariadb/backup-and-restore-overview/" target="_blank" rel="noopener">方式</a>，mysqldump，當然還有其他的方式，但是最熟悉的仍然是簡單的 mysqldump。</p>
+<p>然後…就這樣。</p>
+<p>就這樣?</p>
+<p>是的，基本上 MariaDB 的備份還原只有 mysqldump 那樣的 Full Backups，沒有差異備份那些方式。</p>
+<p>那要怎麼完成最少資料遺失呢? 總不能一直 Full Backup 吧?</p>
+<h2 id="Binary-Log"><a href="#Binary-Log" class="headerlink" title="Binary Log"></a>Binary Log</h2><p>MariaDB 提供一種與 MySQL 一樣的方式，稱之為 <a href="https://mariadb.com/kb/en/mariadb/binary-log/" target="_blank" rel="noopener">Binary Log</a> (binlog)。</p>
+<p>這個 binlog 是<a href="https://mariadb.com/kb/en/mariadb/overview-of-the-binary-log/" target="_blank" rel="noopener">什麼</a>呢?</p>
+<p>簡單來說，就是紀錄著資料庫變動的紀錄，以 binary 方式儲存，有點像 Oracle DB 的 redo log，當有需要叫回備份時，首先要還原最近一次的 Full Backup，然後接著依序<a href="http://dev.mysql.com/doc/refman/5.7/en/point-in-time-recovery.html" target="_blank" rel="noopener">恢復</a>該時間之後的 binlogs，這樣就能達到幾乎 0 資料遺失的還原。</p>
+<p>&lt;img src=<a href="https://sujunmin.github.io/test/mariadb_backup_and_restore.png">https://sujunmin.github.io/test/mariadb_backup_and_restore.png</a> /&gt;</p>
+<p>如果是上圖的樣子，要還原的時候就是：</p>
+<ol>
+<li>Full Backup</li>
+<li>binlog_n (從 time_A 開始)</li>
+<li>binlog_n+1</li>
+<li>binlog_n+2</li>
+<li>binlog_n+3 (到 time_B 結束)</li>
+</ol>
+<p>接下來就是來做個實驗。</p>
+<h2 id="實驗"><a href="#實驗" class="headerlink" title="實驗"></a>實驗</h2><p>a. 首先開啟 binlog 功能，在 my.ini 裡可以設定，重開 mariadb 就可以開始了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">log_bin</span><br></pre></td></tr></table></figure>
+<p>這個是沒加參數的，預設會放在 <code>%mariadb_root%\data\</code>，詳細可以加<a href="https://mariadb.com/kb/en/mariadb/replication-and-binary-log-server-system-variables/#log_bin" target="_blank" rel="noopener">路徑</a>。</p>
+<p>開完裡頭應該會出現 <code>XXX-bin.00001</code> 字樣的檔案， <code>XXX</code> 是 Hostname。</p>
+<p>b. 準備一個 database <code>test1</code>，裡頭一個資料表 <code>test1</code> ，欄位 <code>aaaa</code> 為 <code>int</code> 。</p>
+<p>先做一次 full backup。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">E:\backup&gt;mysqldump -u sujunmin -p test1 &gt; test1.sql</span><br><span class="line">Enter password: ************</span><br><span class="line"></span><br><span class="line">E:\backup&gt;</span><br></pre></td></tr></table></figure>
+<p>c. 新增一筆資料 <code>1234</code>。</p>
+<p>d. <code>trucnate test1.test1;</code></p>
+<p>e. 來看看 binlog 裡頭有什麼東西。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">E:\backup&gt;mysqlbinlog &quot;e:\MariaDB 10.1\data\WSTest-bin.000001&quot; -v &gt; test.sql</span><br><span class="line"></span><br><span class="line">E:\backup&gt;</span><br></pre></td></tr></table></figure></p>
+<p>f. test.sql 內容<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*!50530 SET @@SESSION.PSEUDO_SLAVE_MODE=1*/</span>;</span><br><span class="line"><span class="comment">/*!40019 SET @@session.max_insert_delayed_threads=0*/</span>;</span><br><span class="line"><span class="comment">/*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/</span>;</span><br><span class="line">DELIMITER <span class="comment">/*!*/</span>;</span><br><span class="line"># at 4</span><br><span class="line">#160808 14:25:16 server id 1  end_log_pos 249 	Start: binlog v 4, server v 10.1.14-MariaDB created 160808 14:25:16 at startup</span><br><span class="line"># Warning: this binlog is either in use or was not closed properly.</span><br><span class="line"><span class="keyword">ROLLBACK</span><span class="comment">/*!*/</span>;</span><br><span class="line">BINLOG '</span><br><span class="line">zCWoVw8BAAAA9QAAAPkAAAABAAQAMTAuMS4xNC1NYXJpYURCAGxvZwAAAAAAAAAAAAAAAAAAAAAA</span><br><span class="line">AAAAAAAAAAAAAAAAAADMJahXEzgNAAgAEgAEBAQEEgAA3QAEGggAAAAICAgCAAAACgoKAAAAAAAA</span><br><span class="line">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</span><br><span class="line">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</span><br><span class="line">AAAAAAAAAAAEEwQAAK+oLro=</span><br><span class="line">'<span class="comment">/*!*/</span>;</span><br><span class="line"># at 249</span><br><span class="line">#160808 14:25:16 server id 1  end_log_pos 274 	Gtid list []</span><br><span class="line"># at 274</span><br><span class="line">#160808 14:25:16 server id 1  end_log_pos 314 	Binlog checkpoint WSTest-bin.000001</span><br><span class="line"># at 314</span><br><span class="line">#160808 14:28:32 server id 1  end_log_pos 352 	GTID 0-1-1 trans</span><br><span class="line"><span class="comment">/*!100101 SET @@session.skip_parallel_replication=0*/</span><span class="comment">/*!*/</span>;</span><br><span class="line"><span class="comment">/*!100001 SET @@session.gtid_domain_id=0*/</span><span class="comment">/*!*/</span>;</span><br><span class="line"><span class="comment">/*!100001 SET @@session.server_id=1*/</span><span class="comment">/*!*/</span>;</span><br><span class="line"><span class="comment">/*!100001 SET @@session.gtid_seq_no=1*/</span><span class="comment">/*!*/</span>;</span><br><span class="line"><span class="keyword">BEGIN</span></span><br><span class="line"><span class="comment">/*!*/</span>;</span><br><span class="line"># at 352</span><br><span class="line">#160808 14:28:32 server id 1  end_log_pos 466 	Query	thread_id=3	exec_time=0	error_code=0</span><br><span class="line"><span class="keyword">use</span> <span class="string">`test1`</span><span class="comment">/*!*/</span>;</span><br><span class="line"><span class="keyword">SET</span> <span class="keyword">TIMESTAMP</span>=<span class="number">1470637712</span><span class="comment">/*!*/</span>;</span><br><span class="line"><span class="keyword">SET</span> @@session.pseudo_thread_id=<span class="number">3</span><span class="comment">/*!*/</span>;</span><br><span class="line"><span class="keyword">SET</span> @@session.foreign_key_checks=<span class="number">1</span>, @@session.sql_auto_is_null=<span class="number">0</span>, @@session.unique_checks=<span class="number">1</span>, @@session.autocommit=<span class="number">1</span><span class="comment">/*!*/</span>;</span><br><span class="line"><span class="keyword">SET</span> @@session.sql_mode=<span class="number">1075838976</span><span class="comment">/*!*/</span>;</span><br><span class="line"><span class="keyword">SET</span> @@session.auto_increment_increment=<span class="number">1</span>, @@session.auto_increment_offset=<span class="number">1</span><span class="comment">/*!*/</span>;</span><br><span class="line"><span class="comment">/*!\C utf8mb4 */</span><span class="comment">/*!*/</span>;</span><br><span class="line"><span class="keyword">SET</span> @@session.character_set_client=<span class="number">45</span>,@@session.collation_connection=<span class="number">45</span>,@@session.collation_server=<span class="number">33</span><span class="comment">/*!*/</span>;</span><br><span class="line"><span class="keyword">SET</span> @@session.lc_time_names=<span class="number">0</span><span class="comment">/*!*/</span>;</span><br><span class="line"><span class="keyword">SET</span> @@session.collation_database=<span class="keyword">DEFAULT</span><span class="comment">/*!*/</span>;</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`test1`</span>.<span class="string">`test1`</span> (<span class="string">`aaaa`</span>) <span class="keyword">VALUES</span> (<span class="number">1234</span>)</span><br><span class="line"><span class="comment">/*!*/</span>;</span><br><span class="line"># at 466</span><br><span class="line">#160808 14:28:32 server id 1  end_log_pos 493 	Xid = 55</span><br><span class="line"><span class="keyword">COMMIT</span><span class="comment">/*!*/</span>;</span><br><span class="line"># at 493</span><br><span class="line">#160808 14:31:19 server id 1  end_log_pos 531 	GTID 0-1-2 ddl</span><br><span class="line"><span class="comment">/*!100001 SET @@session.gtid_seq_no=2*/</span><span class="comment">/*!*/</span>;</span><br><span class="line"># at 531</span><br><span class="line">#160808 14:31:19 server id 1  end_log_pos 611 	Query	thread_id=3	exec_time=14	error_code=0</span><br><span class="line"><span class="keyword">SET</span> <span class="keyword">TIMESTAMP</span>=<span class="number">1470637879</span><span class="comment">/*!*/</span>;</span><br><span class="line"><span class="keyword">TRUNCATE</span> <span class="string">`test1`</span></span><br><span class="line"><span class="comment">/*!*/</span>;</span><br><span class="line">DELIMITER ;</span><br><span class="line"># End of log file</span><br><span class="line"><span class="keyword">ROLLBACK</span> <span class="comment">/* added by mysqlbinlog */</span>;</span><br><span class="line"><span class="comment">/*!50003 SET COMPLETION_TYPE=@OLD_COMPLETION_TYPE*/</span>;</span><br><span class="line"><span class="comment">/*!50530 SET @@SESSION.PSEUDO_SLAVE_MODE=0*/</span>;</span><br></pre></td></tr></table></figure></p>
+<p>其中我們可以看到重要的兩筆資料，它們在整個時間序列的狀態為何。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`test1`</span>.<span class="string">`test1`</span> (<span class="string">`aaaa`</span>) <span class="keyword">VALUES</span> (<span class="number">1234</span>)</span><br><span class="line"><span class="comment">/*!*/</span>;</span><br><span class="line"># at 466</span><br><span class="line">#160808 14:28:32 server id 1  end_log_pos 493 	Xid = 55</span><br><span class="line"><span class="keyword">COMMIT</span><span class="comment">/*!*/</span>;</span><br><span class="line"># at 493</span><br><span class="line">#160808 14:31:19 server id 1  end_log_pos 531 	GTID 0-1-2 ddl</span><br><span class="line"><span class="comment">/*!100001 SET @@session.gtid_seq_no=2*/</span><span class="comment">/*!*/</span>;</span><br><span class="line"># at 531</span><br><span class="line">#160808 14:31:19 server id 1  end_log_pos 611 	Query	thread_id=3	exec_time=14	error_code=0</span><br><span class="line"><span class="keyword">SET</span> <span class="keyword">TIMESTAMP</span>=<span class="number">1470637879</span><span class="comment">/*!*/</span>;</span><br><span class="line"><span class="keyword">TRUNCATE</span> <span class="string">`test1`</span></span><br><span class="line"><span class="comment">/*!*/</span>;</span><br></pre></td></tr></table></figure>
+<p>g. 所以如果我們要恢復到 truncate table 之前的話，首先就是 restore full backup。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">E:\backup&gt;mysql -u sujunmin -p test1 &lt; test1.sql</span><br><span class="line">Enter password: ************</span><br><span class="line"></span><br><span class="line">E:\backup</span><br></pre></td></tr></table></figure>
+<p>h. 接著還原 binlog 到 14:31:19 之前(因為接下來就要 truncate table 了)。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">E:\backup&gt;mysqlbinlog &quot;e:\MariaDB 10.1\data\WSTest-bin.000001&quot; --stop-datetime=&quot;2016/08/08 14:31:00&quot; | mysql -u sujunmin -p test1</span><br><span class="line">Enter password: ************</span><br><span class="line"></span><br><span class="line">E:\backup&gt;</span><br></pre></td></tr></table></figure></p>
+<p>i. 看一下 <code>test1.test1</code>，資料應該又回來了。</p>
+<h2 id="運用規劃"><a href="#運用規劃" class="headerlink" title="運用規劃"></a>運用規劃</h2><p>因為這個 binlog 會在系統的狀態改變(重新啟動，記憶體資料寫入 disk…)時產生，加上沒有其他的備份機制(類似像 Oracle DB 的 Archive 模式)，其實當有事情時會不能知道能夠還原到哪。</p>
+<p>所以要透過強制 rotate 與備份資料來幫忙，以下是規劃的方式。</p>
+<ol>
+<li>當定時的時間一到，呼叫 <a href="https://dev.mysql.com/doc/mysql-utilities/1.6/en/mysqlbinlogrotate.html" target="_blank" rel="noopener">mysqlbinlogrotate</a> 切斷 log。</li>
+<li>之前的 log 複製到安全的地方處理。</li>
+<li>每次 Full Backup 完 <a href="https://mariadb.com/kb/en/mariadb/sql-commands-purge-logs/" target="_blank" rel="noopener">PURGE LOG</a>。</li>
+</ol>
+<h2 id="更新"><a href="#更新" class="headerlink" title="更新"></a>更新</h2><h3 id="2016-08-12"><a href="#2016-08-12" class="headerlink" title="2016/08/12"></a>2016/08/12</h3><p>感謝<a href="https://www.facebook.com/sam0737" target="_blank" rel="noopener">Sam Wong</a>提供資訊</p>
+<blockquote>
+<p>sync_binlog = 1 (&lt;5.7.7 默認竟是 0，不是最保守的設定)</p>
+</blockquote>
+<blockquote>
+<p>innodb_flush_log_at_trx_commit = 1 (默認就是 1)</p>
+</blockquote>
+<p>相關資料在<a href="https://mariadb.com/kb/en/mariadb/binlog-group-commit-and-innodb_flush_log_at_trx_commit/" target="_blank" rel="noopener">此</a>。　</p>
+</div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'sujunmin';
+var disqus_identifier = '2016/08/08/從 SQL Server 到 MariaDB - [1] 備份與還原/';
+var disqus_title = '從 SQL Server 到 MariaDB - [1] 備份與還原';
+var disqus_url = 'https://sujunmin.github.io/blog/2016/08/08/從 SQL Server 到 MariaDB - [1] 備份與還原/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><footer id="footer"><div class="container"><div class="bar"><div class="social"><a href="http://twitter.com/sujunmin_" target="_blank"><i class="fa fa-twitter"></i></a><a href="https://github.com/sujunmin" target="_blank"><i class="fa fa-github"></i></a><a href="https://plus.google.com/+JunMingSu" target="_blank"><i class="fa fa-google-plus"></i></a><a href="/atom.xml" target="_blank"><i class="fa fa-rss"></i></a></div><div class="footer">© 2018 <a href="/" rel="nofollow">隨意記事</a>. Powered by <a rel="nofollow" target="_blank" href="https://hexo.io">Hexo</a>. Theme <a target="_blank" href="https://github.com/lotabout/very-simple">very-simple</a>.</div></div></div></footer><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+    $(".fancybox").fancybox();
+});</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-78894509-1');ga('send','pageview');</script></body></html>

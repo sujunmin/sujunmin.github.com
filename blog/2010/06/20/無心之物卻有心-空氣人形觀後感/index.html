@@ -1,40 +1,40 @@
-extends base
-
-block title
-  title= page.title + " | " + config.title
-
-block main
-
-  // gallery that comes before the header
-  if page.photos
-     if page.photos.length
-      .article-gallery
-        .article-gallery-photos.container
-          for photo in page.photos
-            a.article-gallery-img.fancybox(href=url_for(photo), rel="gallery_" + page._id)
-              img(src=url_for(photo), itemprop="image")
-
-  .wrapper
-    .container.post-header
-      h1: = page.title
-
-  .wrapper
-    .container.meta
-      .post-time= page.date.format(config.date_format)
-      if (page.categories && page.categories.length)
-        .post-categories
-          != list_categories(page.categories, {show_count: false, class: 'post-category', style: 'none', separator: '>'})
-      if (page.tags && page.tags.length)
-        .post-tags
-          != list_tags(page.tags, {show_count: false, class: 'post-tag', style:'none', separator:'/'})
-
-
-  article
-    .container.post
-      != page.content
-
-    // comment system
-    .container
-      hr
-      include _partial/comments
-
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>無心之物卻有心 - 空氣人形觀後感 | 隨意記事</title><link rel="stylesheet" type="text/css" href="/blog//css/normalize.css"><link rel="stylesheet" type="text/css" href="/blog//css/highlight.css"><link rel="stylesheet" type="text/css" href="/blog//css/very-simple.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/blog/favicon.ico"><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script>(adsbygoogle = window.adsbygoogle || []).push({
+ google_ad_client: "ca-pub-0187888667607442",
+ enable_page_level_ads: true
+ });
+</script></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>無心之物卻有心 - 空氣人形觀後感</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2010-06-20</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/Movies/">Movies</a></div></div></div><article><div class="container post"><p>今天下午看了這部不錯的作品 - <a href="http://www.imdb.com/title/tt1371630/" target="_blank" rel="noopener">空氣人形</a>，Bonnie還沒看之前，覺得這部應該是宅宅的異想世界吧，我呢看了預告片，覺得應該有些色情…不過看了以後卻完全不是這麼一回事，而且非常的感觸很深，特來寫篇網誌來抒發心得。</p>
+<p>先說在前面，這部片其實邏輯上來說，實在很多很奇怪的地方。如女主角小望(<a href="http://en.wikipedia.org/wiki/Bae_Doona" target="_blank" rel="noopener">斐斗娜</a>飾演，她可是個韓國人耶，演的不錯)主人怎麼都不會發現他常常偷跑出去，或是畫面場景亂跳等，這些是看起來蠻奇怪的地方，不過我覺得是瑕不掩瑜的，畢竟這部片不是重於這個部分。</p>
+<p>如果你常常用的東西，寵愛的物品，甚至像空氣人形(充氣娃娃)這類的東西，忽然有了心，有了自己的意志，會自己行動，在這個沒心的社會，甚至沒心的你/妳，是怎麼樣的存在呢?</p>
+<p><strong><em>因為沒心，大家都是孤獨的。</em></strong></p>
+<p>中年男子秀雄，一個人獨居在老舊公寓，在平淡無奇的生活裡，能傾聽他、陪他說話的就<br>只有他心愛的空氣人形小望，雖然一切都是起因於舊愛的一切(名字，喜歡的東西…等等)，不過秀雄將小望以真人般對待，生活瑣事都和小望一起。</p>
+<p><strong><em>如果大家都有個替代品的話，可以不會那麼孤獨了吧。</em></strong></p>
+<p>這個城市中，除了秀雄以外，還有許多和他一樣被寂寞與孤獨包圍的人。一個女孩可能有一些問題，狂飲暴食，無視於親屬的呼喚，住在一個旁邊是垃圾與寄來的蘋果互相交錯的地方，孤獨頹廢的活者，狂吃是他的替代。一個父親帶著女兒生活，有著不錯的老爸，有很多的親子互動，但那些都是假象，兩個人在一起心卻是離的很遠，爸爸不了解孩子，孩子也冷漠的對待這個世界，良好互動的假象是替代。前社長夫人一直認為自己是新聞報導的兇殺案犯人，一直覺得自己有罪的態度也是替代，讓自己覺得有心。派出所員警每日努力工作，也是一種對人生有好的樣子的替代。坐在長椅上的老爺爺，覺得自己的心裡空空的，是不是也是一種對人生與社會無心的替代呢?一個奇怪的宅男，只為了自己喜歡的事情而去做，專注的不要那麼孤獨，害怕年老的櫃檯服務員，還有可憐的影片出租店的老闆，後來做了十分可惡的事情，也是發洩自己空虛的性慾。最重要的男主角純一(<a href="http://ja.wikipedia.org/wiki/ARATA" target="_blank" rel="noopener">井浦新</a>飾演)，也是因為一些緣故，也跟大家一樣，無心的空空如也。</p>
+<p><em><strong>當大家的替代品有心了，會怎麼看這個世界呢?會怎麼看待那些當他們為替代品的人呢?</strong></em></p>
+<p>某一天下雨的早上，秀雄一如往常的跟冷冰冰的小望道別後，不一樣的是，小望似乎是被注入靈魂一樣，開始動了起來。有了感覺，有了心，這個空氣人形開始他的探索活動，這世界都是那麼的新，那麼的值得探索。這邊我覺得演的不賴是，雖說是剛剛開始會動，女主角會真的像小孩學步一樣，走路十分滑稽，但是到後來就已經不太會這樣了，代表經歷了一些事情。</p>
+<p>直到走到錄影帶出租店，看到店員純一，覺得有一種吸引的氣氛，可能覺得有一樣的地方，於是在那間店打工。後來小望的故事都是在錄影帶出租店，當然還有上面那些人的故事，串成整部電影。</p>
+<p>純一與小望的關係是十分微妙的，像是一對友達以上，戀人未滿的人，一起出去玩當中，產生了更多的情愫(這邊還是很厲害，真的不會學會穿內衣，就整部戲都沒穿了)，直到有一天，小望因為工作的關係，不小心割破自己的皮膚，在消氣的狀態下，讓純一知道自己的真正身分。</p>
+<p><em><strong>我是個空氣人形，是個沒有思想，任人發洩的代替品。</strong></em></p>
+<p>每每在裡面看到這一句，說實在鼻頭都會為之一酸，不為什麼，就是讓有心的東西又在一次感受到這個世界的邪惡與沒救，有一個部分最讓我感慨的，就是錄影帶店老闆用以純一交往為由脅迫，對小望發洩性慾，而小望在完事後，自己拿出自己的假陰道，邊洗邊說上面的話，實在是經典又感慨。一次的一次打擊，除了上面的以外，還有被秀雄堆在儲藏間，因為有新的小望來陪伴了，為什麼大家都有生日，我的生日呢，還有很多悲慘的事情，但是最後他回到製作他的地方，他跟製作者說的話，他不後悔有了心，能夠更了解這個世界，只是真的很痛苦。</p>
+<p><em><strong>雖然有了心那麼痛苦，那麼不討喜，但是美好的事情還是很多，只是…</strong></em></p>
+<p>小望最後讓秀雄因為他的忽然出現嚇到了，當然有自由意志的小望是一個很恐怖的事情啦，不過他的批判也值得玩味，有時候如果會被自己喜歡的東西說成這樣也真的很發人深省。離開了秀雄，跟純一在一起，不以一般的發洩性慾方法來交換愛意，在之前劃破皮膚的時候，純一幫小望充氣的當下，感受到的是比射精更高階的愛：你的身體裡面充滿著我吹的氣，你的愛已充滿了我，我不在是空空如也的空氣人形了。可惜純真的小望以為純一跟她一樣，可以這樣充氣交換愛意，於是純一就在小望劃破她的身體後，悠然的在小望的懷抱下死去。畫面的最後是小望坐在垃圾堆中，變成了個垃圾，還是選擇做回自己那個沒有心的空氣人形。她做了個美夢，她的生日，她的誕生，所有人都為這個替代品慶祝她的誕生，歡迎小望來到這個世界。</p>
+<p>這部電影所有的內容，除了小望有時候很笨拙又很純真的動作實在很有趣以外，就是這些可以給大家思考的事情，在這個寂寞的社會裡，不失寓意良善，是個值得看的作品。</p>
+</div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'sujunmin';
+var disqus_identifier = '2010/06/20/無心之物卻有心-空氣人形觀後感/';
+var disqus_title = '無心之物卻有心 - 空氣人形觀後感';
+var disqus_url = 'https://sujunmin.github.io/blog/2010/06/20/無心之物卻有心-空氣人形觀後感/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><footer id="footer"><div class="container"><div class="bar"><div class="social"><a href="http://twitter.com/sujunmin_" target="_blank"><i class="fa fa-twitter"></i></a><a href="https://github.com/sujunmin" target="_blank"><i class="fa fa-github"></i></a><a href="https://plus.google.com/+JunMingSu" target="_blank"><i class="fa fa-google-plus"></i></a><a href="/atom.xml" target="_blank"><i class="fa fa-rss"></i></a></div><div class="footer">© 2018 <a href="/" rel="nofollow">隨意記事</a>. Powered by <a rel="nofollow" target="_blank" href="https://hexo.io">Hexo</a>. Theme <a target="_blank" href="https://github.com/lotabout/very-simple">very-simple</a>.</div></div></div></footer><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+    $(".fancybox").fancybox();
+});</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-78894509-1');ga('send','pageview');</script></body></html>

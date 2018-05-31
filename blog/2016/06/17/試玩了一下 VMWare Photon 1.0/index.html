@@ -1,40 +1,44 @@
-extends base
-
-block title
-  title= page.title + " | " + config.title
-
-block main
-
-  // gallery that comes before the header
-  if page.photos
-     if page.photos.length
-      .article-gallery
-        .article-gallery-photos.container
-          for photo in page.photos
-            a.article-gallery-img.fancybox(href=url_for(photo), rel="gallery_" + page._id)
-              img(src=url_for(photo), itemprop="image")
-
-  .wrapper
-    .container.post-header
-      h1: = page.title
-
-  .wrapper
-    .container.meta
-      .post-time= page.date.format(config.date_format)
-      if (page.categories && page.categories.length)
-        .post-categories
-          != list_categories(page.categories, {show_count: false, class: 'post-category', style: 'none', separator: '>'})
-      if (page.tags && page.tags.length)
-        .post-tags
-          != list_tags(page.tags, {show_count: false, class: 'post-tag', style:'none', separator:'/'})
-
-
-  article
-    .container.post
-      != page.content
-
-    // comment system
-    .container
-      hr
-      include _partial/comments
-
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>試玩了一下 VMWare Photon 1.0 | 隨意記事</title><link rel="stylesheet" type="text/css" href="/blog//css/normalize.css"><link rel="stylesheet" type="text/css" href="/blog//css/highlight.css"><link rel="stylesheet" type="text/css" href="/blog//css/very-simple.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/blog/favicon.ico"><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script>(adsbygoogle = window.adsbygoogle || []).push({
+ google_ad_client: "ca-pub-0187888667607442",
+ enable_page_level_ads: true
+ });
+</script></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>試玩了一下 VMWare Photon 1.0</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2016-06-17</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/VMWare/">VMWare</a></div></div></div><article><div class="container post"><p>今天早上看到<a href="http://blogs.vmware.com/cloudnative/vmwares-photon-os-1-0-now-available/" target="_blank" rel="noopener">這個</a>，想說有空來試玩一下，以下是我的心得。</p>
+<ol>
+<li><a href="https://vmware.github.io/photon/" target="_blank" rel="noopener">官網</a>。</li>
+<li>我是下載 <a href="https://bintray.com/artifact/download/vmware/photon/photon-custom-hw11-1.0-13c08b6-GA.ova" target="_blank" rel="noopener">Photon OS, Version 1.0 — OVA with virtual hardware v11</a>，懶得自己裝了。</li>
+<li>用 VMWare Workstation 匯入，看起來蠻小的 (2G Ram, 1 Core)。</li>
+<li>跑起來以後會先設定 root 密碼 (預設是 <strong>changeme</strong>，登入以後馬上會修改)。</li>
+<li>預設有開 ssh，可用其他程式連線。</li>
+<li><strong>Yum</strong> 系的 package manager，但是改成了 <strong>tdnf</strong> 。</li>
+<li><a href="https://github.com/vmware/photon/issues/205" target="_blank" rel="noopener">設定 IP</a> /etc/systemd/network/10-dhcp-en.network 裡頭修改 <a href="http://www.linuxfromscratch.org/lfs/view/systemd/chapter07/network.html" target="_blank" rel="noopener">Network</a>。</li>
+<li>開始玩 docker，<a href="https://github.com/vmware/photon/wiki/Frequently-Asked-Questions#q-i-just-booted-into-freshly-installed-photon-os-instance-why-isnt-docker-ps-working" target="_blank" rel="noopener">Q. I just booted into freshly installed Photon OS instance, why isn’t “docker ps” working?</a></li>
+<li><p>啟動 docker 與 port exposed。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -it -p 8000:8000 microsoft/dotnet:latest</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在上面起 asp.net core 1.0 程式，推荐<a href="https://www.sesispla.net/blog/language/en/2016/05/running-asp-net-core-1-0-rc2-in-docker/" target="_blank" rel="noopener">這個</a>，記得 Program.cs 裡頭要多加東西再 build。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.UseUrls(<span class="string">"http://conatiner_ip:8000"</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>用瀏覽器測試一下。</p>
+</li>
+<li>基本上啟動還蠻快的，kernel 不大，不知道匯到 vSphere/Esxi 上有沒有什麼神奇功能，有時間再試試看。</li>
+</ol>
+</div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'sujunmin';
+var disqus_identifier = '2016/06/17/試玩了一下 VMWare Photon 1.0/';
+var disqus_title = '試玩了一下 VMWare Photon 1.0';
+var disqus_url = 'https://sujunmin.github.io/blog/2016/06/17/試玩了一下 VMWare Photon 1.0/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><footer id="footer"><div class="container"><div class="bar"><div class="social"><a href="http://twitter.com/sujunmin_" target="_blank"><i class="fa fa-twitter"></i></a><a href="https://github.com/sujunmin" target="_blank"><i class="fa fa-github"></i></a><a href="https://plus.google.com/+JunMingSu" target="_blank"><i class="fa fa-google-plus"></i></a><a href="/atom.xml" target="_blank"><i class="fa fa-rss"></i></a></div><div class="footer">© 2018 <a href="/" rel="nofollow">隨意記事</a>. Powered by <a rel="nofollow" target="_blank" href="https://hexo.io">Hexo</a>. Theme <a target="_blank" href="https://github.com/lotabout/very-simple">very-simple</a>.</div></div></div></footer><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+    $(".fancybox").fancybox();
+});</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-78894509-1');ga('send','pageview');</script></body></html>

@@ -1,40 +1,111 @@
-extends base
-
-block title
-  title= page.title + " | " + config.title
-
-block main
-
-  // gallery that comes before the header
-  if page.photos
-     if page.photos.length
-      .article-gallery
-        .article-gallery-photos.container
-          for photo in page.photos
-            a.article-gallery-img.fancybox(href=url_for(photo), rel="gallery_" + page._id)
-              img(src=url_for(photo), itemprop="image")
-
-  .wrapper
-    .container.post-header
-      h1: = page.title
-
-  .wrapper
-    .container.meta
-      .post-time= page.date.format(config.date_format)
-      if (page.categories && page.categories.length)
-        .post-categories
-          != list_categories(page.categories, {show_count: false, class: 'post-category', style: 'none', separator: '>'})
-      if (page.tags && page.tags.length)
-        .post-tags
-          != list_tags(page.tags, {show_count: false, class: 'post-tag', style:'none', separator:'/'})
-
-
-  article
-    .container.post
-      != page.content
-
-    // comment system
-    .container
-      hr
-      include _partial/comments
-
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>Trace File 挖寶記 | 隨意記事</title><link rel="stylesheet" type="text/css" href="/blog//css/normalize.css"><link rel="stylesheet" type="text/css" href="/blog//css/highlight.css"><link rel="stylesheet" type="text/css" href="/blog//css/very-simple.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/blog/favicon.ico"><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script>(adsbygoogle = window.adsbygoogle || []).push({
+ google_ad_client: "ca-pub-0187888667607442",
+ enable_page_level_ads: true
+ });
+</script></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>Trace File 挖寶記</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2016-10-19</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/MSSQL/">MSSQL</a></div></div></div><article><div class="container post"><p>昨天下午收到一封告警訊息，發現到是一個從來沒有在告警訊息中出現的帳號 (datareader/datawriter, dbo login)，覺得很奇怪，不知道是不是又被 SQL Injection 攻擊了，於是有了這篇紀錄說明如何從 Trace File 挖寶。</p>
+<p>&lt;img src=<a href="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/eventclass_118_1.png" target="_blank" rel="noopener">https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/eventclass_118_1.png</a> /&gt;</p>
+<p>這篇的結果不是那麼重要，但是怎麼從 Trace File 找到想要的資訊我覺得還蠻重要的。</p>
+<p>基本上 TextData 應該都會有 Query 資訊，大部份都能馬上判定是什麼狀況，但是像這種沒有 TextData 的就要直接去看看 Trace File 裡頭的資訊了。</p>
+<p>Event Class 是 118，<a href="https://msdn.microsoft.com/en-us/library/ms190802.aspx" target="_blank" rel="noopener">Audit Object Derived Permission Event</a>。</p>
+<p>裡頭寫到重要的資訊，就是欄位編號，名稱，跟內容。</p>
+<p>從 <a href="https://github.com/sujunmin/SQLServerTraceFileParser" target="_blank" rel="noopener">Log Server</a> 拿出所要的 csv 檔，取出需要的部份 (如果原來的太大了的話)。</p>
+<p>&lt;img src=<a href="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/eventclass_118_2.png" target="_blank" rel="noopener">https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/eventclass_118_2.png</a> /&gt;</p>
+<p>一些重要的欄位</p>
+<table>
+<thead>
+<tr>
+<th>欄位號碼</th>
+<th>名稱</th>
+<th>內容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8</td>
+<td>HostName</td>
+<td>Name of the computer on which the client is running. This data column is populated if the host name is provided by the client. To determine the host name, use the HOST_NAME function.</td>
+</tr>
+<tr>
+<td>10</td>
+<td>ApplicationName</td>
+<td>Name of the client application that created the connection to an instance of SQL Server. This column is populated with the values passed by the application rather than the displayed name of the program.</td>
+</tr>
+<tr>
+<td>11</td>
+<td>LoginName</td>
+<td>Name of the login of the user (either the SQL Server security login or the Microsoft Windows login credentials in the form of DOMAIN\username).</td>
+</tr>
+<tr>
+<td>14</td>
+<td>StartTime</td>
+<td>Time at which the event started, if available.</td>
+</tr>
+<tr>
+<td>21</td>
+<td>EventSubClass</td>
+<td>Type of event subclass.<br>1=Create<br>2=Alter<br>3=Drop<br>4=Dump<br>11=Load</td>
+</tr>
+<tr>
+<td>23</td>
+<td>Success</td>
+<td>1 = success. 0 = failure. For example, a value of 1 indicates success of a permissions check and a value of 0 indicates failure of that check.</td>
+</tr>
+<tr>
+<td>26</td>
+<td>ServerName</td>
+<td>Name of the instance of SQL Server being traced.</td>
+</tr>
+<tr>
+<td>27</td>
+<td>EventClass</td>
+<td>Type of event = 118.</td>
+</tr>
+<tr>
+<td>34</td>
+<td>ObjectName</td>
+<td>Name of the object that is being created, altered, or dropped.</td>
+</tr>
+<tr>
+<td>35</td>
+<td>DatabaseName</td>
+<td>Name of the database in which the user statement is running.</td>
+</tr>
+<tr>
+<td>37</td>
+<td>OwnerName</td>
+<td>Database username of the object owner of the object being created, altered, or dropped.</td>
+</tr>
+</tbody>
+</table>
+<p>其中除了帳號來源之外，最重要的就是 EventSubClass = Create，ObjectName = _WA_Sys_…。</p>
+<p>所以我們知道是 Create Statistics。</p>
+<p>看一下統計資料</p>
+<p>&lt;img src=<a href="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/eventclass_118_3.png" target="_blank" rel="noopener">https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/eventclass_118_3.png</a> /&gt;</p>
+<p>正式當時產生的：某個 Query 需要其他類型的統計資料，所以就產生了。</p>
+<p>總結：如果要從 Trace File 挖寶，可以這麼做</p>
+<ol>
+<li>找到該 EventClass 的 msdn。</li>
+<li>找出該 Event 的資料。</li>
+<li>對應 EventClass 的欄位資訊。</li>
+<li>依據結果繼續找下去。</li>
+</ol>
+</div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'sujunmin';
+var disqus_identifier = '2016/10/19/Trace File 挖寶記/';
+var disqus_title = 'Trace File 挖寶記';
+var disqus_url = 'https://sujunmin.github.io/blog/2016/10/19/Trace File 挖寶記/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><footer id="footer"><div class="container"><div class="bar"><div class="social"><a href="http://twitter.com/sujunmin_" target="_blank"><i class="fa fa-twitter"></i></a><a href="https://github.com/sujunmin" target="_blank"><i class="fa fa-github"></i></a><a href="https://plus.google.com/+JunMingSu" target="_blank"><i class="fa fa-google-plus"></i></a><a href="/atom.xml" target="_blank"><i class="fa fa-rss"></i></a></div><div class="footer">© 2018 <a href="/" rel="nofollow">隨意記事</a>. Powered by <a rel="nofollow" target="_blank" href="https://hexo.io">Hexo</a>. Theme <a target="_blank" href="https://github.com/lotabout/very-simple">very-simple</a>.</div></div></div></footer><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+    $(".fancybox").fancybox();
+});</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-78894509-1');ga('send','pageview');</script></body></html>

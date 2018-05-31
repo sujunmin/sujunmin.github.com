@@ -1,40 +1,71 @@
-extends base
-
-block title
-  title= page.title + " | " + config.title
-
-block main
-
-  // gallery that comes before the header
-  if page.photos
-     if page.photos.length
-      .article-gallery
-        .article-gallery-photos.container
-          for photo in page.photos
-            a.article-gallery-img.fancybox(href=url_for(photo), rel="gallery_" + page._id)
-              img(src=url_for(photo), itemprop="image")
-
-  .wrapper
-    .container.post-header
-      h1: = page.title
-
-  .wrapper
-    .container.meta
-      .post-time= page.date.format(config.date_format)
-      if (page.categories && page.categories.length)
-        .post-categories
-          != list_categories(page.categories, {show_count: false, class: 'post-category', style: 'none', separator: '>'})
-      if (page.tags && page.tags.length)
-        .post-tags
-          != list_tags(page.tags, {show_count: false, class: 'post-tag', style:'none', separator:'/'})
-
-
-  article
-    .container.post
-      != page.content
-
-    // comment system
-    .container
-      hr
-      include _partial/comments
-
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>IIS強迫跑SSL模式與SQL 2005 Reporting Services over SSL | 隨意記事</title><link rel="stylesheet" type="text/css" href="/blog//css/normalize.css"><link rel="stylesheet" type="text/css" href="/blog//css/highlight.css"><link rel="stylesheet" type="text/css" href="/blog//css/very-simple.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/blog/favicon.ico"><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script>(adsbygoogle = window.adsbygoogle || []).push({
+ google_ad_client: "ca-pub-0187888667607442",
+ enable_page_level_ads: true
+ });
+</script></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>IIS強迫跑SSL模式與SQL 2005 Reporting Services over SSL</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2009-12-18</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/Net/">.Net</a></div></div></div><article><div class="container post"><p>公司裡負責的系統有<a href="http://www.nessus.org/plugins/index.php?view=single&amp;id=26194" target="_blank" rel="noopener">Web Server Uses Plain Text Authentication Forms</a>缺失，今天想說把它解決掉。原來覺得可能很簡單的，不過變成要改一些Code，特此記錄下來供以後與網友參考。</p>
+<p>原來的環境是這樣，某個AP Server上面跑IIS(http and https)，被nessus偵測出來某個AP的default.aspx，帳號密碼登入是用明碼傳送，可能會有資安風險。</p>
+<p><strong><span style="color: #ffffff; bgcolor: #fdbe00;"><span style="background-color: #ffff00;">Web Server Uses Plain Text Authentication Forms</span></span></strong></p>
+<p><strong>Synopsis :</strong></p>
+<p>The remote web server might transmit credentials in cleartext.</p>
+<p><strong>Description :</strong></p>
+<p>The remote web server contains several HTML form fields containing<br>an input of type ‘password’ which transmit their information to<br>a remote web server in cleartext.</p>
+<p>An attacker eavesdropping the traffic between web browser and<br>server may obtain logins and passwords of valid users.</p>
+<p><strong>Solution :</strong></p>
+<p>Make sure that every sensitive form transmits content over HTTPS.</p>
+<p><strong>Risk factor :</strong></p>
+<p>Medium / CVSS Base Score : 5.0<br>(CVSS2#AV:N/AC:L/Au:N/C:P/I:N/A:N)</p>
+<p><strong>Plugin output :</strong><br>Page : /css/<br>Destination page : Default.aspx<br>Input name : Login1$Password</p>
+<p>Nessus ID : <a href="http://www.nessus.org/plugins/index.php?view=single&amp;id=26194" target="_blank" rel="noopener">26194</a></p>
+<p>因此就要去修正(不修正也不行阿)，在網路上找了一下，就決定先把IIS的80 Port(http)先拿掉，都走443 Port (https)。找到這位<a href="http://blogs.microsoft.co.il/blogs/dorr/archive/2009/01/13/how-to-force-redirection-from-http-to-https-on-iis-6-0.aspx" target="_blank" rel="noopener">大大</a>寫的，就來實作一下，步驟如下：</p>
+<ol>
+<li>先把原來的網站(通常是預設的網站那個)修改他的內容，把TCP連接埠改成81(或其他外面連不進來的Port，因為IIS一定要設定TCP連接埠，所以就設定成一個連不進來的Port)，SSL連接埠部分填443。按確定以後重啟原來的網站(預設的網站)，現在Port 80應該是不會通了，443那個應該會通(若不通應該是SSL設定問題，這邊不多贅述)。<a href="http://photo.xuite.net/_r9009/retsamsu/3423409/68.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e23247/3423409/141018774_m.jpg" alt=""></a></li>
+<li>接著下來開一個新的網站，讓他聽80 Port，再轉到443 Port上面。網站說明的地方打你想要的字串就可以。TCP連接埠用Port 80就好。主目錄部分隨便找一個就行(因為等一下我們會來設redirect)，允許讀取就好(如果原來的網站有什麼，這邊就設什麼)，完成網站設定的動作。<br><img src="http://e.share.photo.xuite.net/retsamsu/1e23250/3423409/141019039_m.jpg" alt=""><br><a href="http://photo.xuite.net/_r9009/retsamsu/3423409/70.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e23252/3423409/141019041_m.jpg" alt=""></a><br><a href="http://photo.xuite.net/_r9009/retsamsu/3423409/71.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e23253/3423409/141019042_m.jpg" alt=""></a><br><a href="http://photo.xuite.net/_r9009/retsamsu/3423409/72.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e23255/3423409/141019044_m.jpg" alt=""></a><br><a href="http://photo.xuite.net/_r9009/retsamsu/3423409/73.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e23258/3423409/141019047_m.jpg" alt=""></a><br><a href="http://photo.xuite.net/_r9009/retsamsu/3423409/74.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e2325a/3423409/141019049_m.jpg" alt=""></a></li>
+<li><p>接下來對剛剛新設的網站做設定，到主目錄的地方，選擇某個URL位置的重新導向，在導向到的地方要轉的網址(https://…)，根據需求勾選下面的選項：</p>
+<ul>
+<li>上面所輸入的URL：就是直接轉址，如果有旗下的AP(如<a href="http://abc/ap)，他也不會管，還是只有https://...。" target="_blank" rel="noopener">http://abc/ap)，他也不會管，還是只有https://...。</a></li>
+<li>輸入的URL下的目錄：如果你想要轉到轉址下的某個檔案或目錄，就用這個。</li>
+<li>這個資源的永久重新導向：就是轉到妳的轉址，旗下自動對應轉址下的任何目錄(如<a href="http://abc/ap" target="_blank" rel="noopener">http://abc/ap</a> -&gt; <a href="https://.../ap" target="_blank" rel="noopener">https://…/ap</a>)</li>
+</ul>
+</li>
+</ol>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="http://photo.xuite.net/_r9009/retsamsu/3423409/75.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e23212/3423409/141019489_m.jpg" alt=""></a></p>
+<ol start="4">
+<li>選完以後重啟這個網頁，就完成了轉址動作，測試一下看有沒有什麼問題。</li>
+</ol>
+<p>在我測試的時候，發現原來連結報表伺服器的部份也死了。原因是因為我的報表伺服器也是在同一台，所以http沒了自然都不能用了(找不到檔案)。所以先把報表伺服器的設定先改一下，然後再看程式要改哪邊。</p>
+<p>選擇Reporting Services組態，對報表伺服器虛擬目錄那邊做設定，勾選需要安全通訊端層(SSL)連接，需要用於有三個選項可以選：</p>
+<ul>
+<li>1 - 連接：只有連接的時候使用SSL。</li>
+<li>2 - 報表資料：在產生報表資料傳送時使用SSL。</li>
+<li>3 - 所有SOAP API：全部使用SSL(網頁處理)。</li>
+</ul>
+<p>憑證名稱部分，就打你IIS用的憑證註冊網址(如abc.com.tw)，按套用就完成了。</p>
+<p><a href="http://photo.xuite.net/_r9009/retsamsu/3423409/76.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e2326e/3423409/141020349_m.jpg" alt=""></a><br>來到AP系統看看，發現錯誤又多了一個。</p>
+<p><strong><em>基礎連接已關閉</em>: <em>無法為SSL/TLS 安全通道建立信任關係</em></strong></p>
+<p>這個的原因是因為我們是一個憑證很多伺服器在用，但是在連接時會檢查這個憑證是否有問題，在瀏覽器瀏覽的時候可以按掉解決，這時候就不行了。再上網找解決方案，找到這個<a href="http://sanchen.blogspot.com/2008/04/httpwebrequest-https.html#links" target="_blank" rel="noopener">大大</a>寫的方法，修改自己的程式。不過我是用VB.NET寫的，所以再找一下MSDN，提供解法如下。</p>
+<figure class="highlight vb"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Public</span> <span class="keyword">Shared</span> <span class="keyword">Function</span> ValidateCert(<span class="keyword">ByVal</span> sender <span class="keyword">As</span> <span class="built_in">Object</span>, <span class="keyword">ByVal</span> certificate <span class="keyword">As</span> System.Security.Cryptography.X509Certificates.X509Certificate, <span class="keyword">ByVal</span> chain <span class="keyword">As</span> System.Security.Cryptography.X509Certificates.X509Chain, <span class="keyword">ByVal</span> sslPolicyErrors <span class="keyword">As</span> System.Net.Security.SslPolicyErrors) <span class="keyword">As</span> <span class="built_in">Boolean</span></span><br><span class="line">       <span class="keyword">Return</span> <span class="literal">True</span></span><br><span class="line"><span class="keyword">End</span> <span class="keyword">Function</span></span><br></pre></td></tr></table></figure>
+<p>然後在進入報表之前做下面的<a href="http://msdn.microsoft.com/zh-tw/library/system.net.servicepointmanager.servercertificatevalidationcallback%28VS.80%29.aspx" target="_blank" rel="noopener"> 動作</a>(每次登入只需做一次)即可。</p>
+<figure class="highlight vb"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">System.Net.ServicePointManager.ServerCertificateValidationCallback = <span class="keyword">New</span> System.Net.Security.RemoteCertificateValidationCallback(<span class="keyword">AddressOf</span> ValidateCert)</span><br></pre></td></tr></table></figure>
+<p>其實就是避掉錯誤的回傳這樣，詳情請看MSDN相關<a href="http://msdn.microsoft.com/en-us/library/system.net.security.remotecertificatevalidationcallback.aspx" target="_blank" rel="noopener">函式</a>介紹。</p>
+<p>這樣就完成所有的設定了。</p>
+<p>&nbsp;</p>
+</div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'sujunmin';
+var disqus_identifier = '2009/12/18/IIS強迫跑SSL模式與SQL-2005-Reporting-Services-over-SSL/';
+var disqus_title = 'IIS強迫跑SSL模式與SQL 2005 Reporting Services over SSL';
+var disqus_url = 'https://sujunmin.github.io/blog/2009/12/18/IIS強迫跑SSL模式與SQL-2005-Reporting-Services-over-SSL/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><footer id="footer"><div class="container"><div class="bar"><div class="social"><a href="http://twitter.com/sujunmin_" target="_blank"><i class="fa fa-twitter"></i></a><a href="https://github.com/sujunmin" target="_blank"><i class="fa fa-github"></i></a><a href="https://plus.google.com/+JunMingSu" target="_blank"><i class="fa fa-google-plus"></i></a><a href="/atom.xml" target="_blank"><i class="fa fa-rss"></i></a></div><div class="footer">© 2018 <a href="/" rel="nofollow">隨意記事</a>. Powered by <a rel="nofollow" target="_blank" href="https://hexo.io">Hexo</a>. Theme <a target="_blank" href="https://github.com/lotabout/very-simple">very-simple</a>.</div></div></div></footer><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+    $(".fancybox").fancybox();
+});</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-78894509-1');ga('send','pageview');</script></body></html>

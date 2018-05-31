@@ -1,40 +1,54 @@
-extends base
-
-block title
-  title= page.title + " | " + config.title
-
-block main
-
-  // gallery that comes before the header
-  if page.photos
-     if page.photos.length
-      .article-gallery
-        .article-gallery-photos.container
-          for photo in page.photos
-            a.article-gallery-img.fancybox(href=url_for(photo), rel="gallery_" + page._id)
-              img(src=url_for(photo), itemprop="image")
-
-  .wrapper
-    .container.post-header
-      h1: = page.title
-
-  .wrapper
-    .container.meta
-      .post-time= page.date.format(config.date_format)
-      if (page.categories && page.categories.length)
-        .post-categories
-          != list_categories(page.categories, {show_count: false, class: 'post-category', style: 'none', separator: '>'})
-      if (page.tags && page.tags.length)
-        .post-tags
-          != list_tags(page.tags, {show_count: false, class: 'post-tag', style:'none', separator:'/'})
-
-
-  article
-    .container.post
-      != page.content
-
-    // comment system
-    .container
-      hr
-      include _partial/comments
-
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>用指令開啟或關閉 SD 卡合併到內存 | 隨意記事</title><link rel="stylesheet" type="text/css" href="/blog//css/normalize.css"><link rel="stylesheet" type="text/css" href="/blog//css/highlight.css"><link rel="stylesheet" type="text/css" href="/blog//css/very-simple.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/blog/favicon.ico"><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script>(adsbygoogle = window.adsbygoogle || []).push({
+ google_ad_client: "ca-pub-0187888667607442",
+ enable_page_level_ads: true
+ });
+</script></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>用指令開啟或關閉 SD 卡合併到內存</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2016-09-27</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/Android/">Android</a></div></div></div><article><div class="container post"><p>今天老婆說剛買沒多久的手機又滿了，不能裝東西，想說颱風天來幫她合併 SD 卡內存，這樣她又更能盡情裝 APP 了(?)，結果系統一直顯示無法合併 (因為速度太慢)，但是其實測速以後還好阿，因此用手動的方式來設定合併內存。</p>
+<p>這篇有用的對象如下</p>
+<ol>
+<li>Android 6.0 以上設備</li>
+<li>會開啟 adb 跟 debug 模式</li>
+<li>不管 SD 卡的速度 (因為合併內存一定會降速度，很差的卡降更多)</li>
+<li>合併內存功能被鎖起來，或是因為速度偵測而無法合併的都可以使用</li>
+</ol>
+<h1 id="合併內存"><a href="#合併內存" class="headerlink" title="合併內存"></a>合併內存</h1><ol>
+<li>備份 SD 卡</li>
+<li><code>adb start-server</code></li>
+<li><code>adb shell sm list-volumes all</code> [應該類似 public:179,32 mounted … 這樣，後面的 179,32 等會會用到]</li>
+<li><code>adb shell sm set-force-adoptable true</code></li>
+<li><code>adb shell sm partition disk:179,32 private</code> [這步將會把 SD 卡合併到內存，包含格式化，等了很久才完成，這時候看手機應該看不到 SD 卡了]</li>
+<li><code>adb shell sm set-force-adoptable false</code></li>
+<li><code>adb shell sm list-volumes all</code> [應該會變成 private:179,32 mounted … 這樣，原來的 public 不見了]</li>
+<li>重開機</li>
+<li>檢查一下，到內存那邊移轉資料，還原 SD 卡資料，完成</li>
+</ol>
+<h1 id="恢復成可攜式-SD-卡"><a href="#恢復成可攜式-SD-卡" class="headerlink" title="恢復成可攜式 SD 卡"></a>恢復成可攜式 SD 卡</h1><ol>
+<li>備份 SD 卡</li>
+<li><code>adb start-server</code></li>
+<li><code>adb shell sm list-volumes all</code> [看 ID，179,32]</li>
+<li><code>adb shell sm set-force-adoptable true</code></li>
+<li><code>adb shell sm partition disk:179,32 public</code> [這步會把 SD 設為可攜式 SD 卡，包含格式化]</li>
+<li><code>adb shell sm set-force-adoptable false</code></li>
+<li><code>adb shell sm list-volumes all</code> [應該會變到 public 裡]</li>
+<li>重開機</li>
+<li>檢查一下，還原 SD 卡資料，完成</li>
+</ol>
+</div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'sujunmin';
+var disqus_identifier = '2016/09/27/用指令開啟或關閉 SD 卡合併到內存/';
+var disqus_title = '用指令開啟或關閉 SD 卡合併到內存';
+var disqus_url = 'https://sujunmin.github.io/blog/2016/09/27/用指令開啟或關閉 SD 卡合併到內存/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><footer id="footer"><div class="container"><div class="bar"><div class="social"><a href="http://twitter.com/sujunmin_" target="_blank"><i class="fa fa-twitter"></i></a><a href="https://github.com/sujunmin" target="_blank"><i class="fa fa-github"></i></a><a href="https://plus.google.com/+JunMingSu" target="_blank"><i class="fa fa-google-plus"></i></a><a href="/atom.xml" target="_blank"><i class="fa fa-rss"></i></a></div><div class="footer">© 2018 <a href="/" rel="nofollow">隨意記事</a>. Powered by <a rel="nofollow" target="_blank" href="https://hexo.io">Hexo</a>. Theme <a target="_blank" href="https://github.com/lotabout/very-simple">very-simple</a>.</div></div></div></footer><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+    $(".fancybox").fancybox();
+});</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-78894509-1');ga('send','pageview');</script></body></html>

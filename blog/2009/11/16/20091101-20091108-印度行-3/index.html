@@ -1,40 +1,52 @@
-extends base
-
-block title
-  title= page.title + " | " + config.title
-
-block main
-
-  // gallery that comes before the header
-  if page.photos
-     if page.photos.length
-      .article-gallery
-        .article-gallery-photos.container
-          for photo in page.photos
-            a.article-gallery-img.fancybox(href=url_for(photo), rel="gallery_" + page._id)
-              img(src=url_for(photo), itemprop="image")
-
-  .wrapper
-    .container.post-header
-      h1: = page.title
-
-  .wrapper
-    .container.meta
-      .post-time= page.date.format(config.date_format)
-      if (page.categories && page.categories.length)
-        .post-categories
-          != list_categories(page.categories, {show_count: false, class: 'post-category', style: 'none', separator: '>'})
-      if (page.tags && page.tags.length)
-        .post-tags
-          != list_tags(page.tags, {show_count: false, class: 'post-tag', style:'none', separator:'/'})
-
-
-  article
-    .container.post
-      != page.content
-
-    // comment system
-    .container
-      hr
-      include _partial/comments
-
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>20091101-20091108 印度行 (3) | 隨意記事</title><link rel="stylesheet" type="text/css" href="/blog//css/normalize.css"><link rel="stylesheet" type="text/css" href="/blog//css/highlight.css"><link rel="stylesheet" type="text/css" href="/blog//css/very-simple.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/blog/favicon.ico"><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script>(adsbygoogle = window.adsbygoogle || []).push({
+ google_ad_client: "ca-pub-0187888667607442",
+ enable_page_level_ads: true
+ });
+</script></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>20091101-20091108 印度行 (3)</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2009-11-16</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/Travel/">Travel</a></div></div></div><article><div class="container post"><p>今天回家，濕淋淋的回家，真是討厭的天氣。不過在信箱中發現到之前要寄回台灣的明信片，今天終於到我家了。</p>
+<p>給bonnie的上星期五(11/13)就到了，寄到我家的跟我爸媽家的都是今天。</p>
+<p>&nbsp;<a href="http://photo.xuite.net/_r9009/retsamsu/3423409/44.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e23296/3423409/138317285_m.jpg" alt=""></a></p>
+<p>字寫的很亂，真是不好意思。回想當初在寄這封信的時候，團長說現在的小孩子還能這樣有古早味的浪漫還真不多。</p>
+<p>之前想說要去哪邊玩，除了問當地人以外(有時候不知道是不是當地人，說法都不太一樣)，就是看City Guide。還好到處都有這些東西可以拿。不過呢，當地人不知道是不是不是當地的還是不熟，都知道景點，但是打開地圖要他們報路(我們想要知道距離跟車程，要抓時間用)，就要東找找西找找，找了老半天還不知道在哪。</p>
+<p><a href="http://photo.xuite.net/_r9009/retsamsu/3423409/45.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e23287/3423409/138320086_m.jpg" alt=""></a></p>
+<p>後面那本在介紹一些藝文活動與電視節目訊息，我拿了就不知道幹嘛用的了。倒是前面那份地圖，實在很方便，也讓我學會怎麼看地圖(導航機用習慣了，不太會用地圖與其編排方式)。</p>
+<p><a href="http://photo.xuite.net/_r9009/retsamsu/3423409/46.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e23285/3423409/138320852_m.jpg" alt=""></a><br><a href="http://photo.xuite.net/_r9009/retsamsu/3423409/48.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e23268/3423409/138321335_m.jpg" alt=""></a></p>
+<p>11/2-11/3因為是AFACT會議的重點，當然正事還是要去辦一下的，因此大部分時間都在開會。這邊就記一些有趣的事情吧。印度人的英文腔調真的非常的重，加上捲舌根本就是一句就是像一個字一樣，實在不是很容易懂。有一句話說：男人要知道身體好不好，就要到海南島。如果想知道自己的英文是不是很好，來印度就知道。11/2的會議主要是把我的公司的系統介紹分享給大家知道，當然還有未來這個工作組的走向云云。印度人同意或是覺得對的事情的時候會搖搖頭或是頭斜一邊，但是我們會覺得好像是我們說錯了還是哪邊不懂，因此這個會議有大部分的時間都是一直解釋，他們也覺得很奇怪。</p>
+<p><iframe scrolling="no" marginwidth="0" width="425" frameborder="0" src="http://maps.google.com.tw/maps/ms?ie=UTF8&amp;hl=zh-TW&amp;brcurrent=3,0x0:0x0,0&amp;msa=0&amp;msid=110315272316057324713.0004787d7731f34f37c80&amp;ll=28.612103,77.228222&amp;spn=0.052744,0.072956&amp;z=13&amp;output=embed" marginheight="0" height="350"></iframe><br><small>在較大的地圖上查看<a href="http://maps.google.com.tw/maps/ms?ie=UTF8&amp;hl=zh-TW&amp;brcurrent=3,0x0:0x0,0&amp;msa=0&amp;msid=110315272316057324713.0004787d7731f34f37c80&amp;ll=28.612103,77.228222&amp;spn=0.052744,0.072956&amp;z=13&amp;source=embed" target="_blank" rel="noopener">2009110304</a></small></p>
+<p>11/2以後的註冊跟吃飯都在外面的廣場，心情不太一樣了，但是東西還是一樣的。應<a href="http://www.plurk.com/p/2mo56w" target="_blank" rel="noopener">觀眾</a>要求，想再看看註冊小姐的照片，下面就又補一張了(最後一張摟)。</p>
+<p><a href="http://photo.xuite.net/_r9009/retsamsu/3625494/5.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e23283/3625494/137778029_m.jpg" alt=""></a><a href="http://photo.xuite.net/_r9009/retsamsu/3625494/25.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e23221/3625494/137778443_m.jpg" alt=""></a></p>
+<p>11/2的開會的點都是在這個小門的後面，也開的很晚，尤其是後面寫會議記錄的時候，真的是一整天的英文課：不知道是p還是b還是t還是….。不過還是把它弄完了，要感謝這位印度小弟(畫面右邊數來第一個)，他從指導我們，到直接自己打了，真的很感謝他。</p>
+<p><a href="http://photo.xuite.net/_r9009/retsamsu/3625494/8.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e232fb/3625494/137778149_m.jpg" alt=""></a><a href="http://photo.xuite.net/_r9009/retsamsu/3625494/16.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e23299/3625494/137778307_m.jpg" alt=""></a></p>
+<p>這天晚上我們又繼續我們的冒險之旅：買便宜的東西。聽說在往飯店往捷運(Barakhambha站)方向一直走就會看到一堆商店(因為那天坐車回飯店的時候有經過，飯店的車感覺每天走的路線都不太一樣)，想說應該很簡單吧，不過我們一路上問路跟通過一些恐怖的路口(晚上沒燈也沒紅綠燈，車子都跑很快)，我們來到了<span>Connaught Place(簡稱C.P.)，很多商店，也很熱鬧。</span></p>
+<p><span>到那邊已經是吃飯時間過後很久了，想說先吃一點東西，不過什麼東西都不太想吃(想想飯店裡的東西)，於是問一個外國人(非印度人)說這邊哪邊有麥當勞，他說到這邊有一個麥當勞，跟一個印度的麥當勞(印度速食店)，想當然耳吃那麼多次麥當勞了，要換換印度口味吃看看。那家店叫<a href="http://www.foodiebay.com/ncr/restaurant/delhi/wimpy-connaught-place-672.html" target="_blank" rel="noopener">Wimpy</a>。一進門(有警衛幫我們開)就是速食店的感覺，不過那個不找零的情形又來了。沒什麼人，不知道是不是太晚的關係。</span></p>
+<p><span>&nbsp;</span><a href="http://photo.xuite.net/_r9009/retsamsu/3625494/28.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e23297/3625494/137778561_m.jpg" alt=""></a></p>
+<p>我點了一客雞肉漢堡套餐(Chicken in a Bun)，感覺有些油膩。吃完了服務生會幫我們收盤子。</p>
+<p><a href="http://photo.xuite.net/_r9009/retsamsu/3625494/38.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e232d9/3625494/137778627_m.jpg" alt=""></a></p>
+<p>吃飽了以後，就直接在附近的商店買了一些<a href="http://images.google.com.tw/images?hl=zh-TW&amp;client=firefox-a&amp;rls=org.mozilla:zh-TW:official&amp;hs=hIi&amp;q=sari&amp;um=1&amp;ie=UTF-8&amp;ei=fmABS9-CCoiU6wPi-tDzCg&amp;sa=X&amp;oi=image_result_group&amp;ct=title&amp;resnum=1&amp;ved=0CBkQsAQwAA" target="_blank" rel="noopener">紗麗</a>(sari)，我買給我妹妹一條不錯看的。買了一下時間都過的很快，就回到飯店吃昨天生日的蛋糕，打個電話，處理一些事情，也結束的今天的行程。</p>
+<p>11/4是本次會議的主軸，會員大會。這天也是開一整天會，會議開場前拍了些照片，還有他們會在會議開始前有點燈儀式(不知道之前是不是有這樣)。下面是我跟大會祕書處印度代表合影，還有點燈的檯子。</p>
+<p><a href="http://photo.xuite.net/_r9009/retsamsu/3626959/6.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e232ef/3626959/137840928_m.jpg" alt=""></a><br><a href="http://photo.xuite.net/_r9009/retsamsu/3626959/8.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e2323d/3626959/137841006_m.jpg" alt=""></a></p>
+<p>中場休息的時候，有碰到印度小弟，想說拍張照留念，結果最後一堆人進來，變成TWG(運輸工作組)留念了。</p>
+<p><a href="http://photo.xuite.net/_r9009/retsamsu/3626959/20.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e2329f/3626959/137841360_m.jpg" alt=""></a><br><a href="http://photo.xuite.net/_r9009/retsamsu/3626959/22.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e2322b/3626959/137841500_m.jpg" alt=""></a></p>
+<p>晚上拜某會的老闆所賜，帶我們去飯店28樓的中式餐廳(其實應該是泰式吧)吃飯，真的是很感謝，這邊吃到的，就是印度式的中式料理，實在很重口味。Social的東西就不寫了，今天就這樣結束。明天(11/5)白天是eAsia Award評選，因為我自己沒有參選，所以又多了一天可以出去晃晃，那天的紀錄就會比這篇有趣多了，敬請期待。</p>
+<p><a href="http://photo.xuite.net/_r9009/retsamsu/3626959/26.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e232ca/3626959/137841659_m.jpg" alt=""></a><br><a href="http://photo.xuite.net/_r9009/retsamsu/3626959/38.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e23238/3626959/137842281_m.jpg" alt=""></a></p>
+<p><a href="http://photo.xuite.net/retsamsu/3625494" target="_blank" rel="noopener">20091103拍的照片。</a></p>
+<p><a href="http://photo.xuite.net/retsamsu/3626959" target="_blank" rel="noopener">20091104拍的照片。</a></p>
+</div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'sujunmin';
+var disqus_identifier = '2009/11/16/20091101-20091108-印度行-3/';
+var disqus_title = '20091101-20091108 印度行 (3)';
+var disqus_url = 'https://sujunmin.github.io/blog/2009/11/16/20091101-20091108-印度行-3/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><footer id="footer"><div class="container"><div class="bar"><div class="social"><a href="http://twitter.com/sujunmin_" target="_blank"><i class="fa fa-twitter"></i></a><a href="https://github.com/sujunmin" target="_blank"><i class="fa fa-github"></i></a><a href="https://plus.google.com/+JunMingSu" target="_blank"><i class="fa fa-google-plus"></i></a><a href="/atom.xml" target="_blank"><i class="fa fa-rss"></i></a></div><div class="footer">© 2018 <a href="/" rel="nofollow">隨意記事</a>. Powered by <a rel="nofollow" target="_blank" href="https://hexo.io">Hexo</a>. Theme <a target="_blank" href="https://github.com/lotabout/very-simple">very-simple</a>.</div></div></div></footer><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+    $(".fancybox").fancybox();
+});</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-78894509-1');ga('send','pageview');</script></body></html>

@@ -1,40 +1,164 @@
-extends base
-
-block title
-  title= page.title + " | " + config.title
-
-block main
-
-  // gallery that comes before the header
-  if page.photos
-     if page.photos.length
-      .article-gallery
-        .article-gallery-photos.container
-          for photo in page.photos
-            a.article-gallery-img.fancybox(href=url_for(photo), rel="gallery_" + page._id)
-              img(src=url_for(photo), itemprop="image")
-
-  .wrapper
-    .container.post-header
-      h1: = page.title
-
-  .wrapper
-    .container.meta
-      .post-time= page.date.format(config.date_format)
-      if (page.categories && page.categories.length)
-        .post-categories
-          != list_categories(page.categories, {show_count: false, class: 'post-category', style: 'none', separator: '>'})
-      if (page.tags && page.tags.length)
-        .post-tags
-          != list_tags(page.tags, {show_count: false, class: 'post-tag', style:'none', separator:'/'})
-
-
-  article
-    .container.post
-      != page.content
-
-    // comment system
-    .container
-      hr
-      include _partial/comments
-
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>從 SQL Server 到 MariaDB - [7] Linked Server 與 FederatedX Storage Engine | 隨意記事</title><link rel="stylesheet" type="text/css" href="/blog//css/normalize.css"><link rel="stylesheet" type="text/css" href="/blog//css/highlight.css"><link rel="stylesheet" type="text/css" href="/blog//css/very-simple.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/blog/favicon.ico"><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script>(adsbygoogle = window.adsbygoogle || []).push({
+ google_ad_client: "ca-pub-0187888667607442",
+ enable_page_level_ads: true
+ });
+</script></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>從 SQL Server 到 MariaDB - [7] Linked Server 與 FederatedX Storage Engine</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2016-10-05</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/MSSQL/">MSSQL</a>/<a class="post-tag-link" href="/blog/tags/MariaDB/">MariaDB</a></div></div></div><article><div class="container post"><h2 id="需求說明"><a href="#需求說明" class="headerlink" title="需求說明"></a>需求說明</h2><p>資料庫有跨地區傳送資料的需求，在 SQL Server 用到 Linked Server 來傳送資料，希望在 MariaDB 也有類似的 Solution 可以使用。</p>
+<p>原來的架構如下圖</p>
+<p>&lt;img src=<a href="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/ls_1.png" target="_blank" rel="noopener">https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/ls_1.png</a> /&gt;</p>
+<h2 id="採用-FederatedX-Storage-Engine-的原因"><a href="#採用-FederatedX-Storage-Engine-的原因" class="headerlink" title="採用 FederatedX Storage Engine 的原因"></a>採用 FederatedX Storage Engine 的原因</h2><p>這種同步問題應該採用 Replication 來執行的，但是因為下面的原因而不使用</p>
+<ol>
+<li>在 Site B 會有一份 Site A <code>A_DB</code> 的副本，然後透過那個副本來傳送資料到 Site B 的 <code>B_DB</code>，架構如下</li>
+</ol>
+<p>&lt;img src=<a href="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/ls_2.png" target="_blank" rel="noopener">https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/ls_2.png</a> /&gt;</p>
+<ol start="2">
+<li>這樣 Site B 有一份 <code>A_DB</code> 的副本，蠻浪費空間的，如果把讀寫頭指向 <code>B_DB</code>，雖然可以多個 GTID，但是感覺很混亂，而且出問題就很難修復。</li>
+<li>Replication 不能設定同步時間 (Site A 與 Site B 中間的連線頻寬與其他服務 share，不能一直使用)，雖說可以透過網路管控讓他自己停止 Replication，但是覺得這樣不能完全控制，不太方便。</li>
+<li>在<a href="http://stackoverflow.com/questions/5370970/how-to-create-linked-server-mysql" target="_blank" rel="noopener">這篇</a>裡有網友解答可以透過 FEDERATED engine 達成 linked server 的需求，因此就來看看這是什麼。</li>
+</ol>
+<h2 id="MariaDB-FederatedX-Storage-Engine-介紹"><a href="#MariaDB-FederatedX-Storage-Engine-介紹" class="headerlink" title="MariaDB FederatedX Storage Engine 介紹"></a>MariaDB FederatedX Storage Engine 介紹</h2><p>後來去找 MariaDB 上的 <a href="https://mariadb.com/kb/en/mariadb/federated-storage-engine/" target="_blank" rel="noopener">FEDERATED Storage Engine</a> 時，發現到它已經不再開發了，取而代之的是 MariaDB 自己 fork 的 <a href="https://mariadb.com/kb/en/mariadb/about-federatedx/" target="_blank" rel="noopener">FederatedX Storage Engine</a>，相關比較如此<a href="https://mariadb.com/kb/en/mariadb/differences-between-federatedx-and-federated/" target="_blank" rel="noopener">連結</a>。</p>
+<p>FederatedX Storage Engine 的說明文件是我覺得 MariaDB 文件裏面寫的最口語的，很容易了解。</p>
+<p>這個 FederatedX Storage Engine 的產生是原來 Cisco 需要存取各設備的 MySQL 的資料，但是發動端沒有那麼多空間儲存這些資料，於是這個機制就產生了。</p>
+<p>以下是針對 SQL Server Linked Server 與 MariaDB FederatedX Storage Engine 做一個比較</p>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>SQL Server Linked Server</th>
+<th>MariaDB FederatedX Storage Engine</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>實作層級</td>
+<td>Database Level</td>
+<td>Table Level</td>
+</tr>
+<tr>
+<td>異質資料庫連結種類</td>
+<td>多種類</td>
+<td>MariaDB, MySQL, PostgreSQL (其他專案)</td>
+</tr>
+<tr>
+<td>遠端資料庫的 DDL 異動處理</td>
+<td>沒有感覺</td>
+<td>需重建 HANDLER</td>
+</tr>
+<tr>
+<td>執行遠端資料庫的 DDL</td>
+<td>可以 (<code>exec(&#39;ddl&#39;)</code>)</td>
+<td>不可以</td>
+</tr>
+</tbody>
+</table>
+<h2 id="測試"><a href="#測試" class="headerlink" title="測試"></a>測試</h2><h3 id="建立-HANDLER"><a href="#建立-HANDLER" class="headerlink" title="建立  HANDLER"></a>建立  HANDLER</h3><p>首先開一個 Site A，同一台機器的 3308 Port。</p>
+<p>上面開一個 <code>A_DB</code>，裡頭一個 <code>table</code>，一個欄位 <code>col</code> <code>char(50)</code>，一行 <code>&#39;A&#39;</code>。</p>
+<p>在原來的 MariaDB 假設他是 Site B，開一個 DB <code>B_DB</code> 裡頭一個 <code>table</code>，一個欄位 <code>col</code> <code>char(50)</code>，一行 <code>&#39;B&#39;</code>。</p>
+<p>在 Site B 上執行以下指令</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> B_DB;</span><br><span class="line"></span><br><span class="line"><span class="keyword">create</span> <span class="keyword">server</span> <span class="string">'Site_A'</span> foreign <span class="keyword">data</span> wrapper <span class="string">'mysql'</span> options</span><br><span class="line">  (HOST <span class="string">'127.0.0.1'</span>,</span><br><span class="line">  <span class="keyword">DATABASE</span> <span class="string">'A_DB'</span>,</span><br><span class="line">  <span class="keyword">USER</span> <span class="string">'root'</span>,</span><br><span class="line">  <span class="keyword">PASSWORD</span> <span class="string">'passowrd'</span>,</span><br><span class="line">  PORT <span class="number">3308</span>,</span><br><span class="line">  SOCKET <span class="string">''</span>,</span><br><span class="line">  OWNER <span class="string">'root'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> A_table <span class="keyword">ENGINE</span>=FEDERATED <span class="keyword">CONNECTION</span>=<span class="string">'Site_A/table'</span>;</span><br></pre></td></tr></table></figure>
+<p>接著可以 <code>select * from A_table</code> 看看，應該會看到 A。</p>
+<p>這邊還有一些要注意的</p>
+<ol>
+<li>在 <code>CREATE TABLE</code> 的時候可以故意打錯 table 名字，會報錯 (與原來 FEDERATED 的差異第 2 項)。</li>
+<li>在 <code>CREATE TABLE ... CONNECTION=&#39;Site_A/table&#39;</code> 的時候也可以 <code>mysql://username:password@hostname:port/database/tablename</code>，但是我的密碼有特殊字@，所以還好有 <code>create server</code> 這個方法建立。</li>
+<li>建立完成後可以看看資料庫的 <code>B_DB</code> 資料夾，只會有 <code>a_table.frm</code>，不會有 <code>a_table.ibd</code>，因為資料實際不在 Site B。</li>
+<li>Replication Slave 不會有這樣方法產生出來的 Table，如果要切換記得要手動加回去。</li>
+</ol>
+<h3 id="遠端資料庫執行-DDL"><a href="#遠端資料庫執行-DDL" class="headerlink" title="遠端資料庫執行 DDL"></a>遠端資料庫執行 DDL</h3><p>在 Site A 的 <code>A_DB</code> 把 table 多一個欄位 <code>col1</code> <code>int</code>。</p>
+<p>到 Site B <code>select * from A_table</code> 看看。</p>
+<p>你會只看到一個欄位 <code>col</code>，結果是 A。</p>
+<p>這時候需要重建 HANDLER</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> B_DB;</span><br><span class="line"><span class="keyword">drop</span> <span class="keyword">table</span> A_table;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> A_table <span class="keyword">ENGINE</span>=FEDERATED <span class="keyword">CONNECTION</span>=<span class="string">'Site_A/table'</span>;</span><br></pre></td></tr></table></figure>
+<p>重新 Select 看看，應該會看到正確的資料。</p>
+<h3 id="在-FEDERATED-Table-上執行-DDL"><a href="#在-FEDERATED-Table-上執行-DDL" class="headerlink" title="在 FEDERATED Table 上執行 DDL"></a>在 FEDERATED Table 上執行 DDL</h3><p>在 Site B 的 <code>B_DB</code> 對 <code>A_table</code> 新增一個欄位<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> <span class="string">`A_table`</span> <span class="keyword">ADD</span> <span class="keyword">COLUMN</span> <span class="string">`col3`</span> <span class="built_in">INT</span> <span class="literal">NULL</span> <span class="keyword">AFTER</span> <span class="string">`col2`</span>;</span><br></pre></td></tr></table></figure></p>
+<p>會有以下的錯誤<br><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SQL錯誤（<span class="number">1031</span>）：Storage engine FEDERATED of the table b_db.a_table doesn't have this option</span><br></pre></td></tr></table></figure></p>
+<p>如果透過 <code>execute</code> 呢?</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> B_DB;</span><br><span class="line"><span class="keyword">set</span> @<span class="keyword">sql</span> := <span class="string">'ALTER TABLE A_table ADD COLUMN col3 INT NULL AFTER col2'</span>;</span><br><span class="line"><span class="keyword">prepare</span> stmt <span class="keyword">from</span> @<span class="keyword">sql</span>;</span><br><span class="line"><span class="keyword">execute</span> stmt;</span><br></pre></td></tr></table></figure>
+<p>還是跟上面一樣的錯(不能偷渡就是了)。</p>
+<h2 id="一些想法"><a href="#一些想法" class="headerlink" title="一些想法"></a>一些想法</h2><p>這個 FEDERATED Table 有點像 .Net 開發時拉 Web Reference 會產生出 wsdl 檔在本機，然後透過他的定義去使用 Web Services，只是開發時有一些方法可以 auto update wsdl，以確保介面進出的正確性，這裡的 FEDERATED Table 沒有更新的功能。</p>
+<p>不過如果資料表都沒什麼會動的話其實沒什麼差異，這樣就很好用了。</p>
+<p>然後因為是 Table Level 的關係，Linked Server 只要做一個 Database Link 即可，但是這個就要每個 Table 都要建一次。</p>
+<p>最後的架構</p>
+<p>&lt;img src=<a href="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/ls_3.png" target="_blank" rel="noopener">https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/ls_3.png</a> /&gt;</p>
+<h2 id="上線紀錄"><a href="#上線紀錄" class="headerlink" title="上線紀錄"></a>上線紀錄</h2><h3 id="2016-11-14"><a href="#2016-11-14" class="headerlink" title="2016/11/14"></a>2016/11/14</h3><p>實際執行的時候，發現到有很大的問題，不管是怎麼調整都會有一樣的錯。</p>
+<ol>
+<li>網路很通暢 (之前 MSSQL 的 Linked Server 的路)</li>
+<li>資料庫 loading 很低 (挑選沒有人使用資料庫的作業時間)</li>
+<li>減少 access Federated Table 的次數 (原來 <code>insert into federated_table select * from local_table ...;</code> -&gt; <code>insert into local_staged_table select * from local_table ...; insert into federated_table select * from local_staged_table;</code>)</li>
+</ol>
+<p>錯誤的訊息 <code>Got error 10000 &#39;Error on remote system: 2006: MySQL server has gone away&#39; from FEDERATED</code>。</p>
+<p>這個也是一個蠻久的 <a href="https://jira.mariadb.org/browse/MDEV-4452" target="_blank" rel="noopener">bug</a>，我也發了<a href="https://jira.mariadb.org/browse/MDEV-11276" target="_blank" rel="noopener">一個</a>，希望未來有解。</p>
+<p>現在的方法改成是 <code>mysqldump ... DB.table | mysql ... DB ...</code>，透過 <a href="https://sujunmin.github.io/blog/2017/06/08/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[8]%20User-defined%20Functions%20%E8%88%87%E6%93%B4%E5%A2%9E%20Event%20%E5%8A%9F%E8%83%BD/"><code>sys_exec</code></a> 執行。</p>
+<h3 id="2016-11-23"><a href="#2016-11-23" class="headerlink" title="2016/11/23"></a>2016/11/23</h3><p>感謝<a href="https://jira.mariadb.org/secure/ViewProfile.jspa?name=elenst" target="_blank" rel="noopener">神人</a>幫忙，終於解開疑惑了，他的解釋十分清楚，也不厭其煩的解釋每個動作。</p>
+<p>原因在於遠端連線的問題。</p>
+<p>基本上一個 Federated Table 的存取大概是這樣</p>
+<table>
+<thead>
+<tr>
+<th>動作</th>
+<th>到遠端連線狀態</th>
+<th>結果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Create Server</code></td>
+<td>N/A</td>
+<td>OK</td>
+</tr>
+<tr>
+<td><code>Create Table</code></td>
+<td>會測試連線是否正常，測試完即結束連線</td>
+<td>OK</td>
+</tr>
+<tr>
+<td>1st DMLs for Federate Table</td>
+<td>第一個動作會建起到遠端連線的 session，並做相關紀錄</td>
+<td>OK</td>
+</tr>
+<tr>
+<td>Other DMLs for Federate Table</td>
+<td>順利透過剛剛建立的 session 繼續作業</td>
+<td>OK</td>
+</tr>
+<tr>
+<td>遠端的 session 的 idle 時間大於 session <code>wait_timeout</code> 導致被 Kill 掉 <br>遠端重開機或是一些緣故導致之前建立的 session 斷掉</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>斷掉後的第一個 DMLs for Federate Table</td>
+<td>N/A</td>
+<td>必定失敗(因為原來紀錄的 session 不見了)</td>
+</tr>
+<tr>
+<td>重做 DMLs for Federate Table 或是下一個</td>
+<td>建起到遠端連線的 session，並做相關紀錄</td>
+<td>OK</td>
+</tr>
+</tbody>
+</table>
+<p>我的問題是每天做一次的排程匯入資料從 A 地到 B 地，在預設的情況下遠端的 session 的 idle 時間大於 session <code>wait_timeout</code> (28800 秒，8小時) 導致被 Kill 掉，下一次作業時就會因為必定失敗的問題而無法繼續，所以有以下兩個解法。</p>
+<ol>
+<li>設大一點的 <code>wait_timeout</code>，但我覺得比較不切實際，因為如果重開機了 session 不在還是得失敗一次才能完成。</li>
+<li>每個小時 select federated table 一次，這個我覺得可以把問題縮短到一個小時就能發現，比較實際。</li>
+</ol>
+</div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'sujunmin';
+var disqus_identifier = '2016/10/05/從 SQL Server 到 MariaDB - [7] Linked Server 與 FederatedX Storage Engine/';
+var disqus_title = '從 SQL Server 到 MariaDB - [7] Linked Server 與 FederatedX Storage Engine';
+var disqus_url = 'https://sujunmin.github.io/blog/2016/10/05/從 SQL Server 到 MariaDB - [7] Linked Server 與 FederatedX Storage Engine/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><footer id="footer"><div class="container"><div class="bar"><div class="social"><a href="http://twitter.com/sujunmin_" target="_blank"><i class="fa fa-twitter"></i></a><a href="https://github.com/sujunmin" target="_blank"><i class="fa fa-github"></i></a><a href="https://plus.google.com/+JunMingSu" target="_blank"><i class="fa fa-google-plus"></i></a><a href="/atom.xml" target="_blank"><i class="fa fa-rss"></i></a></div><div class="footer">© 2018 <a href="/" rel="nofollow">隨意記事</a>. Powered by <a rel="nofollow" target="_blank" href="https://hexo.io">Hexo</a>. Theme <a target="_blank" href="https://github.com/lotabout/very-simple">very-simple</a>.</div></div></div></footer><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+    $(".fancybox").fancybox();
+});</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-78894509-1');ga('send','pageview');</script></body></html>
