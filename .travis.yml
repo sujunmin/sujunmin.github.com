@@ -5,14 +5,13 @@ node_js:
 # S: Build Lifecycle
 install:
   - npm install
-  - npm install hexo --save
-
 
 #before_script:
  # - npm install -g gulp
 
 script:
-  - hexo g
+  - hexo clean
+  - hexo generate
   
 
 after_script:
