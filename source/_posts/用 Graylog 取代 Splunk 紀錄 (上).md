@@ -8,7 +8,8 @@ date: 2018-05-31 15:43:12
 
 ## 需求說明
 原來負責系統的 Log 架構是這樣的
-<img src=https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/graylog_1.png />
+
+![](https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/graylog_1.png)
 
 因為 Splunk License 的關係，有時候會因為收的量太多而罷工了。
 
@@ -31,7 +32,7 @@ date: 2018-05-31 15:43:12
 官網的[手動安裝方法](http://docs.graylog.org/en/2.4/pages/installation/os/ubuntu.html)寫得很詳細，照做就很容易完成了。
 
 ## 最後架構
-<img src=https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/graylog_2.png />
+![](https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/graylog_2.png)
 
 因為只有 Windows 傳過來的會亂碼，所以在 Graylog 前面多放一個 logstash 轉檔以後再丟到 Graylog 即可，網路設備的不會這樣，就直接送進 Graylog。
 
