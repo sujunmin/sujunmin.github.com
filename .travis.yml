@@ -5,9 +5,7 @@ node_js:
 # S: Build Lifecycle
 install:
   - npm install
-  - npm install hexo-cli --save
-  - npm install hexo-renderer-sass --save
-  - npm install hexo-renderer-jade --save
+
 #before_script:
  # - npm install -g gulp
 
