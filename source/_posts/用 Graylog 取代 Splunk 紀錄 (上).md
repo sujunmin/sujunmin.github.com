@@ -8,7 +8,6 @@ date: 2018-05-31 15:43:12
 
 ## 需求說明
 原來負責系統的 Log 架構是這樣的
-
 ![](https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/graylog_1.png)
 
 因為 Splunk License 的關係，有時候會因為收的量太多而罷工了。
@@ -39,13 +38,13 @@ date: 2018-05-31 15:43:12
 ### Graylog Server
 #### Ubuntu 16.04
 
-```console
+```
 $ sudo apt-get update && sudo apt-get upgrade
 $ sudo apt-get install apt-transport-https openjdk-8-jre-headless uuid-runtime pwgen
 ```
 
 測試一下 Java
-```console
+```
 sujunmin@graylog:~$ java -version
 java version "1.8.0_171"
 Java(TM) SE Runtime Environment (build 1.8.0_144-b01)
@@ -55,7 +54,7 @@ Java HotSpot(TM) 64-Bit Server VM (build 25.144-b01, mixed mode)
 #### MongoDB
 安裝最新版 MongoDB
 
-```console
+```
 $ sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5
 $ echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.6 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.6.list
 $ sudo apt-get update
@@ -67,7 +66,7 @@ $ sudo systemctl restart mongod.service
 #### Elasticsearch
 Elasticsearch 要用 5.x 版的 (是說我已經有這個了，然後前面又有 logstash，差一個 Kanban 就變成 [ELK](https://www.elastic.co/webinars/introduction-elk-stack) 了，還要用 Graylog 嗎 XD)
 
-```console
+```
 $ wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
 $ echo "deb https://artifacts.elastic.co/packages/5.x/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-5.x.list
 $ sudo apt-get update && sudo apt-get install elasticsearch
