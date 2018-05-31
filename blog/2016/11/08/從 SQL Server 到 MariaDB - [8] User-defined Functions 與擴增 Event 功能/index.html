@@ -1,99 +1,40 @@
-<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>從 SQL Server 到 MariaDB - [8] User-defined Functions 與擴增 Event 功能 | 隨意記事</title><link rel="stylesheet" type="text/css" href="/blog//css/normalize.css"><link rel="stylesheet" type="text/css" href="/blog//css/highlight.css"><link rel="stylesheet" type="text/css" href="/blog//css/very-simple.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/blog/favicon.ico"><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script>(adsbygoogle = window.adsbygoogle || []).push({
- google_ad_client: "ca-pub-0187888667607442",
- enable_page_level_ads: true
- });
-</script></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>從 SQL Server 到 MariaDB - [8] User-defined Functions 與擴增 Event 功能</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2016-11-08</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/MSSQL/">MSSQL</a>/<a class="post-tag-link" href="/blog/tags/MariaDB/">MariaDB</a></div></div></div><article><div class="container post"><h2 id="需求說明"><a href="#需求說明" class="headerlink" title="需求說明"></a>需求說明</h2><p>雖然一些排程或是資訊可以透過系統排程來處理，但是原有的 SQL Server 管理方式幾乎都是透過 SQL Server Job 系統執行，加上 SQL Server 有許多可以在 Server 本體就能做完的方式，為了追求一樣的管理方式，導入 User-defined Functions (UDF) 來擴增 Server 功能。</p>
-<h2 id="透過-MariaDB-裡的-Event-System-進行備份"><a href="#透過-MariaDB-裡的-Event-System-進行備份" class="headerlink" title="透過 MariaDB 裡的 Event System 進行備份"></a>透過 MariaDB 裡的 Event System 進行備份</h2><p>基本上 Google 搜尋 MariaDB/MySQL 備份，不外乎是利用 cron jobs 或是 Windows tasks 來進行備份，這樣進行備份一則與原來的 SQL Server 管理不一樣，另外一個也沒辦法知道備份的情況 (要登入主機看 Task 狀態)。</p>
-<p>如果能透過 MariaDB 來發動備份 (透過 Event) 感覺能夠與以前的管理方式一樣，Server 要的排程 Server 自己發動，而且也能收集相關資料進行監控。</p>
-<p>但是 MariaDB 沒有什麼介面可以來執行系統作業，這時候剛好找到 <a href="https://mariadb.com/kb/en/mariadb/user-defined-functions/" target="_blank" rel="external">UDF</a>，還有一大堆神人做好的 <a href="http://www.mysqludf.org/" target="_blank" rel="external">MySQLUDF</a> Repository，裡頭剛好有我要的與系統處理有關的 <a href="https://github.com/mysqludf/lib_mysqludf_sys#readme" target="_blank" rel="external">UDF</a>，正好可以拿來用。</p>
-<h2 id="lib-mysqludf-sys-編譯、安裝、與使用"><a href="#lib-mysqludf-sys-編譯、安裝、與使用" class="headerlink" title="lib_mysqludf_sys 編譯、安裝、與使用"></a>lib_mysqludf_sys 編譯、安裝、與使用</h2><h3 id="編譯"><a href="#編譯" class="headerlink" title="編譯"></a>編譯</h3><p>如果連到 lib_mysqludf_sys 的 github，發現到它的 Makefile 都是為 gcc 做的，Windows 用戶有點麻煩。</p>
-<p>網路上可以找到編譯好的 dll，但是覺得有點怕不知道裏面有什麼。</p>
-<p>還好找到一篇也是部份 MySQL UDF 的作者寫的 blog <a href="http://rpbouman.blogspot.tw/2007/09/creating-mysql-udfs-with-microsoft.html" target="_blank" rel="external">Creating MySQL UDFs with Microsoft Visual C++ Express</a>，裡頭有一些方法可以參考。</p>
-<p>編譯的環境跟之前修改 <a href="https://sujunmin.github.io/blog/2016/10/03/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[6]%20Audit%20%E7%9A%84%E5%AF%A6%E4%BD%9C/">audit log plugin</a> 的環境一樣，需要注意的地方如下</p>
-<h4 id="Configuring-the-Include-path"><a href="#Configuring-the-Include-path" class="headerlink" title="Configuring the Include path"></a>Configuring the Include path</h4><p>Platform SDK 的 Include Files 在 <code>C:\Program Files (x86)\Windows Kits\8.1\Include</code> 。</p>
-<p>MariaDB 的我是 <code>&lt;MariaDB&gt;\include</code> 與 <code>&lt;MariaDB&gt;\include\mysql</code>。</p>
-<p>這兩個資料夾的資料最好複製一份到其他地方，因為等會要改。</p>
-<h4 id="Adding-the-HAVE-DLOPEN-macro"><a href="#Adding-the-HAVE-DLOPEN-macro" class="headerlink" title="Adding the HAVE_DLOPEN macro"></a>Adding the HAVE_DLOPEN macro</h4><p>除了加這個以外，還要加兩個防止 <code>strncpy</code> 的安全問題一直錯的 macro。</p>
-<p><code>HAVE_DLOPEN;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE</code></p>
-<h4 id="Configuring-the-library-path"><a href="#Configuring-the-library-path" class="headerlink" title="Configuring the library path"></a>Configuring the library path</h4><p>Platform SDK 的 Lib Files 在 <code>C:\Program Files (x86)\Windows Kits\8.1\Lib</code> 。</p>
-<p>MariaDB 的是 <code>&lt;MariaDB&gt;\lib</code> 。</p>
-<h4 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h4><p>編譯的時候會一直有 <code>snprintf</code> 重複定義的問題，為了減少麻煩，直接把 MariaDB 的 Include Files 裡有相關的定義先拿掉，待編譯完再改回來。</p>
-<h3 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h3><p>將產生出來的 dll 與 pdf 檔複製到 <code>&lt;MariaDB&gt;\lib\plugin</code>，透過 github 裡的 <a href="https://github.com/mysqludf/lib_mysqludf_sys/blob/master/lib_mysqludf_sys.sql" target="_blank" rel="external"><code>lib_mysqludf_sys.sql</code></a> 安裝，記得 so 要改成 dll。</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">DROP</span> <span class="keyword">FUNCTION</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> lib_mysqludf_sys_info;</div><div class="line"><span class="keyword">DROP</span> <span class="keyword">FUNCTION</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> sys_get;</div><div class="line"><span class="keyword">DROP</span> <span class="keyword">FUNCTION</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> sys_set;</div><div class="line"><span class="keyword">DROP</span> <span class="keyword">FUNCTION</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> sys_exec;</div><div class="line"><span class="keyword">DROP</span> <span class="keyword">FUNCTION</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> sys_eval;</div><div class="line"></div><div class="line"><span class="keyword">CREATE</span> <span class="keyword">FUNCTION</span> lib_mysqludf_sys_info <span class="keyword">RETURNS</span> <span class="keyword">string</span> <span class="keyword">SONAME</span> <span class="string">'lib_mysqludf_sys.dll'</span>;</div><div class="line"><span class="keyword">CREATE</span> <span class="keyword">FUNCTION</span> sys_get <span class="keyword">RETURNS</span> <span class="keyword">string</span> <span class="keyword">SONAME</span> <span class="string">'lib_mysqludf_sys.dll'</span>;</div><div class="line"><span class="keyword">CREATE</span> <span class="keyword">FUNCTION</span> sys_set <span class="keyword">RETURNS</span> <span class="built_in">int</span> <span class="keyword">SONAME</span> <span class="string">'lib_mysqludf_sys.dll'</span>;</div><div class="line"><span class="keyword">CREATE</span> <span class="keyword">FUNCTION</span> sys_exec <span class="keyword">RETURNS</span> <span class="built_in">int</span> <span class="keyword">SONAME</span> <span class="string">'lib_mysqludf_sys.dll'</span>;</div><div class="line"><span class="keyword">CREATE</span> <span class="keyword">FUNCTION</span> sys_eval <span class="keyword">RETURNS</span> <span class="keyword">string</span> <span class="keyword">SONAME</span> <span class="string">'lib_mysqludf_sys.dll'</span>;</div></pre></td></tr></table></figure>
-<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><p>可以看 <a href="https://github.com/mysqludf/lib_mysqludf_sys/blob/master/lib_mysqludf_sys.html" target="_blank" rel="external"><code>lib_mysqludf_sys.html</code></a>，基本上很簡單。</p>
-<table>
-<thead>
-<tr>
-<th>Function Name</th>
-<th>Input</th>
-<th>Output</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>lib_mysqludf_sys_info</code></td>
-<td>N/A</td>
-<td>版本號碼</td>
-</tr>
-<tr>
-<td><code>sys_get</code></td>
-<td>系統變數名稱</td>
-<td>系統變數值</td>
-</tr>
-<tr>
-<td><code>sys_set</code></td>
-<td>系統變數名稱<br> 要設定的系統變數值</td>
-<td>0 為成功，其他為失敗</td>
-</tr>
-<tr>
-<td><code>sys_exec</code></td>
-<td>需執行的指令</td>
-<td>該指令執行的 Process 傳回值</td>
-</tr>
-<tr>
-<td><code>sys_eval</code></td>
-<td>需執行的指令</td>
-<td>指令在 Standard Output 產生內容</td>
-</tr>
-</tbody>
-</table>
-<p>來跑一下試試看</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">select</span> sys_eval(<span class="string">'ipconfig'</span>);</div></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/lib_mysqludf_sys_01.png"></p>
-<p>竟然是亂碼，但是 cmd 的沒有問題</p>
-<p><img src="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/lib_mysqludf_sys_02.png"></p>
-<p>顯然是 Windows 編碼問題，最後是這樣解決的。</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">select</span> <span class="keyword">convert</span>(<span class="keyword">convert</span>(sys_eval(<span class="string">'ipconfig'</span>) <span class="keyword">using</span> big5) <span class="keyword">using</span> utf8);</div></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/lib_mysqludf_sys_03.png"></p>
-<h2 id="與-Event-實作備份"><a href="#與-Event-實作備份" class="headerlink" title="與 Event 實作備份"></a>與 Event 實作備份</h2><p>首先透過之前做的 <a href="https://sujunmin.github.io/blog/2016/09/10/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[4]%20SQL%20Agent%20%E8%88%87%20MariaDB%20Event/">Event 紀錄系統</a>來做處理，不過因為 <code>sys_eval</code> 與 <code>sys_exec</code> 有珍貴的 Log 資料，所以不能只是紀錄單純的 OK 就好，加上兼容一般 SQL 的排程，所以修改了一下 Event 紀錄系統。</p>
-<h3 id="備份排程"><a href="#備份排程" class="headerlink" title="備份排程"></a>備份排程</h3><p>做一個備份排程如下</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">CREATE</span> DEFINER=<span class="string">`sujunmin`</span>@<span class="string">`%`</span> <span class="keyword">EVENT</span> <span class="string">`backups`</span></div><div class="line">	<span class="keyword">ON</span> SCHEDULE</div><div class="line">		EVERY <span class="number">1</span> <span class="keyword">MINUTE</span> STARTS <span class="string">'2016-11-07 13:42:26'</span></div><div class="line">	<span class="keyword">ON</span> COMPLETION <span class="keyword">NOT</span> <span class="keyword">PRESERVE</span></div><div class="line">	<span class="keyword">ENABLE</span></div><div class="line">	<span class="keyword">COMMENT</span> <span class="string">''</span></div><div class="line">	<span class="keyword">DO</span> <span class="keyword">BEGIN</span></div><div class="line">    <span class="keyword">call</span> master.proc_for_event_history(<span class="string">'master'</span>, <span class="string">'backups'</span>, <span class="string">'select sys_eval(\'"E://MariaDB 10.1//bin//mysqldump.exe" -u sujunmin -pabcdef@12345 --master-data --verbose --all-databases --events --routines --gtid 2&gt;&amp;1 &gt; E://backup//all_db.sql\') into @outv;'</span>);</div><div class="line"><span class="keyword">END</span></div></pre></td></tr></table></figure>
-<p>要注意的是中間那個 <code>2&gt;&amp;1</code>，因為 <code>mysqldump</code> 是拿 <a href="http://dba.stackexchange.com/questions/14305/how-to-log-verbose-output-from-mysqldump" target="_blank" rel="external">Standard Error</a> 來 Output 訊息，但是 <code>sys_eval</code> 只會送回 Standard Outupt 內容。</p>
-<p>執行完以後看看結果。</p>
-<p><img src="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/lib_mysqludf_sys_04.png"></p>
-<h2 id="資安問題"><a href="#資安問題" class="headerlink" title="資安問題"></a>資安問題</h2><p>網路上有很多使用 MySQL UDF 透過這些 UDF 來存取系統的<a href="https://securitypentester.ninja/mysql-udf-injection/" target="_blank" rel="external">資安問題</a>，所以要確保以下的防護是否有達成。</p>
-<ol>
-<li>Web 連資料庫不能是 root 等級的帳號，權限愈小愈好。</li>
-<li>AppArmor 或是 UAC 的設定。</li>
-</ol>
-<h2 id="其他紀錄"><a href="#其他紀錄" class="headerlink" title="其他紀錄"></a>其他紀錄</h2><h3 id="2016-11-08"><a href="#2016-11-08" class="headerlink" title="2016/11/08"></a>2016/11/08</h3><p>安裝的時候如果碰到不能載入，除了之前那篇寫的內容之外，有可能是 Visual C++ Redistributable 套件需要安裝，我是在 Visual Studio 2015 編譯的，找 <a href="https://www.microsoft.com/en-us/download/details.aspx?id=48145" target="_blank" rel="external">Visual C++ Redistributable for Visual Studio 2015</a> 安裝就可以了。</p>
-</div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">
-var disqus_shortname = 'sujunmin';
-var disqus_identifier = '2016/11/08/從 SQL Server 到 MariaDB - [8] User-defined Functions 與擴增 Event 功能/';
-var disqus_title = '從 SQL Server 到 MariaDB - [8] User-defined Functions 與擴增 Event 功能';
-var disqus_url = 'https://sujunmin.github.io/blog/2016/11/08/從 SQL Server 到 MariaDB - [8] User-defined Functions 與擴增 Event 功能/';
-(function() {
-   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-})();
-</script>
-<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="http://disqus.com" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><footer id="footer"><div class="container"><div class="bar"><div class="social"><a href="http://twitter.com/sujunmin_" target="_blank"><i class="fa fa-twitter"></i></a><a href="https://github.com/sujunmin" target="_blank"><i class="fa fa-github"></i></a><a href="https://plus.google.com/+JunMingSu" target="_blank"><i class="fa fa-google-plus"></i></a><a href="/atom.xml" target="_blank"><i class="fa fa-rss"></i></a></div><div class="footer">© 2017 <a href="/" rel="nofollow">隨意記事</a>. Powered by <a rel="nofollow" target="_blank" href="https://hexo.io">Hexo</a>. Theme <a target="_blank" href="https://github.com/lotabout/very-simple">very-simple</a>.</div></div></div></footer><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
-    $(".fancybox").fancybox();
-});</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
-function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
-e=o.createElement(i);r=o.getElementsByTagName(i)[0];
-e.src='//www.google-analytics.com/analytics.js';
-r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
-ga('create','UA-78894509-1');ga('send','pageview');</script></body></html>
+extends base
+
+block title
+  title= page.title + " | " + config.title
+
+block main
+
+  // gallery that comes before the header
+  if page.photos
+     if page.photos.length
+      .article-gallery
+        .article-gallery-photos.container
+          for photo in page.photos
+            a.article-gallery-img.fancybox(href=url_for(photo), rel="gallery_" + page._id)
+              img(src=url_for(photo), itemprop="image")
+
+  .wrapper
+    .container.post-header
+      h1: = page.title
+
+  .wrapper
+    .container.meta
+      .post-time= page.date.format(config.date_format)
+      if (page.categories && page.categories.length)
+        .post-categories
+          != list_categories(page.categories, {show_count: false, class: 'post-category', style: 'none', separator: '>'})
+      if (page.tags && page.tags.length)
+        .post-tags
+          != list_tags(page.tags, {show_count: false, class: 'post-tag', style:'none', separator:'/'})
+
+
+  article
+    .container.post
+      != page.content
+
+    // comment system
+    .container
+      hr
+      include _partial/comments
+

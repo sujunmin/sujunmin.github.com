@@ -1,138 +1,40 @@
-<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>從 SQL Server 到 MariaDB - [4] SQL Agent 與 MariaDB Event | 隨意記事</title><link rel="stylesheet" type="text/css" href="/blog//css/normalize.css"><link rel="stylesheet" type="text/css" href="/blog//css/highlight.css"><link rel="stylesheet" type="text/css" href="/blog//css/very-simple.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/blog/favicon.ico"><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script>(adsbygoogle = window.adsbygoogle || []).push({
- google_ad_client: "ca-pub-0187888667607442",
- enable_page_level_ads: true
- });
-</script></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>從 SQL Server 到 MariaDB - [4] SQL Agent 與 MariaDB Event</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2016-09-10</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/MSSQL/">MSSQL</a>/<a class="post-tag-link" href="/blog/tags/MariaDB/">MariaDB</a></div></div></div><article><div class="container post"><h2 id="需求說明"><a href="#需求說明" class="headerlink" title="需求說明"></a>需求說明</h2><p>回到維運面的處理，在 SQL Server 有 SQL Server Agent Service 作為 Job System，說實在真的好用，在 msdb 裡儲存了很多 Job 的資料，不管是統計還是錯誤時的資料收集都做的非常好，因此系統每天會出資料庫系統狀態報表，其中有兩個項目有很多東西能看</p>
-<p><img src="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/SQLServerAgentLog_1.png"><br><img src="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/SQLServerAgentLog_2.png"> </p>
-<p>因此每天的檢查大部份都是看這些 Log 的狀態，希望在 MariaDB 上面希望也有類似的方法實作。</p>
-<h2 id="Job-System-的選擇"><a href="#Job-System-的選擇" class="headerlink" title="Job System 的選擇"></a>Job System 的選擇</h2><p>在 MariaDB 上有 <a href="https://mariadb.com/kb/en/mariadb/events/" target="_blank" rel="external"><code>Event</code></a> 可以用，在 Windows 裡有 Windows Tasks 可以用，但他們跟 SQL Server Agent Service 真的是差太多了，這兩個服務 MariaDB 的 <code>Event</code> 幾乎是射後不理，Windows 的 Tasks 也只有少少的 Log 可以用，基本上直接用是沒法達到原來維運的要求的，最後仍然是選擇 MariaDB 的 <code>Event</code> 配合一點紀錄來實作 Job System。</p>
-<h2 id="MariaDB-的-Event"><a href="#MariaDB-的-Event" class="headerlink" title="MariaDB 的 Event"></a>MariaDB 的 <code>Event</code></h2><p>詳細資料可以參考<a href="https://mariadb.com/kb/en/mariadb/events/" target="_blank" rel="external">這個</a>，基本上很簡單，就是設定某個 Schema 的什麼時候做什麼事情，用 <code>Show events;</code> 可以看到 <code>Event</code> 的內容，不過這邊要來說明的是 <code>mysql.event</code> 這個<a href="https://mariadb.com/kb/en/mariadb/mysqlevent-table/" target="_blank" rel="external">資料表</a>，因為所有的 <code>Event</code> 資料都是從這個地方加工的。</p>
-<p>其中有一些時間戳記，經過一些實驗結果 (因為真的寫的好少，不太清楚真正的意思) 有一些認識</p>
-<table>
-<thead>
-<tr>
-<th>欄位名</th>
-<th>意義</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>created</code></td>
-<td><code>Event</code> 產生的時間</td>
-</tr>
-<tr>
-<td><code>modified</code></td>
-<td><code>Event</code> 被修改的時間</td>
-</tr>
-<tr>
-<td><code>last_executed</code></td>
-<td>上次執行結束時間 (不論成功或失敗)</td>
-</tr>
-<tr>
-<td><code>starts</code></td>
-<td><code>Event</code> 開始時間 (第一次開始執行的時間)</td>
-</tr>
-<tr>
-<td><code>ends</code></td>
-<td><code>Event</code> 結束時間 (如果沒有結束日期就是 Null)</td>
-</tr>
-</tbody>
-</table>
-<p>要注意的是 <code>last_executed</code> 是不管成功或是失敗執行完的時間，<code>starts</code> 是第一次執行的時間，如果他是週期性執行，沒有結束的時間，只會記住第一次的</p>
-<p>這個時間系統很重要的是因為它會關係到後續報表怎麼出，所以要先了解一下</p>
-<p>另外的是處理情形的資訊，在 <code>mysql.event</code> 沒有任何紀錄最後一次狀態的資訊 (所以才說它幾乎是射後不理的系統)，這邊就需要自己紀錄了。 </p>
-<h2 id="紀錄-Event-執行狀態的-table"><a href="#紀錄-Event-執行狀態的-table" class="headerlink" title="紀錄 Event 執行狀態的 table"></a>紀錄 <code>Event</code> 執行狀態的 table</h2><p>根據需求，我在 <code>master</code> Create 了 <code>event_history</code> 資料表</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> event_history (</div><div class="line">    db <span class="built_in">CHAR</span>(<span class="number">64</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span>,</div><div class="line">    <span class="keyword">name</span> <span class="built_in">CHAR</span>(<span class="number">64</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span>,</div><div class="line">    <span class="keyword">start</span> DATETIME <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</div><div class="line">    <span class="keyword">end</span> DATETIME <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</div><div class="line">    <span class="keyword">sqlstate</span> <span class="built_in">CHAR</span>(<span class="number">64</span>) <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</div><div class="line">    errno <span class="built_in">CHAR</span>(<span class="number">64</span>) <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</div><div class="line">    message_text <span class="built_in">VARCHAR</span>(<span class="number">500</span>) <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</div><div class="line">    record_time DATETIME <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="keyword">CURRENT_TIMESTAMP</span>,</div><div class="line">    <span class="keyword">INDEX</span> idx1 (db, <span class="keyword">name</span>)</div><div class="line">)</div><div class="line"><span class="keyword">COLLATE</span>=<span class="string">'utf8_general_ci'</span></div><div class="line"><span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span></div><div class="line">;</div></pre></td></tr></table></figure>
-<table>
-<thead>
-<tr>
-<th>欄位名</th>
-<th>意義</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>db</code></td>
-<td><code>mysql.event.db</code></td>
-</tr>
-<tr>
-<td><code>name</code></td>
-<td><code>mysql.event.name</code></td>
-</tr>
-<tr>
-<td><code>start</code></td>
-<td>這次執行開始時間</td>
-</tr>
-<tr>
-<td><code>end</code></td>
-<td>這次執行結束時間</td>
-</tr>
-<tr>
-<td><code>sqlstate</code></td>
-<td>錯誤時紀錄 <code>sqlstate</code></td>
-</tr>
-<tr>
-<td><code>errno</code></td>
-<td>錯誤代碼</td>
-</tr>
-<tr>
-<td><code>message_text</code></td>
-<td>訊息</td>
-</tr>
-<tr>
-<td><code>record_time</code></td>
-<td>紀錄時間</td>
-</tr>
-</tbody>
-</table>
-<h3 id="攔截錯誤時的訊息"><a href="#攔截錯誤時的訊息" class="headerlink" title="攔截錯誤時的訊息"></a>攔截錯誤時的訊息</h3><p>MariaDB 有個 <a href="https://mariadb.com/kb/en/mariadb/declare-handler/" target="_blank" rel="external">Handler</a> 作為錯誤處理 try-catch 的機制，可以從這邊下手。</p>
-<p><a href="https://mariadb.com/kb/en/mariadb/get-diagnostics/" target="_blank" rel="external">Diagnostics</a> 可以在錯誤時拿到相關的資訊，有 <code>sqlstate</code> ，<code>errno</code> ，<code>message_text</code> 可以拿來用。</p>
-<h3 id="Prepare-Statements"><a href="#Prepare-Statements" class="headerlink" title="Prepare Statements"></a>Prepare Statements</h3><p>由上面的準備，幾乎是可以完成表裡需要的欄位項目，但是如果要每個 <code>Event</code>都要前面加 <code>Handler</code> 與 <code>Diagnostics</code> 來塞資料，這樣太麻煩也有可能會忘記，所以要做個 Store Procedure 來達成這個需求。</p>
-<p>其中需要讓 Store Procedure 執行傳進來的 SQL Statements，有 <a href="https://mariadb.com/kb/en/mariadb/prepare-statement/" target="_blank" rel="external">Prepare Statement</a> 可以用，這樣就差不多了</p>
-<p>不過這個 Prepare Statement 有限制使用的語法，而且只能執行一行。</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">CREATE</span> <span class="keyword">PROCEDURE</span> proc_for_event_history(<span class="keyword">IN</span> idb <span class="built_in">char</span>(<span class="number">64</span>), <span class="keyword">IN</span> iname <span class="built_in">char</span>(<span class="number">64</span>), <span class="keyword">IN</span> <span class="keyword">sql</span> <span class="built_in">TEXT</span>)</div><div class="line">    <span class="keyword">LANGUAGE</span> <span class="keyword">SQL</span></div><div class="line">    <span class="keyword">NOT</span> <span class="keyword">DETERMINISTIC</span></div><div class="line">    CONTAINS <span class="keyword">SQL</span></div><div class="line">    <span class="keyword">SQL</span> <span class="keyword">SECURITY</span> DEFINER</div><div class="line">    <span class="keyword">COMMENT</span> <span class="string">''</span></div><div class="line"><span class="keyword">BEGIN</span></div><div class="line">      <span class="keyword">DECLARE</span> <span class="keyword">EXIT</span> <span class="keyword">HANDLER</span> <span class="keyword">FOR</span> SQLEXCEPTION</div><div class="line">      <span class="keyword">BEGIN</span></div><div class="line">        <span class="keyword">GET</span> <span class="keyword">DIAGNOSTICS</span> CONDITION <span class="number">1</span> @<span class="keyword">sqlstate</span> = RETURNED_SQLSTATE,  @errno = MYSQL_ERRNO, @<span class="built_in">text</span> = MESSAGE_TEXT;</div><div class="line">        <span class="keyword">select</span> <span class="keyword">now</span>() <span class="keyword">into</span> @<span class="keyword">start</span> <span class="keyword">from</span> dual;</div><div class="line">        <span class="keyword">insert</span> <span class="keyword">into</span> master.event_history (db, <span class="keyword">name</span>, <span class="keyword">start</span>, <span class="keyword">end</span>, <span class="keyword">sqlstate</span>, errno, message_text) <span class="keyword">values</span> (idb, iname, @<span class="keyword">start</span>, <span class="keyword">now</span>(), @<span class="keyword">sqlstate</span>, @errno, @<span class="built_in">text</span>);</div><div class="line">      <span class="keyword">END</span>;</div><div class="line">     </div><div class="line">     <span class="keyword">set</span> @<span class="keyword">sql</span> := <span class="keyword">sql</span>;</div><div class="line">     <span class="keyword">prepare</span> stmt <span class="keyword">from</span> @<span class="keyword">sql</span>;</div><div class="line">    </div><div class="line">     <span class="keyword">select</span> <span class="keyword">now</span>() <span class="keyword">into</span> @<span class="keyword">start</span> <span class="keyword">from</span> dual;</div><div class="line">     <span class="keyword">set</span> @outs := <span class="string">''</span>;</div><div class="line">	  <span class="keyword">execute</span> stmt;</div><div class="line">      <span class="keyword">select</span> <span class="keyword">sleep</span>(<span class="number">10</span>);</div><div class="line">	  if instr(@sql, '@outv') &lt;&gt; 0 then</div><div class="line">      <span class="keyword">select</span> <span class="keyword">concat</span>(<span class="string">'OK '</span>, @outv) <span class="keyword">into</span> @outs;</div><div class="line">     else</div><div class="line">      <span class="keyword">select</span> <span class="string">'OK'</span> <span class="keyword">into</span> @outs;</div><div class="line">     <span class="keyword">end</span> <span class="keyword">if</span>;</div><div class="line">  	  <span class="keyword">insert</span> <span class="keyword">into</span> master.event_history (<span class="string">`db`</span>, <span class="string">`name`</span>, <span class="string">`start`</span>, <span class="string">`end`</span>, <span class="string">`sqlstate`</span>, <span class="string">`errno`</span>, <span class="string">`message_text`</span>) <span class="keyword">values</span> (idb, iname, @<span class="keyword">start</span>, <span class="keyword">now</span>(), <span class="literal">NULL</span>, <span class="literal">NULL</span>, @outs); </div><div class="line"><span class="keyword">END</span></div></pre></td></tr></table></figure>
-<p>錯誤的時候有錯誤訊息，但正確的時候不知道那邊可以找到訊息，只好先打個 OK 了。</p>
-<p>有一個 <code>select sleep(10);</code> 是拿來做實驗用的，平時可以拿掉。</p>
-<h2 id="實驗"><a href="#實驗" class="headerlink" title="實驗"></a>實驗</h2><ol>
-<li><p><code>Event</code> 系統要打開</p>
-<p><code>SET Global event_schedular=1</code></p>
-<p>或是在 <code>my.cnf</code> 加上 <code>events_scheduler=1</code></p>
-</li>
-<li><p>一個簡單 table，然後做一個 <code>Event</code> 是一直加一的</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">CREATE</span> <span class="keyword">Database</span> test1;</div><div class="line"></div><div class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> test2 (</div><div class="line"> idtest2 <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</div><div class="line"> PRIMARY <span class="keyword">KEY</span> (idtest2)</div><div class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=utf8;</div><div class="line"></div><div class="line"><span class="keyword">CREATE</span> <span class="keyword">EVENT</span> test_event</div><div class="line"> <span class="keyword">ON</span> SCHEDULE</div><div class="line">     EVERY <span class="number">1</span> <span class="keyword">MINUTE</span> STARTS <span class="string">'2016-09-07 16:00:58'</span></div><div class="line"> <span class="keyword">ON</span> COMPLETION <span class="keyword">NOT</span> <span class="keyword">PRESERVE</span></div><div class="line"> <span class="keyword">ENABLE</span></div><div class="line"> <span class="keyword">COMMENT</span> <span class="string">''</span></div><div class="line"> <span class="keyword">DO</span> <span class="keyword">begin</span></div><div class="line">  <span class="keyword">call</span> master.proc_for_event_history(<span class="string">'test1'</span>, <span class="string">'test_event'</span>, <span class="string">'UPDATE test1.test22 SET idtest2 = idtest2 + 1'</span>);</div><div class="line"><span class="keyword">end</span>;</div></pre></td></tr></table></figure>
-<p>這裡的 <code>test22</code> 是故意打錯的，看看結果如何</p>
-</li>
-<li><p>看一下結果</p>
-<figure class="highlight cmd"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">MariaDB [master]&gt; select * from event_history order by record_time desc limit <span class="number">1</span>\G</div><div class="line">*************************** <span class="number">1</span>. row ***************************</div><div class="line"><span class="function">          db: <span class="title">test1</span></span></div><div class="line"><span class="function">        <span class="title">name</span>: <span class="title">test_event</span></span></div><div class="line"><span class="function">       <span class="title">start</span>: 2016-09-10 15:57:58</span></div><div class="line"><span class="function">         <span class="title">end</span>: 2016-09-10 15:57:58</span></div><div class="line"><span class="function">    <span class="title">sqlstate</span>: 42<span class="title">S02</span></span></div><div class="line"><span class="function">       <span class="title">errno</span>: 1146</span></div><div class="line"><span class="function"><span class="title">message_text</span>: <span class="title">Table</span> '<span class="title">test1.test22</span>' <span class="title">doesn</span>'<span class="title">t</span> <span class="title">exist</span></span></div><div class="line"><span class="function"> <span class="title">record_time</span>: 2016-09-10 15:57:58</span></div><div class="line"><span class="function">1 <span class="title">row</span> <span class="title">in</span> <span class="title">set</span> (0.00 <span class="title">sec</span>)</span></div></pre></td></tr></table></figure>
-</li>
-<li><p>調回來正確的，再看一下結果</p>
-<figure class="highlight cmd"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">MariaDB [master]&gt; select * from event_history order by record_time desc limit <span class="number">1</span>\G</div><div class="line">*************************** <span class="number">1</span>. row ***************************</div><div class="line"><span class="function">          db: <span class="title">test1</span></span></div><div class="line"><span class="function">        <span class="title">name</span>: <span class="title">test_event</span></span></div><div class="line"><span class="function">       <span class="title">start</span>: 2016-09-10 16:00:58</span></div><div class="line"><span class="function">         <span class="title">end</span>: 2016-09-10 16:01:08</span></div><div class="line"><span class="function">    <span class="title">sqlstate</span>: <span class="title">NULL</span></span></div><div class="line"><span class="function">       <span class="title">errno</span>: <span class="title">NULL</span></span></div><div class="line"><span class="function"><span class="title">message_text</span>: <span class="title">OK</span></span></div><div class="line"><span class="function"> <span class="title">record_time</span>: 2016-09-10 16:01:08</span></div><div class="line"><span class="function">1 <span class="title">row</span> <span class="title">in</span> <span class="title">set</span> (0.00 <span class="title">sec</span>)</span></div></pre></td></tr></table></figure>
-</li>
-</ol>
-<p>開始跟結束差 10 秒鐘是之前加的 <code>select sleep(10)</code> 的關係。</p>
-<h2 id="還需要解決的項目"><a href="#還需要解決的項目" class="headerlink" title="還需要解決的項目"></a>還需要解決的項目</h2><ol>
-<li>Query 正確時的回傳要能抓到</li>
-<li>該次真正開始執行時間</li>
-<li>下一次開始執行時間</li>
-</ol>
-<h2 id="修改"><a href="#修改" class="headerlink" title="修改"></a>修改</h2><h3 id="2016-11-7"><a href="#2016-11-7" class="headerlink" title="2016/11/7"></a>2016/11/7</h3><p>透過 <code>@outv</code> 收 SQL 訊息，傳到 <code>@outs</code> 給 Event 紀錄系統。</p>
-</div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">
-var disqus_shortname = 'sujunmin';
-var disqus_identifier = '2016/09/10/從 SQL Server 到 MariaDB - [4] SQL Agent 與 MariaDB Event/';
-var disqus_title = '從 SQL Server 到 MariaDB - [4] SQL Agent 與 MariaDB Event';
-var disqus_url = 'https://sujunmin.github.io/blog/2016/09/10/從 SQL Server 到 MariaDB - [4] SQL Agent 與 MariaDB Event/';
-(function() {
-   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-})();
-</script>
-<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="http://disqus.com" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><footer id="footer"><div class="container"><div class="bar"><div class="social"><a href="http://twitter.com/sujunmin_" target="_blank"><i class="fa fa-twitter"></i></a><a href="https://github.com/sujunmin" target="_blank"><i class="fa fa-github"></i></a><a href="https://plus.google.com/+JunMingSu" target="_blank"><i class="fa fa-google-plus"></i></a><a href="/atom.xml" target="_blank"><i class="fa fa-rss"></i></a></div><div class="footer">© 2017 <a href="/" rel="nofollow">隨意記事</a>. Powered by <a rel="nofollow" target="_blank" href="https://hexo.io">Hexo</a>. Theme <a target="_blank" href="https://github.com/lotabout/very-simple">very-simple</a>.</div></div></div></footer><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
-    $(".fancybox").fancybox();
-});</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
-function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
-e=o.createElement(i);r=o.getElementsByTagName(i)[0];
-e.src='//www.google-analytics.com/analytics.js';
-r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
-ga('create','UA-78894509-1');ga('send','pageview');</script></body></html>
+extends base
+
+block title
+  title= page.title + " | " + config.title
+
+block main
+
+  // gallery that comes before the header
+  if page.photos
+     if page.photos.length
+      .article-gallery
+        .article-gallery-photos.container
+          for photo in page.photos
+            a.article-gallery-img.fancybox(href=url_for(photo), rel="gallery_" + page._id)
+              img(src=url_for(photo), itemprop="image")
+
+  .wrapper
+    .container.post-header
+      h1: = page.title
+
+  .wrapper
+    .container.meta
+      .post-time= page.date.format(config.date_format)
+      if (page.categories && page.categories.length)
+        .post-categories
+          != list_categories(page.categories, {show_count: false, class: 'post-category', style: 'none', separator: '>'})
+      if (page.tags && page.tags.length)
+        .post-tags
+          != list_tags(page.tags, {show_count: false, class: 'post-tag', style:'none', separator:'/'})
+
+
+  article
+    .container.post
+      != page.content
+
+    // comment system
+    .container
+      hr
+      include _partial/comments
+
