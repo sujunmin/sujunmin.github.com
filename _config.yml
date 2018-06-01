@@ -38,7 +38,7 @@ post_asset_folder: false
 relative_link: false
 future: true
 highlight:
-  enable: enable
+  enable: false
 hljs:
   enable: true #true to enable the plugin
   line_number: frontend # add line_number in frontend or backend
