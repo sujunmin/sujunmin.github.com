@@ -7,45 +7,16 @@
 <h2 id="讓不支援-Web-API-的程式支援"><a href="#讓不支援-Web-API-的程式支援" class="headerlink" title="讓不支援 Web API 的程式支援"></a>讓不支援 Web API 的程式支援</h2><p>如果你的架構能支援使用外部程式，或是可以使用其他類 (如 C++ export function) 函式庫的話，以下的說明可以讓該架構可以使用 Web API。</p>
 <p>我的架構中是沒有支援使用外部程式，但可以用 C++ 的外部函式庫，在 Windows 上面。</p>
 <p>首先，我使用 Windows 都有的 <code>shell32.dll</code>。</p>
-<p></p><p class="code-caption" data-lang="c" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
-<pre><code class="c">#import &quot;shell32.dll&quot; 
-        int ShellExecuteW( int       hWnd,
-                           string    lpVerb,
-                           string    lpFile,
-                           string    lpParameters,
-                           string    lpDirectory,
-                           int       nCmdShow
-                           );
-#import
-</code></pre>
+<p></p><p class="code-caption" data-lang="c" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">"shell32.dll"</span> </span></span><br><span class="line">        <span class="function"><span class="keyword">int</span> <span class="title">ShellExecuteW</span><span class="params">( <span class="keyword">int</span>       hWnd,</span></span></span><br><span class="line"><span class="function"><span class="params">                           <span class="built_in">string</span>    lpVerb,</span></span></span><br><span class="line"><span class="function"><span class="params">                           <span class="built_in">string</span>    lpFile,</span></span></span><br><span class="line"><span class="function"><span class="params">                           <span class="built_in">string</span>    lpParameters,</span></span></span><br><span class="line"><span class="function"><span class="params">                           <span class="built_in">string</span>    lpDirectory,</span></span></span><br><span class="line"><span class="function"><span class="params">                           <span class="keyword">int</span>       nCmdShow</span></span></span><br><span class="line"><span class="function"><span class="params">                           )</span></span>;</span><br><span class="line"><span class="meta">#import</span></span><br></pre></td></tr></table></figure><p></p>
 <p>其中 <a href="https://goo.gl/mhpXpg" target="_blank" rel="noopener"><code>ShellExecuteW</code></a> 是拿來執行外部程式的函數。</p>
 <p>接下來使用 <a href="https://curl.haxx.se/download.html" target="_blank" rel="noopener">curl</a> 來作為發動 Http Request 的外部程式，這個 curl 支援多種平台，真的很方便。</p>
 <p>因為環境在 Windows 上，所以下載 Windows 版的 (記得裡頭的檔案都要在同個目錄下才能運作)。</p>
 <p>最後在要使用 Web API 的地方加</p>
-<p></p><p class="code-caption" data-lang="c" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
-<pre><code class="c">...
-string cmd = &quot; -X POST -H \&quot;Authorization: Bearer &quot; + LineNotifyAccessToken + &quot;\&quot; -F \&quot;message=&quot; + msg + &quot;\&quot; -F \&quot;imageFile=&quot;+filename+&quot;\&quot; https://notify-api.line.me/api/notify&quot;; 
-          ...
-          ShellExecuteW (0, &quot;Open&quot;, &quot;curl.exe&quot;, cmd, workpath, 0);
-...
-</code></pre>
+<p></p><p class="code-caption" data-lang="c" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="built_in">string</span> cmd = <span class="string">" -X POST -H \"Authorization: Bearer "</span> + LineNotifyAccessToken + <span class="string">"\" -F \"message="</span> + msg + <span class="string">"\" -F \"imageFile="</span>+filename+<span class="string">"\" https://notify-api.line.me/api/notify"</span>; </span><br><span class="line">		  ...</span><br><span class="line">		  ShellExecuteW (<span class="number">0</span>, <span class="string">"Open"</span>, <span class="string">"curl.exe"</span>, cmd, workpath, <span class="number">0</span>);</span><br><span class="line">...</span><br></pre></td></tr></table></figure><p></p>
 <p>其中 <code>imageFile</code> 的格式是 jpeg/png ，自己電腦裡的路徑 <code>@C:/test/abc.png</code>，所以就是 <code>imageFile=@C:/test/abc.png</code>。</p>
 <p>另外這個服務是每個小時有一個<a href="https://notify-bot.line.me/doc/en/" target="_blank" rel="noopener">上限</a>，API Rate Limit，可以參考一下。</p>
-<p></p><p class="code-caption" data-lang="" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
-<pre><code>F:\Test&gt;curl -X GET -H &quot;Authorization: Bearer &lt;token&gt;&quot; https://notify-api.line.me/api/status -I
-HTTP/1.1 200 OK
-Server: nginx
-Date: Fri, 03 Mar 2017 02:45:18 GMT
-Content-Type: application/json;charset=UTF-8
-Transfer-Encoding: chunked
-Connection: keep-alive
-Keep-Alive: timeout=3
-X-RateLimit-Limit: 1000
-X-RateLimit-ImageLimit: 50
-X-RateLimit-Remaining: 946
-X-RateLimit-ImageRemaining: 50
-X-RateLimit-Reset: 1488511643
-</code></pre><p>這樣一來就讓不支援 Web API 的程式支援了。</p>
+<p></p><p class="code-caption" data-lang="" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">F:\Test&gt;curl -X GET -H &quot;Authorization: Bearer &lt;token&gt;&quot; https://notify-api.line.me/api/status -I</span><br><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Server: nginx</span><br><span class="line">Date: Fri, 03 Mar 2017 02:45:18 GMT</span><br><span class="line">Content-Type: application/json;charset=UTF-8</span><br><span class="line">Transfer-Encoding: chunked</span><br><span class="line">Connection: keep-alive</span><br><span class="line">Keep-Alive: timeout=3</span><br><span class="line">X-RateLimit-Limit: 1000</span><br><span class="line">X-RateLimit-ImageLimit: 50</span><br><span class="line">X-RateLimit-Remaining: 946</span><br><span class="line">X-RateLimit-ImageRemaining: 50</span><br><span class="line">X-RateLimit-Reset: 1488511643</span><br></pre></td></tr></table></figure><p></p>
+<p>這樣一來就讓不支援 Web API 的程式支援了。</p>
 </div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">
 var disqus_shortname = 'sujunmin';
 var disqus_identifier = '2017/03/03/讓不支援 Web API 的程式支援並使用 LINE Notify 服務/';

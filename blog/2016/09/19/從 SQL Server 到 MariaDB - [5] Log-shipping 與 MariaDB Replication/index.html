@@ -41,13 +41,8 @@
 <p>什麼叫作 “紀錄的最後一個 binlog GTID” 呢?</p>
 <p>對 <code>gtid_slave_pos</code> 來說，就是 master 的最後一筆 GTID。</p>
 <p>對 <code>gtid_current_pos</code> 來說，不管當下的 Instance 之前是 Master 還是 Slave</p>
-<p></p><p class="code-caption" data-lang="" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
-<pre><code>if gtid_binlog_pos.ServerID = Instance.ServerID and gtid_binlog_pos.DomainID = Instance.DomainID and gtid_binlog_pos.SequenceID &gt; gtid_slave_pos.SequenceID (同 ServerID 與 DomainID 狀態下) then
-  gtid_current_pos = gtid_binlog_pos
-else 
-  gtid_current_pos = gtid_slave_pos (同 ServerID 與 DomainID 狀態下)
-end if
-</code></pre><p>官方文件有說到一個例子，假設 A 為 Master，B 為 Slave，參數為 <code>slave_pos</code>，把 A 先關一會兒，讓 B 成為 Master，最後回復 A 並成為 B 的 Slave。</p>
+<p></p><p class="code-caption" data-lang="" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">if gtid_binlog_pos.ServerID = Instance.ServerID and gtid_binlog_pos.DomainID = Instance.DomainID and gtid_binlog_pos.SequenceID &gt; gtid_slave_pos.SequenceID (同 ServerID 與 DomainID 狀態下) then</span><br><span class="line">  gtid_current_pos = gtid_binlog_pos</span><br><span class="line">else </span><br><span class="line">  gtid_current_pos = gtid_slave_pos (同 ServerID 與 DomainID 狀態下)</span><br><span class="line">end if</span><br></pre></td></tr></table></figure><p></p>
+<p>官方文件有說到一個例子，假設 A 為 Master，B 為 Slave，參數為 <code>slave_pos</code>，把 A 先關一會兒，讓 B 成為 Master，最後回復 A 並成為 B 的 Slave。</p>
 <p><img src="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/MariaDB_Replication_1.png"></p>
 <ul>
 <li>一開始 A 的 <code>gtid_binlog_pos</code> 與 <code>gtid_current_pos</code> 相同（<code>1-1-123</code>, <code>1-1-137</code>, <code>1-1-145</code>），<code>gtid_slave_pos</code> 是空值。</li>
@@ -81,10 +76,7 @@ end if
 <li>Event 記得設成 Disabled on Slave。</li>
 <li>接下來備份 Master</li>
 </ul>
-<p></p><p class="code-caption" data-lang="cmd" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
-<pre><code class="cmd">E:\backup&gt;mysqldump -u sujunmin -p --master-data --all-databases --events --routines --gtid &gt; all_db.sql
-Enter password: ************
-</code></pre>
+<p></p><p class="code-caption" data-lang="cmd" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">E:\<span class="title">backup</span>&gt;<span class="title">mysqldump</span> -<span class="title">u</span> <span class="title">sujunmin</span> -<span class="title">p</span> --<span class="title">master</span>-<span class="title">data</span> --<span class="title">all</span>-<span class="title">databases</span> --<span class="title">events</span> --<span class="title">routines</span> --<span class="title">gtid</span> &gt; <span class="title">all_db.sql</span></span></span><br><span class="line"><span class="function"><span class="title">Enter</span> <span class="title">password</span>: ************</span></span><br></pre></td></tr></table></figure><p></p>
 <p>  其中幾個重要參數</p>
 <table>
 <thead>
@@ -113,27 +105,7 @@ Enter password: ************
 </tbody>
 </table>
 <p>  觀察一下 <code>all_db.sql</code> 的內容</p>
-<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
-<pre><code class="sql">-- MySQL dump 10.16  Distrib 10.1.17-MariaDB, for Win64 (AMD64)
-(中間省略)
---
--- Position to start replication or point-in-time recovery from
---
-
--- CHANGE MASTER TO MASTER_LOG_FILE=&#39;WSTest-bin.000002&#39;, MASTER_LOG_POS=3732;
-
---
--- GTID to start replication from
---
-
-CHANGE MASTER TO MASTER_USE_GTID=slave_pos;
-SET GLOBAL gtid_slave_pos=&#39;0-1-770&#39;;
-
---
--- Current Database: &#39;master&#39;
---
-(後面省略)
-</code></pre>
+<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- MySQL dump 10.16  Distrib 10.1.17-MariaDB, for Win64 (AMD64)</span></span><br><span class="line">(中間省略)</span><br><span class="line"><span class="comment">--</span></span><br><span class="line"><span class="comment">-- Position to start replication or point-in-time recovery from</span></span><br><span class="line"><span class="comment">--</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- CHANGE MASTER TO MASTER_LOG_FILE='WSTest-bin.000002', MASTER_LOG_POS=3732;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">--</span></span><br><span class="line"><span class="comment">-- GTID to start replication from</span></span><br><span class="line"><span class="comment">--</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">CHANGE</span> <span class="keyword">MASTER</span> <span class="keyword">TO</span> MASTER_USE_GTID=slave_pos;</span><br><span class="line"><span class="keyword">SET</span> <span class="keyword">GLOBAL</span> gtid_slave_pos=<span class="string">'0-1-770'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">--</span></span><br><span class="line"><span class="comment">-- Current Database: 'master'</span></span><br><span class="line"><span class="comment">--</span></span><br><span class="line">(後面省略)</span><br></pre></td></tr></table></figure><p></p>
 <p>  可以看到如果要用舊的方式(兼容 MySQL Replication) 與新的方式。</p>
 <ul>
 <li>啟動 Slave 的 Instance。  </li>
@@ -141,38 +113,12 @@ SET GLOBAL gtid_slave_pos=&#39;0-1-770&#39;;
 <li>在 Master 上開一個 User <code>lsuser</code> 作為 Replication 用，權限是 <code>REPLICATION SLAVE</code> 與 <code>SUPER</code> (這個我不設定會沒權限登入，但是官方網站沒有這個權限)。</li>
 <li>在 Slave 上設定 <code>CHANGE MASTER</code> </li>
 </ul>
-<p></p><p class="code-caption" data-lang="cmd" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
-<pre><code class="cmd">MariaDB [(none)]&gt; change master to master_host=&#39;localhost&#39;, master_port=3306, master_user=&#39;lsuser&#39;, master_password=&#39;password&#39;;
-Query OK, 0 rows affected (0.05 sec)
-</code></pre>
+<p></p><p class="code-caption" data-lang="cmd" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [(none)]&gt; change master to master_host='localhost', master_port=<span class="number">3306</span>, master_user='lsuser', master_password='password';</span><br><span class="line">Query OK, <span class="number">0</span> rows affected (<span class="number">0</span>.<span class="number">05</span> sec)</span><br></pre></td></tr></table></figure><p></p>
 <ul>
 <li><code>START SLAVE;</code></li>
 <li><code>SHOW SLAVE STATUS;</code></li>
 </ul>
-<p></p><p class="code-caption" data-lang="cmd" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
-<pre><code class="cmd">MariaDB [(none)]&gt; show slave status\G
-*************************** 1. row ***************************
-            Slave_IO_State: Waiting for master to send event
-               Master_Host: localhost
-               Master_User: lsuser
-               Master_Port: 3306
-             Connect_Retry: 60
-           Master_Log_File: WSTest-bin.000002
-       Read_Master_Log_Pos: 5429
-            Relay_Log_File: WSTest-relay-bin.000002
-             Relay_Log_Pos: 5757
-     Relay_Master_Log_File: WSTest-bin.000002
-          Slave_IO_Running: Yes
-         Slave_SQL_Running: Yes
-           Replicate_Do_DB:
-                        (省略)
-                Using_Gtid: Slave_Pos
-               Gtid_IO_Pos: 0-1-775
-   Replicate_Do_Domain_Ids:
- Replicate_Ignore_Domain_Ids:
-             Parallel_Mode: conservative
- 1 row in set (0.00 sec)
-</code></pre>
+<p></p><p class="code-caption" data-lang="cmd" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [(none)]&gt; show slave status\G</span><br><span class="line">*************************** <span class="number">1</span>. row ***************************</span><br><span class="line"><span class="function">            Slave_IO_State: <span class="title">Waiting</span> <span class="title">for</span> <span class="title">master</span> <span class="title">to</span> <span class="title">send</span> <span class="title">event</span></span></span><br><span class="line"><span class="function">               <span class="title">Master_Host</span>: <span class="title">localhost</span></span></span><br><span class="line"><span class="function">               <span class="title">Master_User</span>: <span class="title">lsuser</span></span></span><br><span class="line"><span class="function">               <span class="title">Master_Port</span>: 3306</span></span><br><span class="line"><span class="function">             <span class="title">Connect_Retry</span>: 60</span></span><br><span class="line"><span class="function">           <span class="title">Master_Log_File</span>: <span class="title">WSTest</span>-<span class="title">bin</span>.000002</span></span><br><span class="line"><span class="function">       <span class="title">Read_Master_Log_Pos</span>: 5429</span></span><br><span class="line"><span class="function">            <span class="title">Relay_Log_File</span>: <span class="title">WSTest</span>-<span class="title">relay</span>-<span class="title">bin</span>.000002</span></span><br><span class="line"><span class="function">             <span class="title">Relay_Log_Pos</span>: 5757</span></span><br><span class="line"><span class="function">     <span class="title">Relay_Master_Log_File</span>: <span class="title">WSTest</span>-<span class="title">bin</span>.000002</span></span><br><span class="line"><span class="function">          <span class="title">Slave_IO_Running</span>: <span class="title">Yes</span></span></span><br><span class="line"><span class="function">         <span class="title">Slave_SQL_Running</span>: <span class="title">Yes</span></span></span><br><span class="line"><span class="function">           <span class="title">Replicate_Do_DB</span>:</span></span><br><span class="line"><span class="function">                        (省略)</span></span><br><span class="line"><span class="function">                <span class="title">Using_Gtid</span>: <span class="title">Slave_Pos</span></span></span><br><span class="line"><span class="function">               <span class="title">Gtid_IO_Pos</span>: 0-1-775</span></span><br><span class="line"><span class="function">   <span class="title">Replicate_Do_Domain_Ids</span>:</span></span><br><span class="line"><span class="function"> <span class="title">Replicate_Ignore_Domain_Ids</span>:</span></span><br><span class="line"><span class="function">             <span class="title">Parallel_Mode</span>: <span class="title">conservative</span></span></span><br><span class="line"><span class="function"> 1 <span class="title">row</span> <span class="title">in</span> <span class="title">set</span> (0.00 <span class="title">sec</span>)</span></span><br></pre></td></tr></table></figure><p></p>
 <ul>
 <li>看一下同步狀況</li>
 <li>移除 Master 模擬 Master 壞掉了狀態<ul>
@@ -183,136 +129,37 @@ Query OK, 0 rows affected (0.05 sec)
 </li>
 <li>Slave 沒法連到 Master 了</li>
 </ul>
-<p></p><p class="code-caption" data-lang="cmd" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
-<pre><code class="cmd">MariaDB [(none)]&gt; show slave status\G
-*************************** 1. row ***************************
-             Slave_IO_State: Reconnecting after a failed master event read
-                Master_Host: localhost
-                Master_User: lsuser
-                Master_Port: 3306
-              Connect_Retry: 60
-            Master_Log_File: WSTest-bin.000002
-        Read_Master_Log_Pos: 8223
-             Relay_Log_File: WSTest-relay-bin.000002
-              Relay_Log_Pos: 8551
-      Relay_Master_Log_File: WSTest-bin.000002
-           Slave_IO_Running: Connecting
-          Slave_SQL_Running: Yes
-                         (省略)
-              Last_IO_Errno: 2003
-              Last_IO_Error: error reconnecting to master &#39;lsuser@localhost:3306&#39; - retry-time: 60  retries: 86400  message: Can&#39;t connect to MySQL server on&#39;localhost&#39; (10061 &quot;Unknown error&quot;)
-             Last_SQL_Errno: 0
-             Last_SQL_Error:
- Replicate_Ignore_Server_Ids:
-           Master_Server_Id: 1
-             Master_SSL_Crl:
-         Master_SSL_Crlpath:
-                 Using_Gtid: Slave_Pos
-                Gtid_IO_Pos: 0-1-784
-    Replicate_Do_Domain_Ids:
- Replicate_Ignore_Domain_Ids:
-              Parallel_Mode: conservative
- 1 row in set (0.00 sec)
-</code></pre>
+<p></p><p class="code-caption" data-lang="cmd" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [(none)]&gt; show slave status\G</span><br><span class="line">*************************** <span class="number">1</span>. row ***************************</span><br><span class="line"><span class="function">             Slave_IO_State: <span class="title">Reconnecting</span> <span class="title">after</span> <span class="title">a</span> <span class="title">failed</span> <span class="title">master</span> <span class="title">event</span> <span class="title">read</span></span></span><br><span class="line"><span class="function">                <span class="title">Master_Host</span>: <span class="title">localhost</span></span></span><br><span class="line"><span class="function">                <span class="title">Master_User</span>: <span class="title">lsuser</span></span></span><br><span class="line"><span class="function">                <span class="title">Master_Port</span>: 3306</span></span><br><span class="line"><span class="function">              <span class="title">Connect_Retry</span>: 60</span></span><br><span class="line"><span class="function">            <span class="title">Master_Log_File</span>: <span class="title">WSTest</span>-<span class="title">bin</span>.000002</span></span><br><span class="line"><span class="function">        <span class="title">Read_Master_Log_Pos</span>: 8223</span></span><br><span class="line"><span class="function">             <span class="title">Relay_Log_File</span>: <span class="title">WSTest</span>-<span class="title">relay</span>-<span class="title">bin</span>.000002</span></span><br><span class="line"><span class="function">              <span class="title">Relay_Log_Pos</span>: 8551</span></span><br><span class="line"><span class="function">      <span class="title">Relay_Master_Log_File</span>: <span class="title">WSTest</span>-<span class="title">bin</span>.000002</span></span><br><span class="line"><span class="function">           <span class="title">Slave_IO_Running</span>: <span class="title">Connecting</span></span></span><br><span class="line"><span class="function">          <span class="title">Slave_SQL_Running</span>: <span class="title">Yes</span></span></span><br><span class="line"><span class="function">                         (省略)</span></span><br><span class="line"><span class="function">              <span class="title">Last_IO_Errno</span>: 2003</span></span><br><span class="line"><span class="function">              <span class="title">Last_IO_Error</span>: <span class="title">error</span> <span class="title">reconnecting</span> <span class="title">to</span> <span class="title">master</span> '<span class="title">lsuser</span>@<span class="title">localhost</span>:3306' - <span class="title">retry</span>-<span class="title">time</span>: 60  <span class="title">retries</span>: 86400  <span class="title">message</span>: <span class="title">Can</span>'<span class="title">t</span> <span class="title">connect</span> <span class="title">to</span> <span class="title">MySQL</span> <span class="title">server</span> <span class="title">on</span>'<span class="title">localhost</span>' (10061 "<span class="title">Unknown</span> <span class="title">error</span>")</span></span><br><span class="line"><span class="function">             <span class="title">Last_SQL_Errno</span>: 0</span></span><br><span class="line"><span class="function">             <span class="title">Last_SQL_Error</span>:</span></span><br><span class="line"><span class="function"> <span class="title">Replicate_Ignore_Server_Ids</span>:</span></span><br><span class="line"><span class="function">           <span class="title">Master_Server_Id</span>: 1</span></span><br><span class="line"><span class="function">             <span class="title">Master_SSL_Crl</span>:</span></span><br><span class="line"><span class="function">         <span class="title">Master_SSL_Crlpath</span>:</span></span><br><span class="line"><span class="function">                 <span class="title">Using_Gtid</span>: <span class="title">Slave_Pos</span></span></span><br><span class="line"><span class="function">                <span class="title">Gtid_IO_Pos</span>: 0-1-784</span></span><br><span class="line"><span class="function">    <span class="title">Replicate_Do_Domain_Ids</span>:</span></span><br><span class="line"><span class="function"> <span class="title">Replicate_Ignore_Domain_Ids</span>:</span></span><br><span class="line"><span class="function">              <span class="title">Parallel_Mode</span>: <span class="title">conservative</span></span></span><br><span class="line"><span class="function"> 1 <span class="title">row</span> <span class="title">in</span> <span class="title">set</span> (0.00 <span class="title">sec</span>)</span></span><br></pre></td></tr></table></figure><p></p>
 <ul>
 <li><code>STOP SLAVE</code></li>
 <li>打開 Slave 的 Event 服務</li>
 <li>繼續服務</li>
 <li>重建 Master</li>
 </ul>
-<p></p><p class="code-caption" data-lang="cmd" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
-<pre><code class="cmd">E:\backup&gt;mysqldump -u sujunmin -p --port 3307 --master-data --all-databases --events --routines --gtid &gt; all_db.sql
-Enter password: ************
-</code></pre>
+<p></p><p class="code-caption" data-lang="cmd" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">E:\<span class="title">backup</span>&gt;<span class="title">mysqldump</span> -<span class="title">u</span> <span class="title">sujunmin</span> -<span class="title">p</span> --<span class="title">port</span> 3307 --<span class="title">master</span>-<span class="title">data</span> --<span class="title">all</span>-<span class="title">databases</span> --<span class="title">events</span> --<span class="title">routines</span> --<span class="title">gtid</span> &gt; <span class="title">all_db.sql</span></span></span><br><span class="line"><span class="function"><span class="title">Enter</span> <span class="title">password</span>: ************</span></span><br></pre></td></tr></table></figure><p></p>
 <p>  觀察一下 <code>all_db.sql</code> 的內容</p>
-<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
-<pre><code class="sql">-- MySQL dump 10.16  Distrib 10.1.17-MariaDB, for Win64 (AMD64)
-(中間省略)
---
--- Position to start replication or point-in-time recovery from
---
-
--- CHANGE MASTER TO MASTER_LOG_FILE=&#39;WSTest-bin.000003&#39;, MASTER_LOG_POS=12441;
-
---
--- GTID to start replication from
---
-
-CHANGE MASTER TO MASTER_USE_GTID=slave_pos;
-SET GLOBAL gtid_slave_pos=&#39;0-2-976&#39;;
-
---
--- Current Database: &#39;master&#39;
---
-(後面省略)
-</code></pre>
+<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- MySQL dump 10.16  Distrib 10.1.17-MariaDB, for Win64 (AMD64)</span></span><br><span class="line">(中間省略)</span><br><span class="line"><span class="comment">--</span></span><br><span class="line"><span class="comment">-- Position to start replication or point-in-time recovery from</span></span><br><span class="line"><span class="comment">--</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- CHANGE MASTER TO MASTER_LOG_FILE='WSTest-bin.000003', MASTER_LOG_POS=12441;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">--</span></span><br><span class="line"><span class="comment">-- GTID to start replication from</span></span><br><span class="line"><span class="comment">--</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">CHANGE</span> <span class="keyword">MASTER</span> <span class="keyword">TO</span> MASTER_USE_GTID=slave_pos;</span><br><span class="line"><span class="keyword">SET</span> <span class="keyword">GLOBAL</span> gtid_slave_pos=<span class="string">'0-2-976'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">--</span></span><br><span class="line"><span class="comment">-- Current Database: 'master'</span></span><br><span class="line"><span class="comment">--</span></span><br><span class="line">(後面省略)</span><br></pre></td></tr></table></figure><p></p>
 <ul>
 <li>啟動 Master 的 Instance。  </li>
 <li>把 <code>all_db.sql</code> 倒到 Master (3307) 上面。</li>
 <li>在 Slave 上設定 <code>CHANGE MASTER</code> 為 <code>current_pos</code> </li>
 </ul>
-<p></p><p class="code-caption" data-lang="cmd" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
-<pre><code class="cmd">MariaDB [(none)]&gt; change master to master_host=&#39;localhost&#39;, master_port=3306, master_user=&#39;lsuser&#39;, master_password=&#39;password&#39;, master_use_gtid=current_pos;
-Query OK, 0 rows affected (0.05 sec)
-</code></pre>
+<p></p><p class="code-caption" data-lang="cmd" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [(none)]&gt; change master to master_host='localhost', master_port=<span class="number">3306</span>, master_user='lsuser', master_password='password', master_use_gtid=current_pos;</span><br><span class="line">Query OK, <span class="number">0</span> rows affected (<span class="number">0</span>.<span class="number">05</span> sec)</span><br></pre></td></tr></table></figure><p></p>
 <ul>
 <li><code>START SLAVE;</code></li>
 <li><code>SHOW SLAVE STATUS;</code></li>
 </ul>
-<p></p><p class="code-caption" data-lang="cmd" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
-<pre><code class="cmd">MariaDB [(none)]&gt; show slave status\G
-  *************************** 1. row ***************************
-                          (省略)
-             Last_IO_Errno: 1236
-             Last_IO_Error: Got fatal error 1236 from master when reading data from binary log: &#39;Error: connecting slave requested to start from GTID 0-2-980, which is not in the master&#39;s binlog. Since the master&#39;s binlog contains GTIDs with higher sequence numbers, it probably means that the slave has diverged due to executing extra erroneous transactions&#39;
-            Last_SQL_Errno: 0
-            Last_SQL_Error:
-Replicate_Ignore_Server_Ids:
-          Master_Server_Id: 1
-            Master_SSL_Crl:
-        Master_SSL_Crlpath:
-                Using_Gtid: Current_Pos
-               Gtid_IO_Pos: 0-2-980
-   Replicate_Do_Domain_Ids:
-Replicate_Ignore_Domain_Ids:
-              Parallel_Mode: conservative
-  1 row in set (0.00 sec)
-</code></pre>
+<p></p><p class="code-caption" data-lang="cmd" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [(none)]&gt; show slave status\G</span><br><span class="line">  *************************** <span class="number">1</span>. row ***************************</span><br><span class="line">                          (省略)</span><br><span class="line"><span class="function">             Last_IO_Errno: 1236</span></span><br><span class="line"><span class="function">             <span class="title">Last_IO_Error</span>: <span class="title">Got</span> <span class="title">fatal</span> <span class="title">error</span> 1236 <span class="title">from</span> <span class="title">master</span> <span class="title">when</span> <span class="title">reading</span> <span class="title">data</span> <span class="title">from</span> <span class="title">binary</span> <span class="title">log</span>: '<span class="title">Error</span>: <span class="title">connecting</span> <span class="title">slave</span> <span class="title">requested</span> <span class="title">to</span> <span class="title">start</span> <span class="title">from</span> <span class="title">GTID</span> 0-2-980, <span class="title">which</span> <span class="title">is</span> <span class="title">not</span> <span class="title">in</span> <span class="title">the</span> <span class="title">master</span>'<span class="title">s</span> <span class="title">binlog</span>. <span class="title">Since</span> <span class="title">the</span> <span class="title">master</span>'<span class="title">s</span> <span class="title">binlog</span> <span class="title">contains</span> <span class="title">GTIDs</span> <span class="title">with</span> <span class="title">higher</span> <span class="title">sequence</span> <span class="title">numbers</span>, <span class="title">it</span> <span class="title">probably</span> <span class="title">means</span> <span class="title">that</span> <span class="title">the</span> <span class="title">slave</span> <span class="title">has</span> <span class="title">diverged</span> <span class="title">due</span> <span class="title">to</span> <span class="title">executing</span> <span class="title">extra</span> <span class="title">erroneous</span> <span class="title">transactions</span>'</span></span><br><span class="line"><span class="function">            <span class="title">Last_SQL_Errno</span>: 0</span></span><br><span class="line"><span class="function">            <span class="title">Last_SQL_Error</span>:</span></span><br><span class="line"><span class="function"><span class="title">Replicate_Ignore_Server_Ids</span>:</span></span><br><span class="line"><span class="function">          <span class="title">Master_Server_Id</span>: 1</span></span><br><span class="line"><span class="function">            <span class="title">Master_SSL_Crl</span>:</span></span><br><span class="line"><span class="function">        <span class="title">Master_SSL_Crlpath</span>:</span></span><br><span class="line"><span class="function">                <span class="title">Using_Gtid</span>: <span class="title">Current_Pos</span></span></span><br><span class="line"><span class="function">               <span class="title">Gtid_IO_Pos</span>: 0-2-980</span></span><br><span class="line"><span class="function">   <span class="title">Replicate_Do_Domain_Ids</span>:</span></span><br><span class="line"><span class="function"><span class="title">Replicate_Ignore_Domain_Ids</span>:</span></span><br><span class="line"><span class="function">              <span class="title">Parallel_Mode</span>: <span class="title">conservative</span></span></span><br><span class="line"><span class="function">  1 <span class="title">row</span> <span class="title">in</span> <span class="title">set</span> (0.00 <span class="title">sec</span>)</span></span><br></pre></td></tr></table></figure><p></p>
 <ul>
 <li><code>STOP SLAVE;</code></li>
 <li>在 Slave 上設定 <code>CHANGE MASTER</code> 為 <code>slave_pos</code>   </li>
 </ul>
-<p></p><p class="code-caption" data-lang="cmd" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
-<pre><code class="cmd">MariaDB [(none)]&gt; change master to master_host=&#39;localhost&#39;, master_port=3306, master_user=&#39;lsuser&#39;, master_password=&#39;password&#39;, master_use_gtid=slave_pos;
-Query OK, 0 rows affected (0.05 sec)
-</code></pre>
+<p></p><p class="code-caption" data-lang="cmd" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [(none)]&gt; change master to master_host='localhost', master_port=<span class="number">3306</span>, master_user='lsuser', master_password='password', master_use_gtid=slave_pos;</span><br><span class="line">Query OK, <span class="number">0</span> rows affected (<span class="number">0</span>.<span class="number">05</span> sec)</span><br></pre></td></tr></table></figure><p></p>
 <ul>
 <li><code>START SLAVE;</code></li>
 <li><code>SHOW SLAVE STATUS;</code></li>
 </ul>
-<p></p><p class="code-caption" data-lang="cmd" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
-<pre><code class="cmd">MariaDB [(none)]&gt; show slave status\G
-*************************** 1. row ***************************
-            Slave_IO_State: Waiting for master to send event
-               Master_Host: localhost
-               Master_User: lsuser
-               Master_Port: 3306
-             Connect_Retry: 60
-           Master_Log_File: WSTest-bin.000003
-       Read_Master_Log_Pos: 7177
-            Relay_Log_File: WSTest-relay-bin.000003
-             Relay_Log_Pos: 7466
-     Relay_Master_Log_File: WSTest-bin.000003
-          Slave_IO_Running: Yes
-         Slave_SQL_Running: Yes
-                        (省略)
-                Using_Gtid: Slave_Pos
-               Gtid_IO_Pos: 0-1-1167
-   Replicate_Do_Domain_Ids:
- Replicate_Ignore_Domain_Ids:
-               Parallel_Mode: conservative
-1 row in set (0.00 sec)
-</code></pre>
+<p></p><p class="code-caption" data-lang="cmd" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [(none)]&gt; show slave status\G</span><br><span class="line">*************************** <span class="number">1</span>. row ***************************</span><br><span class="line"><span class="function">            Slave_IO_State: <span class="title">Waiting</span> <span class="title">for</span> <span class="title">master</span> <span class="title">to</span> <span class="title">send</span> <span class="title">event</span></span></span><br><span class="line"><span class="function">               <span class="title">Master_Host</span>: <span class="title">localhost</span></span></span><br><span class="line"><span class="function">               <span class="title">Master_User</span>: <span class="title">lsuser</span></span></span><br><span class="line"><span class="function">               <span class="title">Master_Port</span>: 3306</span></span><br><span class="line"><span class="function">             <span class="title">Connect_Retry</span>: 60</span></span><br><span class="line"><span class="function">           <span class="title">Master_Log_File</span>: <span class="title">WSTest</span>-<span class="title">bin</span>.000003</span></span><br><span class="line"><span class="function">       <span class="title">Read_Master_Log_Pos</span>: 7177</span></span><br><span class="line"><span class="function">            <span class="title">Relay_Log_File</span>: <span class="title">WSTest</span>-<span class="title">relay</span>-<span class="title">bin</span>.000003</span></span><br><span class="line"><span class="function">             <span class="title">Relay_Log_Pos</span>: 7466</span></span><br><span class="line"><span class="function">     <span class="title">Relay_Master_Log_File</span>: <span class="title">WSTest</span>-<span class="title">bin</span>.000003</span></span><br><span class="line"><span class="function">          <span class="title">Slave_IO_Running</span>: <span class="title">Yes</span></span></span><br><span class="line"><span class="function">         <span class="title">Slave_SQL_Running</span>: <span class="title">Yes</span></span></span><br><span class="line"><span class="function">                        (省略)</span></span><br><span class="line"><span class="function">                <span class="title">Using_Gtid</span>: <span class="title">Slave_Pos</span></span></span><br><span class="line"><span class="function">               <span class="title">Gtid_IO_Pos</span>: 0-1-1167</span></span><br><span class="line"><span class="function">   <span class="title">Replicate_Do_Domain_Ids</span>:</span></span><br><span class="line"><span class="function"> <span class="title">Replicate_Ignore_Domain_Ids</span>:</span></span><br><span class="line"><span class="function">               <span class="title">Parallel_Mode</span>: <span class="title">conservative</span></span></span><br><span class="line"><span class="function">1 <span class="title">row</span> <span class="title">in</span> <span class="title">set</span> (0.00 <span class="title">sec</span>)</span></span><br></pre></td></tr></table></figure><p></p>
 <ul>
 <li>這兩個對應 (<code>0-2-976</code>, <code>0-1-1167</code>) 都幫你做好了</li>
 <li><p>完成</p>
@@ -324,15 +171,7 @@ Query OK, 0 rows affected (0.05 sec)
 <p>但是不太清楚要 skip 幾個的狀態下，就一個一個看了。</p>
 </li>
 </ul>
-<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
-<pre><code class="sql">stop slave;
-set global sql_slave_skip_counter=1;
-start slave;
-
-select sleep(10);
-
-show slave status;
-</code></pre>
+<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">stop</span> <span class="keyword">slave</span>;</span><br><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> sql_slave_skip_counter=<span class="number">1</span>;</span><br><span class="line"><span class="keyword">start</span> <span class="keyword">slave</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> <span class="keyword">sleep</span>(<span class="number">10</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">show</span> <span class="keyword">slave</span> <span class="keyword">status</span>;</span><br></pre></td></tr></table></figure><p></p>
 </div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">
 var disqus_shortname = 'sujunmin';
 var disqus_identifier = '2016/09/19/從 SQL Server 到 MariaDB - [5] Log-shipping 與 MariaDB Replication/';

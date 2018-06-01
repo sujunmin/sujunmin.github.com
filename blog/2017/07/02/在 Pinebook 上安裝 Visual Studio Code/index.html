@@ -10,85 +10,20 @@
 <li>安裝它</li>
 </ol>
 <p>在 3 的地方發生了一個很嚴重的問題</p>
-<p></p><p class="code-caption" data-lang="" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
-<pre><code>&gt; sudo dpkg -i code-oss_1.14.0-1497990172_armhf.deb 
-[sudo] password for sujunmin: 
-選取了原先未選的套件 code-oss:armhf。
-（讀取資料庫 ... 目前共安裝了 193100 個檔案和目錄。）
-準備解開 code-oss_1.14.0-1497990172_armhf.deb ...
-解開 code-oss:armhf (1.14.0-1497990172) 中...
-dpkg: 因相依問題，無法設定 code-oss:armhf：
- code-oss:armhf 相依於 apt.
-
-dpkg: error processing package code-oss:armhf (--install):
- 相依問題 - 保留未設定
-Processing triggers for desktop-file-utils (0.22-1ubuntu5.1) ...
-Processing triggers for bamfdaemon (0.5.3~bzr0+16.04.20160824-0ubuntu1) ...
-Rebuilding /usr/share/applications/bamf-2.index...
-Processing triggers for mime-support (3.59ubuntu1) ...
-處理時發生錯誤：
- code-oss:armhf
-</code></pre><p>然後要使用 <code>sudo apt install -f</code> 來處理的時候</p>
-<p></p><p class="code-caption" data-lang="" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
-<pre><code>&gt; sudo apt install -f
-正在讀取套件清單... 完成
-正在重建相依關係          
-正在讀取狀態資料... 完成
-正在修正相依關係... 完成
-下列的額外套件將被安裝：
-  apt:armhf
-建議套件：
-  aptitude:armhf | synaptic:armhf | wajig:armhf apt-doc:armhf python-apt:armhf
-下列套件將會被【移除】：
-  apt apt-utils
-下列【新】套件將會被安裝：
-  apt:armhf
-【警告】：下列的基本套件都將被移除。
-除非您很清楚您在做什麼，否則請勿輕易嘗試！
-  apt
-升級 0 個，新安裝 1 個，移除 2 個，有 0 個未被升級。
-1 個沒有完整得安裝或移除。
-需要下載 1,014 kB 的套件檔。
-此操作完成之後，會空出 1,042 kB 的磁碟空間。
-您所進行的操作可能會帶來危險。
-請輸入 &#39;Yes, do as I say!&#39; 這個句子以繼續進行
- ?]
-</code></pre><p>天阿，竟然會移除掉 <code>apt</code>，那時想這只是不同的 arch 應該還是可以用，結果就繼續下去，變成更多的 error</p>
-<p></p><p class="code-caption" data-lang="" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
-<pre><code>&gt; sudo apt upgrade
-正在讀取套件清單... 完成
-正在重建相依關係          
-正在讀取狀態資料... 完成
-您也許得執行 &#39;apt-get -f install&#39; 以修正這些問題。
-下列的套件有未滿足的相依關係：
- account-plugin-facebook : 相依關係: libaccount-plugin-generic-oauth 但它卻尚未安裝或
-                                         ubuntu-system-settings-online-accounts 但它卻尚未安裝
- account-plugin-flickr : 相依關係: libaccount-plugin-generic-oauth 但它卻尚未安裝或
-                                       ubuntu-system-settings-online-accounts 但它卻尚未安裝
- account-plugin-google : 相依關係: libaccount-plugin-google 但它卻尚未安裝或
-                                       ubuntu-system-settings-online-accounts 但它卻尚未安裝
- adduser : 相依關係: perl-base (&gt;= 5.6.0) 但它卻尚未安裝
-           相依關係: passwd (&gt;= 1:4.1.5.1-1.1ubuntu6) 但它卻尚未安裝
- adwaita-icon-theme : 相依關係: libgtk-3-bin 但它卻尚未安裝
-                      相依關係: librsvg2-common 但它卻尚未安裝
- alsa-base : 相依關係: kmod (&gt;= 17-1) 但它卻尚未安裝
-             相依關係: udev 但它卻尚未安裝
-...
-</code></pre><p>幾乎整個系統都要轉成 <code>armhf</code> 架構了，真糟糕。</p>
+<p></p><p class="code-caption" data-lang="" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&gt; sudo dpkg -i code-oss_1.14.0-1497990172_armhf.deb </span><br><span class="line">[sudo] password for sujunmin: </span><br><span class="line">選取了原先未選的套件 code-oss:armhf。</span><br><span class="line">（讀取資料庫 ... 目前共安裝了 193100 個檔案和目錄。）</span><br><span class="line">準備解開 code-oss_1.14.0-1497990172_armhf.deb ...</span><br><span class="line">解開 code-oss:armhf (1.14.0-1497990172) 中...</span><br><span class="line">dpkg: 因相依問題，無法設定 code-oss:armhf：</span><br><span class="line"> code-oss:armhf 相依於 apt.</span><br><span class="line"></span><br><span class="line">dpkg: error processing package code-oss:armhf (--install):</span><br><span class="line"> 相依問題 - 保留未設定</span><br><span class="line">Processing triggers for desktop-file-utils (0.22-1ubuntu5.1) ...</span><br><span class="line">Processing triggers for bamfdaemon (0.5.3~bzr0+16.04.20160824-0ubuntu1) ...</span><br><span class="line">Rebuilding /usr/share/applications/bamf-2.index...</span><br><span class="line">Processing triggers for mime-support (3.59ubuntu1) ...</span><br><span class="line">處理時發生錯誤：</span><br><span class="line"> code-oss:armhf</span><br></pre></td></tr></table></figure><p></p>
+<p>然後要使用 <code>sudo apt install -f</code> 來處理的時候</p>
+<p></p><p class="code-caption" data-lang="" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">&gt; sudo apt install -f</span><br><span class="line">正在讀取套件清單... 完成</span><br><span class="line">正在重建相依關係          </span><br><span class="line">正在讀取狀態資料... 完成</span><br><span class="line">正在修正相依關係... 完成</span><br><span class="line">下列的額外套件將被安裝：</span><br><span class="line">  apt:armhf</span><br><span class="line">建議套件：</span><br><span class="line">  aptitude:armhf | synaptic:armhf | wajig:armhf apt-doc:armhf python-apt:armhf</span><br><span class="line">下列套件將會被【移除】：</span><br><span class="line">  apt apt-utils</span><br><span class="line">下列【新】套件將會被安裝：</span><br><span class="line">  apt:armhf</span><br><span class="line">【警告】：下列的基本套件都將被移除。</span><br><span class="line">除非您很清楚您在做什麼，否則請勿輕易嘗試！</span><br><span class="line">  apt</span><br><span class="line">升級 0 個，新安裝 1 個，移除 2 個，有 0 個未被升級。</span><br><span class="line">1 個沒有完整得安裝或移除。</span><br><span class="line">需要下載 1,014 kB 的套件檔。</span><br><span class="line">此操作完成之後，會空出 1,042 kB 的磁碟空間。</span><br><span class="line">您所進行的操作可能會帶來危險。</span><br><span class="line">請輸入 &apos;Yes, do as I say!&apos; 這個句子以繼續進行</span><br><span class="line"> ?]</span><br></pre></td></tr></table></figure><p></p>
+<p>天阿，竟然會移除掉 <code>apt</code>，那時想這只是不同的 arch 應該還是可以用，結果就繼續下去，變成更多的 error</p>
+<p></p><p class="code-caption" data-lang="" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&gt; sudo apt upgrade</span><br><span class="line">正在讀取套件清單... 完成</span><br><span class="line">正在重建相依關係          </span><br><span class="line">正在讀取狀態資料... 完成</span><br><span class="line">您也許得執行 &apos;apt-get -f install&apos; 以修正這些問題。</span><br><span class="line">下列的套件有未滿足的相依關係：</span><br><span class="line"> account-plugin-facebook : 相依關係: libaccount-plugin-generic-oauth 但它卻尚未安裝或</span><br><span class="line">                                         ubuntu-system-settings-online-accounts 但它卻尚未安裝</span><br><span class="line"> account-plugin-flickr : 相依關係: libaccount-plugin-generic-oauth 但它卻尚未安裝或</span><br><span class="line">                                       ubuntu-system-settings-online-accounts 但它卻尚未安裝</span><br><span class="line"> account-plugin-google : 相依關係: libaccount-plugin-google 但它卻尚未安裝或</span><br><span class="line">                                       ubuntu-system-settings-online-accounts 但它卻尚未安裝</span><br><span class="line"> adduser : 相依關係: perl-base (&gt;= 5.6.0) 但它卻尚未安裝</span><br><span class="line">           相依關係: passwd (&gt;= 1:4.1.5.1-1.1ubuntu6) 但它卻尚未安裝</span><br><span class="line"> adwaita-icon-theme : 相依關係: libgtk-3-bin 但它卻尚未安裝</span><br><span class="line">                      相依關係: librsvg2-common 但它卻尚未安裝</span><br><span class="line"> alsa-base : 相依關係: kmod (&gt;= 17-1) 但它卻尚未安裝</span><br><span class="line">             相依關係: udev 但它卻尚未安裝</span><br><span class="line">...</span><br></pre></td></tr></table></figure><p></p>
+<p>幾乎整個系統都要轉成 <code>armhf</code> 架構了，真糟糕。</p>
 <h1 id="解決的方法"><a href="#解決的方法" class="headerlink" title="解決的方法"></a>解決的方法</h1><p>中間有試過很多方法(重編，安裝 arm64 版本…)都失敗。最後還是想到這樣的方式解決。</p>
 <p>首先要把 <code>apt:arm64</code> 裝回來，然後確定 apt database 沒問題以後，解開下載的安裝包，手動放在該放的目錄底下。</p>
-<p></p><p class="code-caption" data-lang="" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
-<pre><code>&gt; dpkg -x code-oss_1.14.0-1497990172_armhf.deb code
-&gt; cd code
-&gt; sudo cp -R usr/* /usr/
-&gt; sudo ln -s /usr/share/code-oss/code-oss /usr/bin/code-oss
-&gt; sudo wget https://raw.githubusercontent.com/stevedesmond-ca/vscode-arm/master/code.png -O /usr/share/code-oss/resources/app/resources/linux/code.png
-</code></pre><p>最後一個因為我還是比較喜歡 Windows 上面的 Icon，不一定要改。</p>
+<p></p><p class="code-caption" data-lang="" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt; dpkg -x code-oss_1.14.0-1497990172_armhf.deb code</span><br><span class="line">&gt; cd code</span><br><span class="line">&gt; sudo cp -R usr/* /usr/</span><br><span class="line">&gt; sudo ln -s /usr/share/code-oss/code-oss /usr/bin/code-oss</span><br><span class="line">&gt; sudo wget https://raw.githubusercontent.com/stevedesmond-ca/vscode-arm/master/code.png -O /usr/share/code-oss/resources/app/resources/linux/code.png</span><br></pre></td></tr></table></figure><p></p>
+<p>最後一個因為我還是比較喜歡 Windows 上面的 Icon，不一定要改。</p>
 <p>接著把它加入到 WM 的功能表裡就完成了。</p>
 <p>你可以加入他們家的 repository，不是要真的更新，而是有更新了可以知道，然後用這樣的方式更新 XD</p>
-<p></p><p class="code-caption" data-lang="" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
-<pre><code>&gt; curl -s https://packagecloud.io/install/repositories/headmelted/codebuilds/script.deb.sh | sudo bash
-</code></pre></div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">
+<p></p><p class="code-caption" data-lang="" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt; curl -s https://packagecloud.io/install/repositories/headmelted/codebuilds/script.deb.sh | sudo bash</span><br></pre></td></tr></table></figure><p></p>
+</div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">
 var disqus_shortname = 'sujunmin';
 var disqus_identifier = '2017/07/02/在 Pinebook 上安裝 Visual Studio Code/';
 var disqus_title = '在 Pinebook 上安裝 Visual Studio Code';
