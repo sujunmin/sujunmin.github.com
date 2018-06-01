@@ -8,12 +8,10 @@
 <p>開發到一定的階段以後，都會用發行網站，把要放在Server上的程式發行到某個地方，再把它弄到Server上。</p>
 <p><img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/34785457/1.png" alt=""></p>
 <p>可是不管怎麼調，產生出來的bin目錄下的dll就是看起來亂七八糟。</p>
-<p><img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/34785457/2.png" alt="">
-隨便開一個.aspx的檔案，相關的資訊都已經被編譯器改成這樣奇怪的資訊了。</p>
+<p><img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/34785457/2.png" alt=""><br>隨便開一個.aspx的檔案，相關的資訊都已經被編譯器改成這樣奇怪的資訊了。</p>
 <p>這是由先行編譯工具產生的資料標記檔，不應該加以刪除!</p>
 <p>原來都不選的話就做Static Building。如果勾了讓這個先行編譯的站台成為可更新，每個aspx的內容都回來了(好做Dynamic Building)，但是還是有麻煩的東西(請注意看inherits的地方)。</p>
-<p><img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/34785457/3.png" alt="">
-這是什麼問題呢?如果我只是要改某個網頁的部份，或是CodeBehind的程式碼，在Server上除了bin目錄要替換之外，連原來aspx都要換(因為inherits會變)。加勾使用固定命名和單一頁面的組件是好多了，但是每個DLL還是後面跟一堆亂碼，每個網頁獨立的DLL，如果網頁一多真的嚇死人了(光複製就很久)，這樣不是辦法，後來在網路上找到<a href="http://www.microsoft.com/downloads/details.aspx?familyid=0AA30AE8-C73B-4BDD-BB1B-FE697256C459&amp;displaylang=en" target="_blank" rel="noopener">這個</a>。</p>
+<p><img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/34785457/3.png" alt=""><br>這是什麼問題呢?如果我只是要改某個網頁的部份，或是CodeBehind的程式碼，在Server上除了bin目錄要替換之外，連原來aspx都要換(因為inherits會變)。加勾使用固定命名和單一頁面的組件是好多了，但是每個DLL還是後面跟一堆亂碼，每個網頁獨立的DLL，如果網頁一多真的嚇死人了(光複製就很久)，這樣不是辦法，後來在網路上找到<a href="http://www.microsoft.com/downloads/details.aspx?familyid=0AA30AE8-C73B-4BDD-BB1B-FE697256C459&amp;displaylang=en" target="_blank" rel="noopener">這個</a>。</p>
 <p>安裝完以後，會在介面裡多了一個選項，點選以後在建置的地方會多個Add Web Deployment Project..，加了這個專案就可以用類似於ASP.NET WEB應用程式的發行方法。</p>
 <p><img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/34785457/9.png" alt=""></p>
 <p>點選完會有個對話框，選擇要發行的地方。</p>
@@ -24,7 +22,7 @@
 <p><img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/34785457/12.png" alt=""></p>
 <p>這樣就會只剩一個DLL產出，做出來也會自動改aspx程式裡的inherits內容，以後改程式只要改DLL與那隻aspx就行了，不用整個目錄重新覆蓋。</p>
 <p><img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/34785457/13.png" alt=""></p>
-<p>除了剛剛的選項以外，還有其他選項可以用，有需要可以自行玩看看。 </p>
+<p>除了剛剛的選項以外，還有其他選項可以用，有需要可以自行玩看看。&nbsp;</p>
 <p>不過有潔癖的我，看到.compiled實在很不高興(笑)，雖然剛剛已經有選項移掉那些.compiled檔了，但是有用到Web Reference的還是會在。</p>
 <p><img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/34785457/14.png" alt=""></p>
 <p>在剛剛的選項裡都沒看到可以調的，就只能直接改專案檔了。對專案檔按右鍵，選Open Project File可以編輯專案檔。首先在ItemGroup加入DeleteAfterBuild的檔案特徵，然後在下面的Target中AfterBuild裡加入Delete的資訊。</p>
@@ -42,11 +40,12 @@ var disqus_url = 'https://sujunmin.github.io/blog/2010/06/10/最近這段時間�
 })();
 </script>
 <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="http://disqus.com" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><footer id="footer"><div class="container"><div class="bar"><div class="social"><a href="http://twitter.com/sujunmin_" target="_blank"><i class="fa fa-twitter"></i></a><a href="https://github.com/sujunmin" target="_blank"><i class="fa fa-github"></i></a><a href="https://plus.google.com/+JunMingSu" target="_blank"><i class="fa fa-google-plus"></i></a><a href="/atom.xml" target="_blank"><i class="fa fa-rss"></i></a></div><div class="footer">© 2018 <a href="/" rel="nofollow">隨意記事</a>. Powered by <a rel="nofollow" target="_blank" href="https://hexo.io">Hexo</a>. Theme <a target="_blank" href="https://github.com/lotabout/very-simple">very-simple</a>.</div></div></div></footer><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+<a href="http://disqus.com" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><footer id="footer"><div class="container"><div class="bar"><div class="social"><a href="http://twitter.com/sujunmin_" target="_blank"><i class="fa fa-twitter"></i></a><a href="https://github.com/sujunmin" target="_blank"><i class="fa fa-github"></i></a><a href="https://plus.google.com/+JunMingSu" target="_blank"><i class="fa fa-google-plus"></i></a><a href="/atom.xml" target="_blank"><i class="fa fa-rss"></i></a></div><div class="footer">© 2018 <a href="/" rel="nofollow">Su, Jun-Ming</a>. Powered by <a rel="nofollow" target="_blank" href="https://hexo.io">Hexo</a>. Theme <a target="_blank" href="https://github.com/lotabout/very-simple">very-simple</a>.</div></div></div></footer><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
     $(".fancybox").fancybox();
-});</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+});
+</script></body><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
 function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
 e=o.createElement(i);r=o.getElementsByTagName(i)[0];
 e.src='//www.google-analytics.com/analytics.js';
 r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
-ga('create','UA-78894509-1');ga('send','pageview');</script></body></html>
+ga('create','UA-78894509-1');ga('send','pageview');</script></html>

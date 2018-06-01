@@ -10,20 +10,18 @@
 <li>不管 SD 卡的速度 (因為合併內存一定會降速度，很差的卡降更多)</li>
 <li>合併內存功能被鎖起來，或是因為速度偵測而無法合併的都可以使用</li>
 </ol>
-<h1>合併內存</h1>
-<ol>
+<h1 id="合併內存"><a href="#合併內存" class="headerlink" title="合併內存"></a>合併內存</h1><ol>
 <li>備份 SD 卡</li>
 <li><code>adb start-server</code></li>
-<li><code>adb shell sm list-volumes all</code> [應該類似 public:179,32 mounted ... 這樣，後面的 179,32 等會會用到]</li>
+<li><code>adb shell sm list-volumes all</code> [應該類似 public:179,32 mounted … 這樣，後面的 179,32 等會會用到]</li>
 <li><code>adb shell sm set-force-adoptable true</code></li>
 <li><code>adb shell sm partition disk:179,32 private</code> [這步將會把 SD 卡合併到內存，包含格式化，等了很久才完成，這時候看手機應該看不到 SD 卡了]</li>
 <li><code>adb shell sm set-force-adoptable false</code></li>
-<li><code>adb shell sm list-volumes all</code> [應該會變成 private:179,32 mounted ... 這樣，原來的 public 不見了]</li>
+<li><code>adb shell sm list-volumes all</code> [應該會變成 private:179,32 mounted … 這樣，原來的 public 不見了]</li>
 <li>重開機</li>
 <li>檢查一下，到內存那邊移轉資料，還原 SD 卡資料，完成</li>
 </ol>
-<h1>恢復成可攜式 SD 卡</h1>
-<ol>
+<h1 id="恢復成可攜式-SD-卡"><a href="#恢復成可攜式-SD-卡" class="headerlink" title="恢復成可攜式 SD 卡"></a>恢復成可攜式 SD 卡</h1><ol>
 <li>備份 SD 卡</li>
 <li><code>adb start-server</code></li>
 <li><code>adb shell sm list-volumes all</code> [看 ID，179,32]</li>
@@ -46,11 +44,12 @@ var disqus_url = 'https://sujunmin.github.io/blog/2016/09/27/用指令開啟或�
 })();
 </script>
 <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="http://disqus.com" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><footer id="footer"><div class="container"><div class="bar"><div class="social"><a href="http://twitter.com/sujunmin_" target="_blank"><i class="fa fa-twitter"></i></a><a href="https://github.com/sujunmin" target="_blank"><i class="fa fa-github"></i></a><a href="https://plus.google.com/+JunMingSu" target="_blank"><i class="fa fa-google-plus"></i></a><a href="/atom.xml" target="_blank"><i class="fa fa-rss"></i></a></div><div class="footer">© 2018 <a href="/" rel="nofollow">隨意記事</a>. Powered by <a rel="nofollow" target="_blank" href="https://hexo.io">Hexo</a>. Theme <a target="_blank" href="https://github.com/lotabout/very-simple">very-simple</a>.</div></div></div></footer><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+<a href="http://disqus.com" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><footer id="footer"><div class="container"><div class="bar"><div class="social"><a href="http://twitter.com/sujunmin_" target="_blank"><i class="fa fa-twitter"></i></a><a href="https://github.com/sujunmin" target="_blank"><i class="fa fa-github"></i></a><a href="https://plus.google.com/+JunMingSu" target="_blank"><i class="fa fa-google-plus"></i></a><a href="/atom.xml" target="_blank"><i class="fa fa-rss"></i></a></div><div class="footer">© 2018 <a href="/" rel="nofollow">Su, Jun-Ming</a>. Powered by <a rel="nofollow" target="_blank" href="https://hexo.io">Hexo</a>. Theme <a target="_blank" href="https://github.com/lotabout/very-simple">very-simple</a>.</div></div></div></footer><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
     $(".fancybox").fancybox();
-});</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+});
+</script></body><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
 function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
 e=o.createElement(i);r=o.getElementsByTagName(i)[0];
 e.src='//www.google-analytics.com/analytics.js';
 r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
-ga('create','UA-78894509-1');ga('send','pageview');</script></body></html>
+ga('create','UA-78894509-1');ga('send','pageview');</script></html>

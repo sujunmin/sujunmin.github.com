@@ -44,7 +44,7 @@ body {
   font-family: Helvetica, Tahoma, Arial, STXihei, "Microsoft YaHei", "WenQuanYi Micro Hei", SimSun, Heiti, ubuntu, sans-serif; }
 
 article {
-  flex: 1; }
+  flex-grow: 1; }
 
 /**
  * header
@@ -429,7 +429,7 @@ article {
   article .entry {
     font-size: 16px; }
   article h1, article h2, article h3, article h4, article h5, article h6 {
-    font-family: "Helvetica Neue", "WenQuanYi Micro Hei", Heiti, Impact, Charcoal, sans-serif;
+    font-family: "Helvetica Neue", "Microsoft Yahei", "微软雅黑", "WenQuanYi Micro Hei", SimHei, Heiti, Impact, Charcoal, serif;
     font-weight: 600; }
   article h1 {
     border-bottom: 2px solid #333;

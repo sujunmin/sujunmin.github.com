@@ -4,32 +4,24 @@
  });
 </script></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>VMWare 的 VM 備份時針對沒有支援 Application Awarness 的解決方法</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2016-07-07</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/VMWare/">VMWare</a></div></div></div><article><div class="container post"><p>最近在研究資料庫從 MSSQL 轉到 MariaDB，其中有一項備份的選擇，備份軟體 (Acronis vm Protect 9) 的 Application Awarness 不支援 MySQL/MariaDB，因此如果要移轉至 MariaDB，勢必要解決這個問題。</p>
 <p>在這邊找到一篇<a href="https://kb.vmware.com/selfservice/microsites/search.do?language=en_US&amp;cmd=displayKC&amp;externalId=1006671" target="_blank" rel="noopener">文章</a>，提到透過 VMWare Tools 備份的備份軟體 (Agent-Free) 可以在 Quiece (凍結)該 VM 前與後都可以做些什麼，這真是太好了，趕緊來測試一下。</p>
-<h1>測試環境</h1>
-<ul>
+<h1 id="測試環境"><a href="#測試環境" class="headerlink" title="測試環境"></a>測試環境</h1><ul>
 <li>ESXi 6.0</li>
 <li>一個 Windows VM，VMWare Tools 要更新到跟該台 ESXi 一樣新</li>
 <li>Acronis vm Protect 9 備份環境</li>
 </ul>
-<h1>測試方式</h1>
-<ul>
-<li>
-<p>在該台 VM 的 <code>C:\WINDOWS</code> 下新增兩個檔案，內容如下</p>
-<p><code>C:\WINDOWS\&lt;pre-freeze-script.bat&gt;</code> 裡頭是 <code>echo Start &gt; C:\backup.txt</code> (寫個東西到檔案裡)</p>
-<p><code>C:\WINDOWS\&lt;post-thaw-script.bat&gt;</code> 裡頭是 <code>echo End &gt;&gt; C:\backup.txt</code> (加個東西到原來的檔案裡)</p>
+<h1 id="測試方式"><a href="#測試方式" class="headerlink" title="測試方式"></a>測試方式</h1><ul>
+<li><p>在該台 VM 的 <code>C:\WINDOWS</code> 下新增兩個檔案，內容如下</p>
+<p> <code>C:\WINDOWS\&lt;pre-freeze-script.bat&gt;</code> 裡頭是 <code>echo Start &gt; C:\backup.txt</code> (寫個東西到檔案裡)</p>
+<p> <code>C:\WINDOWS\&lt;post-thaw-script.bat&gt;</code> 裡頭是 <code>echo End &gt;&gt; C:\backup.txt</code> (加個東西到原來的檔案裡)</p>
 </li>
-<li>
-<p>執行備份</p>
-</li>
-<li>
-<p>看一下 <code>C:\backup.txt</code>，裏頭應該是</p>
+<li>執行備份</li>
+<li><p>看一下 <code>C:\backup.txt</code>，裏頭應該是</p>
 <p><code>Start</code></p>
 <p><code>End</code></p>
 </li>
-<li>
-<p>如此一來，就可以利用這兩個 Script 先把 Application 的資料 (Cache, Memory Data...) Sync 到 Disk 上(譬如說手動暫停服務)，就不會因為資料的關係造成備份出來的系統有問題了</p>
+<li><p>如此一來，就可以利用這兩個 Script 先把 Application 的資料 (Cache, Memory Data…) Sync 到 Disk 上(譬如說手動暫停服務)，就不會因為資料的關係造成備份出來的系統有問題了</p>
 </li>
-<li>
-<p>另外這兩個 Script 的執行時間不能超過 10 分鐘，要不然會導致備份失敗 (Quiece 失敗)</p>
+<li><p>另外這兩個 Script 的執行時間不能超過 10 分鐘，要不然會導致備份失敗 (Quiece 失敗) </p>
 </li>
 </ul>
 </div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">
@@ -44,11 +36,12 @@ var disqus_url = 'https://sujunmin.github.io/blog/2016/07/07/VMWare 的 VM 備�
 })();
 </script>
 <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="http://disqus.com" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><footer id="footer"><div class="container"><div class="bar"><div class="social"><a href="http://twitter.com/sujunmin_" target="_blank"><i class="fa fa-twitter"></i></a><a href="https://github.com/sujunmin" target="_blank"><i class="fa fa-github"></i></a><a href="https://plus.google.com/+JunMingSu" target="_blank"><i class="fa fa-google-plus"></i></a><a href="/atom.xml" target="_blank"><i class="fa fa-rss"></i></a></div><div class="footer">© 2018 <a href="/" rel="nofollow">隨意記事</a>. Powered by <a rel="nofollow" target="_blank" href="https://hexo.io">Hexo</a>. Theme <a target="_blank" href="https://github.com/lotabout/very-simple">very-simple</a>.</div></div></div></footer><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+<a href="http://disqus.com" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><footer id="footer"><div class="container"><div class="bar"><div class="social"><a href="http://twitter.com/sujunmin_" target="_blank"><i class="fa fa-twitter"></i></a><a href="https://github.com/sujunmin" target="_blank"><i class="fa fa-github"></i></a><a href="https://plus.google.com/+JunMingSu" target="_blank"><i class="fa fa-google-plus"></i></a><a href="/atom.xml" target="_blank"><i class="fa fa-rss"></i></a></div><div class="footer">© 2018 <a href="/" rel="nofollow">Su, Jun-Ming</a>. Powered by <a rel="nofollow" target="_blank" href="https://hexo.io">Hexo</a>. Theme <a target="_blank" href="https://github.com/lotabout/very-simple">very-simple</a>.</div></div></div></footer><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
     $(".fancybox").fancybox();
-});</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+});
+</script></body><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
 function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
 e=o.createElement(i);r=o.getElementsByTagName(i)[0];
 e.src='//www.google-analytics.com/analytics.js';
 r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
-ga('create','UA-78894509-1');ga('send','pageview');</script></body></html>
+ga('create','UA-78894509-1');ga('send','pageview');</script></html>

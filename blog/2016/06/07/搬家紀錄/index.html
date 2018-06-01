@@ -15,19 +15,17 @@
 <ol>
 <li>在 <a href="http://blog.xuite.net/retsamsu/diary" target="_blank" rel="noopener">xuite</a> 把檔案轉出來</li>
 <li>開 <a href="https://sourceforge.net/projects/blogtrans/files/" target="_blank" rel="noopener">BlogTrans</a> 轉檔至 Blogger ATOM XML，如果有留言可以選擇合併到本文裡</li>
-<li>把生出來的檔案放在一個網頁空間裡，我是放在 Google Drive 分享
-<ul>
+<li>把生出來的檔案放在一個網頁空間裡，我是放在 Google Drive 分享<ul>
 <li>這篇文章提到如何取得分享的真實連結(因為 Google Drive 分享文字檔會開 Web Viewer)</li>
 <li><a href="http://lifehacker.com/share-direct-links-to-files-in-google-drive-and-skip-th-1493813665" target="_blank" rel="noopener">Share Direct Links to Files in Google Drive and Skip the Web Viewer</a></li>
 <li>得到 網址A</li>
 </ul>
 </li>
-<li>安裝與設定 <a href="https://hexo.io/" target="_blank" rel="noopener">hexo</a> 與 <a href="https://github.com/" target="_blank" rel="noopener">github</a> 上傳
-<ul>
+<li>安裝與設定 <a href="https://hexo.io/" target="_blank" rel="noopener">hexo</a> 與 <a href="https://github.com/" target="_blank" rel="noopener">github</a> 上傳<ul>
 <li>這裡建議如果需要多台機器都會編輯的時候，blog 系統就需要一併放在 <a href="https://github.com/" target="_blank" rel="noopener">github</a> 上</li>
 <li>這篇文章提到如何透過 <a href="https://travis-ci.org/" target="_blank" rel="noopener">Travis-CI</a> 自動化上版流程，蠻不賴的，以後不管那台機器有沒有相同的環境，只要 clone 主體一份就能編輯了</li>
 <li><a href="http://www.jianshu.com/p/e22c13d85659" target="_blank" rel="noopener">手把手教你使用Travis CI自动部署你的Hexo博客到Github上</a></li>
-<li>[2016/06/14 更新] 這裡提到的方法是重建 master 以達到自動佈署的功能，如果原來的 github pages 已經有東西了怎麼辦? 參考<a href="http://stackoverflow.com/questions/600079/is-there-any-way-to-clone-a-git-repositorys-sub-directory-only" target="_blank" rel="noopener">這裡</a>修改一下 <a href="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/blog-source/.travis.yml" target="_blank" rel="noopener">travis.yml</a> 來處理。</li>
+<li>[2016/06/14 更新] 這裡提到的方法是重建 master 以達到自動佈署的功能，如果原來的 github pages 已經有東西了怎麼辦? 參考<a href="http://stackoverflow.com/questions/600079/is-there-any-way-to-clone-a-git-repositorys-sub-directory-only" target="_blank" rel="noopener">這裡</a>修改一下 <a href="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/blog-source/.travis.yml" target="_blank" rel="noopener">travis.yml</a> 來處理。<ul>
 <li>hexo 設定 root (_config.yml)</li>
 <li>Git 設定</li>
 <li><code>git config core.sparseCheckout true</code></li>
@@ -35,24 +33,25 @@
 <li><code>echo &quot;blog/&quot; &gt;&gt; .git/info/sparse-checkout</code> 設定只 checkout <code>blog</code> 資料夾</li>
 <li>複製要佈署的資料到 <code>blog</code></li>
 <li>git push</li>
+</ul>
+</li>
 <li>其他的 <a href="https://hexo.io/" target="_blank" rel="noopener">hexo</a> 跟 theme 教學網路上寫的都不賴</li>
 </ul>
 </li>
-<li>hexo-migrator-rss
-<ul>
+<li>hexo-migrator-rss<ul>
 <li>在 blog 裡頭的 package.json 加一行 <code>&quot;hexo-migrator-rss&quot;: &quot;^0.1.2&quot;,</code></li>
 <li>npm install</li>
 <li>hexo migrate rss 網址A</li>
 <li>可以看它應該會自動匯入了</li>
 </ul>
 </li>
-<li>後續整理</li>
-</ol>
-<ul>
-<li>多一個奇怪的 tag https://www.blogger.com/site2008...</li>
+<li>後續整理<ul>
+<li>多一個奇怪的 tag <a href="https://www.blogger.com/site2008.." target="_blank" rel="noopener">https://www.blogger.com/site2008..</a>.</li>
 <li>需自己移除掉</li>
 <li><a href="http://blog.xuite.net/evelyn7768/blog/130563164-xuite+vip%E5%88%B0%E6%9C%9F+%E5%8E%9F%E5%9C%96%E5%A4%96%E9%80%A3%E7%84%A1%E6%B3%95%E4%BD%BF%E7%94%A8+%E5%A6%82%E4%BD%95%E6%89%8D%E8%83%BD%E7%9C%8B%E5%88%B0%E5%9C%96%E5%91%A2%3F%E5%85%B6%E5%AF%A6%E5%BE%88%E7%B0%A1%E5%96%AE+" target="_blank" rel="noopener">xuite vip到期 原圖外連無法使用 如何才能看到圖呢?其實很簡單</a></li>
 </ul>
+</li>
+</ol>
 </div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">
 var disqus_shortname = 'sujunmin';
 var disqus_identifier = '2016/06/07/搬家紀錄/';
@@ -65,11 +64,12 @@ var disqus_url = 'https://sujunmin.github.io/blog/2016/06/07/搬家紀錄/';
 })();
 </script>
 <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="http://disqus.com" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><footer id="footer"><div class="container"><div class="bar"><div class="social"><a href="http://twitter.com/sujunmin_" target="_blank"><i class="fa fa-twitter"></i></a><a href="https://github.com/sujunmin" target="_blank"><i class="fa fa-github"></i></a><a href="https://plus.google.com/+JunMingSu" target="_blank"><i class="fa fa-google-plus"></i></a><a href="/atom.xml" target="_blank"><i class="fa fa-rss"></i></a></div><div class="footer">© 2018 <a href="/" rel="nofollow">隨意記事</a>. Powered by <a rel="nofollow" target="_blank" href="https://hexo.io">Hexo</a>. Theme <a target="_blank" href="https://github.com/lotabout/very-simple">very-simple</a>.</div></div></div></footer><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+<a href="http://disqus.com" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><footer id="footer"><div class="container"><div class="bar"><div class="social"><a href="http://twitter.com/sujunmin_" target="_blank"><i class="fa fa-twitter"></i></a><a href="https://github.com/sujunmin" target="_blank"><i class="fa fa-github"></i></a><a href="https://plus.google.com/+JunMingSu" target="_blank"><i class="fa fa-google-plus"></i></a><a href="/atom.xml" target="_blank"><i class="fa fa-rss"></i></a></div><div class="footer">© 2018 <a href="/" rel="nofollow">Su, Jun-Ming</a>. Powered by <a rel="nofollow" target="_blank" href="https://hexo.io">Hexo</a>. Theme <a target="_blank" href="https://github.com/lotabout/very-simple">very-simple</a>.</div></div></div></footer><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
     $(".fancybox").fancybox();
-});</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+});
+</script></body><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
 function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
 e=o.createElement(i);r=o.getElementsByTagName(i)[0];
 e.src='//www.google-analytics.com/analytics.js';
 r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
-ga('create','UA-78894509-1');ga('send','pageview');</script></body></html>
+ga('create','UA-78894509-1');ga('send','pageview');</script></html>
