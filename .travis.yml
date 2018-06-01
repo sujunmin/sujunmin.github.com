@@ -5,7 +5,8 @@ node_js:
 # S: Build Lifecycle
 install:
   - npm install
-  - npm install hexo-filter-highlight --save
+  - npm un hexo-renderer-marked --save
+  - npm i hexo-renderer-markdown-it --save
   
 #before_script:
  # - npm install -g gulp
