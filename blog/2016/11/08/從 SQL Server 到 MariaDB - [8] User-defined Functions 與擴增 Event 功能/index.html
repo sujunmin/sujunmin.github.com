@@ -2,37 +2,35 @@
  google_ad_client: "ca-pub-0187888667607442",
  enable_page_level_ads: true
  });
-</script></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>從 SQL Server 到 MariaDB - [8] User-defined Functions 與擴增 Event 功能</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2016-11-08</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/MSSQL/">MSSQL</a>/<a class="post-tag-link" href="/blog/tags/MariaDB/">MariaDB</a></div></div></div><article><div class="container post"><h2 id="需求說明"><a href="#需求說明" class="headerlink" title="需求說明"></a>需求說明</h2><p>雖然一些排程或是資訊可以透過系統排程來處理，但是原有的 SQL Server 管理方式幾乎都是透過 SQL Server Job 系統執行，加上 SQL Server 有許多可以在 Server 本體就能做完的方式，為了追求一樣的管理方式，導入 User-defined Functions (UDF) 來擴增 Server 功能。</p>
-<h2 id="透過-MariaDB-裡的-Event-System-進行備份"><a href="#透過-MariaDB-裡的-Event-System-進行備份" class="headerlink" title="透過 MariaDB 裡的 Event System 進行備份"></a>透過 MariaDB 裡的 Event System 進行備份</h2><p>基本上 Google 搜尋 MariaDB/MySQL 備份，不外乎是利用 cron jobs 或是 Windows tasks 來進行備份，這樣進行備份一則與原來的 SQL Server 管理不一樣，另外一個也沒辦法知道備份的情況 (要登入主機看 Task 狀態)。</p>
+</script></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>從 SQL Server 到 MariaDB - [8] User-defined Functions 與擴增 Event 功能</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2016-11-08</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/MSSQL/">MSSQL</a>/<a class="post-tag-link" href="/blog/tags/MariaDB/">MariaDB</a></div></div></div><article><div class="container post"><h2>需求說明</h2>
+<p>雖然一些排程或是資訊可以透過系統排程來處理，但是原有的 SQL Server 管理方式幾乎都是透過 SQL Server Job 系統執行，加上 SQL Server 有許多可以在 Server 本體就能做完的方式，為了追求一樣的管理方式，導入 User-defined Functions (UDF) 來擴增 Server 功能。</p>
+<h2>透過 MariaDB 裡的 Event System 進行備份</h2>
+<p>基本上 Google 搜尋 MariaDB/MySQL 備份，不外乎是利用 cron jobs 或是 Windows tasks 來進行備份，這樣進行備份一則與原來的 SQL Server 管理不一樣，另外一個也沒辦法知道備份的情況 (要登入主機看 Task 狀態)。</p>
 <p>如果能透過 MariaDB 來發動備份 (透過 Event) 感覺能夠與以前的管理方式一樣，Server 要的排程 Server 自己發動，而且也能收集相關資料進行監控。</p>
 <p>但是 MariaDB 沒有什麼介面可以來執行系統作業，這時候剛好找到 <a href="https://mariadb.com/kb/en/mariadb/user-defined-functions/" target="_blank" rel="noopener">UDF</a>，還有一大堆神人做好的 <a href="http://www.mysqludf.org/" target="_blank" rel="noopener">MySQLUDF</a> Repository，裡頭剛好有我要的與系統處理有關的 <a href="https://github.com/mysqludf/lib_mysqludf_sys#readme" target="_blank" rel="noopener">UDF</a>，正好可以拿來用。</p>
-<h2 id="lib-mysqludf-sys-編譯、安裝、與使用"><a href="#lib-mysqludf-sys-編譯、安裝、與使用" class="headerlink" title="lib_mysqludf_sys 編譯、安裝、與使用"></a>lib_mysqludf_sys 編譯、安裝、與使用</h2><h3 id="編譯"><a href="#編譯" class="headerlink" title="編譯"></a>編譯</h3><p>如果連到 lib_mysqludf_sys 的 github，發現到它的 Makefile 都是為 gcc 做的，Windows 用戶有點麻煩。</p>
+<h2>lib_mysqludf_sys 編譯、安裝、與使用</h2>
+<h3>編譯</h3>
+<p>如果連到 lib_mysqludf_sys 的 github，發現到它的 Makefile 都是為 gcc 做的，Windows 用戶有點麻煩。</p>
 <p>網路上可以找到編譯好的 dll，但是覺得有點怕不知道裏面有什麼。</p>
 <p>還好找到一篇也是部份 MySQL UDF 的作者寫的 blog <a href="http://rpbouman.blogspot.tw/2007/09/creating-mysql-udfs-with-microsoft.html" target="_blank" rel="noopener">Creating MySQL UDFs with Microsoft Visual C++ Express</a>，裡頭有一些方法可以參考。</p>
-<p>編譯的環境跟之前修改 <a href="https://sujunmin.github.io/blog/2016/10/03/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[6]%20Audit%20%E7%9A%84%E5%AF%A6%E4%BD%9C/">audit log plugin</a> 的環境一樣，需要注意的地方如下</p>
-<h4 id="Configuring-the-Include-path"><a href="#Configuring-the-Include-path" class="headerlink" title="Configuring the Include path"></a>Configuring the Include path</h4><p>Platform SDK 的 Include Files 在 <code>C:\Program Files (x86)\Windows Kits\8.1\Include</code> 。</p>
+<p>編譯的環境跟之前修改 <a href="https://sujunmin.github.io/blog/2016/10/03/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20%5B6%5D%20Audit%20%E7%9A%84%E5%AF%A6%E4%BD%9C/">audit log plugin</a> 的環境一樣，需要注意的地方如下</p>
+<h4>Configuring the Include path</h4>
+<p>Platform SDK 的 Include Files 在 <code>C:\Program Files (x86)\Windows Kits\8.1\Include</code> 。</p>
 <p>MariaDB 的我是 <code>&lt;MariaDB&gt;\include</code> 與 <code>&lt;MariaDB&gt;\include\mysql</code>。</p>
 <p>這兩個資料夾的資料最好複製一份到其他地方，因為等會要改。</p>
-<h4 id="Adding-the-HAVE-DLOPEN-macro"><a href="#Adding-the-HAVE-DLOPEN-macro" class="headerlink" title="Adding the HAVE_DLOPEN macro"></a>Adding the HAVE_DLOPEN macro</h4><p>除了加這個以外，還要加兩個防止 <code>strncpy</code> 的安全問題一直錯的 macro。</p>
+<h4>Adding the HAVE_DLOPEN macro</h4>
+<p>除了加這個以外，還要加兩個防止 <code>strncpy</code> 的安全問題一直錯的 macro。</p>
 <p><code>HAVE_DLOPEN;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE</code></p>
-<h4 id="Configuring-the-library-path"><a href="#Configuring-the-library-path" class="headerlink" title="Configuring the library path"></a>Configuring the library path</h4><p>Platform SDK 的 Lib Files 在 <code>C:\Program Files (x86)\Windows Kits\8.1\Lib</code> 。</p>
+<h4>Configuring the library path</h4>
+<p>Platform SDK 的 Lib Files 在 <code>C:\Program Files (x86)\Windows Kits\8.1\Lib</code> 。</p>
 <p>MariaDB 的是 <code>&lt;MariaDB&gt;\lib</code> 。</p>
-<h4 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h4><p>編譯的時候會一直有 <code>snprintf</code> 重複定義的問題，為了減少麻煩，直接把 MariaDB 的 Include Files 裡有相關的定義先拿掉，待編譯完再改回來。</p>
-<h3 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h3><p>將產生出來的 dll 與 pdf 檔複製到 <code>&lt;MariaDB&gt;\lib\plugin</code>，透過 github 裡的 <a href="https://github.com/mysqludf/lib_mysqludf_sys/blob/master/lib_mysqludf_sys.sql" target="_blank" rel="noopener"><code>lib_mysqludf_sys.sql</code></a> 安裝，記得 so 要改成 dll。</p>
-<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
-<pre><code class="sql">DROP FUNCTION IF EXISTS lib_mysqludf_sys_info;
-DROP FUNCTION IF EXISTS sys_get;
-DROP FUNCTION IF EXISTS sys_set;
-DROP FUNCTION IF EXISTS sys_exec;
-DROP FUNCTION IF EXISTS sys_eval;
-
-CREATE FUNCTION lib_mysqludf_sys_info RETURNS string SONAME &#39;lib_mysqludf_sys.dll&#39;;
-CREATE FUNCTION sys_get RETURNS string SONAME &#39;lib_mysqludf_sys.dll&#39;;
-CREATE FUNCTION sys_set RETURNS int SONAME &#39;lib_mysqludf_sys.dll&#39;;
-CREATE FUNCTION sys_exec RETURNS int SONAME &#39;lib_mysqludf_sys.dll&#39;;
-CREATE FUNCTION sys_eval RETURNS string SONAME &#39;lib_mysqludf_sys.dll&#39;;
-</code></pre>
-<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><p>可以看 <a href="https://github.com/mysqludf/lib_mysqludf_sys/blob/master/lib_mysqludf_sys.html" target="_blank" rel="noopener"><code>lib_mysqludf_sys.html</code></a>，基本上很簡單。</p>
+<h4>其他</h4>
+<p>編譯的時候會一直有 <code>snprintf</code> 重複定義的問題，為了減少麻煩，直接把 MariaDB 的 Include Files 裡有相關的定義先拿掉，待編譯完再改回來。</p>
+<h3>安裝</h3>
+<p>將產生出來的 dll 與 pdf 檔複製到 <code>&lt;MariaDB&gt;\lib\plugin</code>，透過 github 裡的 <a href="https://github.com/mysqludf/lib_mysqludf_sys/blob/master/lib_mysqludf_sys.sql" target="_blank" rel="noopener"><code>lib_mysqludf_sys.sql</code></a> 安裝，記得 so 要改成 dll。</p>
+<p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">DROP</span> <span class="keyword">FUNCTION</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> lib_mysqludf_sys_info;</span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">FUNCTION</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> sys_get;</span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">FUNCTION</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> sys_set;</span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">FUNCTION</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> sys_exec;</span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">FUNCTION</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> sys_eval;</span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">FUNCTION</span> lib_mysqludf_sys_info <span class="keyword">RETURNS</span> <span class="keyword">string</span> <span class="keyword">SONAME</span> <span class="string">'lib_mysqludf_sys.dll'</span>;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">FUNCTION</span> sys_get <span class="keyword">RETURNS</span> <span class="keyword">string</span> <span class="keyword">SONAME</span> <span class="string">'lib_mysqludf_sys.dll'</span>;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">FUNCTION</span> sys_set <span class="keyword">RETURNS</span> <span class="built_in">int</span> <span class="keyword">SONAME</span> <span class="string">'lib_mysqludf_sys.dll'</span>;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">FUNCTION</span> sys_exec <span class="keyword">RETURNS</span> <span class="built_in">int</span> <span class="keyword">SONAME</span> <span class="string">'lib_mysqludf_sys.dll'</span>;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">FUNCTION</span> sys_eval <span class="keyword">RETURNS</span> <span class="keyword">string</span> <span class="keyword">SONAME</span> <span class="string">'lib_mysqludf_sys.dll'</span>;</span><br></pre></td></tr></table></figure></p>
+<h3>使用</h3>
+<p>可以看 <a href="https://github.com/mysqludf/lib_mysqludf_sys/blob/master/lib_mysqludf_sys.html" target="_blank" rel="noopener"><code>lib_mysqludf_sys.html</code></a>，基本上很簡單。</p>
 <table>
 <thead>
 <tr>
@@ -54,7 +52,7 @@ CREATE FUNCTION sys_eval RETURNS string SONAME &#39;lib_mysqludf_sys.dll&#39;;
 </tr>
 <tr>
 <td><code>sys_set</code></td>
-<td>系統變數名稱<br> 要設定的系統變數值</td>
+<td>系統變數名稱&lt;br /&gt; 要設定的系統變數值</td>
 <td>0 為成功，其他為失敗</td>
 </tr>
 <tr>
@@ -70,39 +68,30 @@ CREATE FUNCTION sys_eval RETURNS string SONAME &#39;lib_mysqludf_sys.dll&#39;;
 </tbody>
 </table>
 <p>來跑一下試試看</p>
-<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
-<pre><code class="sql">select sys_eval(&#39;ipconfig&#39;);
-</code></pre>
-<p>&lt;img src=<a href="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/lib_mysqludf_sys_01.png" target="_blank" rel="noopener">https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/lib_mysqludf_sys_01.png</a> /&gt;</p>
+<p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> sys_eval(<span class="string">'ipconfig'</span>);</span><br></pre></td></tr></table></figure></p>
+<p>&lt;img src=https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/lib_mysqludf_sys_01.png /&gt;</p>
 <p>竟然是亂碼，但是 cmd 的沒有問題</p>
-<p>&lt;img src=<a href="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/lib_mysqludf_sys_02.png" target="_blank" rel="noopener">https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/lib_mysqludf_sys_02.png</a> /&gt;</p>
+<p>&lt;img src=https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/lib_mysqludf_sys_02.png /&gt;</p>
 <p>顯然是 Windows 編碼問題，最後是這樣解決的。</p>
-<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
-<pre><code class="sql">select convert(convert(sys_eval(&#39;ipconfig&#39;) using big5) using utf8);
-</code></pre>
-<p>&lt;img src=<a href="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/lib_mysqludf_sys_03.png" target="_blank" rel="noopener">https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/lib_mysqludf_sys_03.png</a> /&gt;</p>
-<h2 id="與-Event-實作備份"><a href="#與-Event-實作備份" class="headerlink" title="與 Event 實作備份"></a>與 Event 實作備份</h2><p>首先透過之前做的 <a href="https://sujunmin.github.io/blog/2016/09/10/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[4]%20SQL%20Agent%20%E8%88%87%20MariaDB%20Event/">Event 紀錄系統</a>來做處理，不過因為 <code>sys_eval</code> 與 <code>sys_exec</code> 有珍貴的 Log 資料，所以不能只是紀錄單純的 OK 就好，加上兼容一般 SQL 的排程，所以修改了一下 Event 紀錄系統。</p>
-<h3 id="備份排程"><a href="#備份排程" class="headerlink" title="備份排程"></a>備份排程</h3><p>做一個備份排程如下</p>
-<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
-<pre><code class="sql">CREATE DEFINER=`sujunmin`@`%` EVENT `backups`
-    ON SCHEDULE
-        EVERY 1 MINUTE STARTS &#39;2016-11-07 13:42:26&#39;
-    ON COMPLETION NOT PRESERVE
-    ENABLE
-    COMMENT &#39;&#39;
-    DO BEGIN
-    call master.proc_for_event_history(&#39;master&#39;, &#39;backups&#39;, &#39;select sys_eval(\&#39;&quot;E://MariaDB 10.1//bin//mysqldump.exe&quot; -u sujunmin -pabcdef@12345 --master-data --verbose --all-databases --events --routines --gtid 2&gt;&amp;1 &gt; E://backup//all_db.sql\&#39;) into @outv;&#39;);
-END
-</code></pre>
+<p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">convert</span>(<span class="keyword">convert</span>(sys_eval(<span class="string">'ipconfig'</span>) <span class="keyword">using</span> big5) <span class="keyword">using</span> utf8);</span><br></pre></td></tr></table></figure></p>
+<p>&lt;img src=https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/lib_mysqludf_sys_03.png /&gt;</p>
+<h2>與 Event 實作備份</h2>
+<p>首先透過之前做的 <a href="https://sujunmin.github.io/blog/2016/09/10/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20%5B4%5D%20SQL%20Agent%20%E8%88%87%20MariaDB%20Event/">Event 紀錄系統</a>來做處理，不過因為 <code>sys_eval</code> 與 <code>sys_exec</code> 有珍貴的 Log 資料，所以不能只是紀錄單純的 OK 就好，加上兼容一般 SQL 的排程，所以修改了一下 Event 紀錄系統。</p>
+<h3>備份排程</h3>
+<p>做一個備份排程如下</p>
+<p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> DEFINER=<span class="string">`sujunmin`</span>@<span class="string">`%`</span> <span class="keyword">EVENT</span> <span class="string">`backups`</span></span><br><span class="line">	<span class="keyword">ON</span> SCHEDULE</span><br><span class="line">		EVERY <span class="number">1</span> <span class="keyword">MINUTE</span> STARTS <span class="string">'2016-11-07 13:42:26'</span></span><br><span class="line">	<span class="keyword">ON</span> COMPLETION <span class="keyword">NOT</span> <span class="keyword">PRESERVE</span></span><br><span class="line">	<span class="keyword">ENABLE</span></span><br><span class="line">	<span class="keyword">COMMENT</span> <span class="string">''</span></span><br><span class="line">	<span class="keyword">DO</span> <span class="keyword">BEGIN</span></span><br><span class="line">    <span class="keyword">call</span> master.proc_for_event_history(<span class="string">'master'</span>, <span class="string">'backups'</span>, <span class="string">'select sys_eval(\'"E://MariaDB 10.1//bin//mysqldump.exe" -u sujunmin -pabcdef@12345 --master-data --verbose --all-databases --events --routines --gtid 2&gt;&amp;1 &gt; E://backup//all_db.sql\') into @outv;'</span>);</span><br><span class="line"><span class="keyword">END</span></span><br></pre></td></tr></table></figure></p>
 <p>要注意的是中間那個 <code>2&gt;&amp;1</code>，因為 <code>mysqldump</code> 是拿 <a href="http://dba.stackexchange.com/questions/14305/how-to-log-verbose-output-from-mysqldump" target="_blank" rel="noopener">Standard Error</a> 來 Output 訊息，但是 <code>sys_eval</code> 只會送回 Standard Outupt 內容。</p>
 <p>執行完以後看看結果。</p>
-<p>&lt;img src=<a href="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/lib_mysqludf_sys_04.png" target="_blank" rel="noopener">https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/lib_mysqludf_sys_04.png</a> /&gt;</p>
-<h2 id="資安問題"><a href="#資安問題" class="headerlink" title="資安問題"></a>資安問題</h2><p>網路上有很多使用 MySQL UDF 透過這些 UDF 來存取系統的<a href="https://securitypentester.ninja/mysql-udf-injection/" target="_blank" rel="noopener">資安問題</a>，所以要確保以下的防護是否有達成。</p>
+<p>&lt;img src=https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/lib_mysqludf_sys_04.png /&gt;</p>
+<h2>資安問題</h2>
+<p>網路上有很多使用 MySQL UDF 透過這些 UDF 來存取系統的<a href="https://securitypentester.ninja/mysql-udf-injection/" target="_blank" rel="noopener">資安問題</a>，所以要確保以下的防護是否有達成。</p>
 <ol>
 <li>Web 連資料庫不能是 root 等級的帳號，權限愈小愈好。</li>
 <li>AppArmor 或是 UAC 的設定。</li>
 </ol>
-<h2 id="其他紀錄"><a href="#其他紀錄" class="headerlink" title="其他紀錄"></a>其他紀錄</h2><h3 id="2016-11-08"><a href="#2016-11-08" class="headerlink" title="2016/11/08"></a>2016/11/08</h3><p>安裝的時候如果碰到不能載入，除了之前那篇寫的內容之外，有可能是 Visual C++ Redistributable 套件需要安裝，我是在 Visual Studio 2015 編譯的，找 <a href="https://www.microsoft.com/en-us/download/details.aspx?id=48145" target="_blank" rel="noopener">Visual C++ Redistributable for Visual Studio 2015</a> 安裝就可以了。</p>
+<h2>其他紀錄</h2>
+<h3>2016/11/08</h3>
+<p>安裝的時候如果碰到不能載入，除了之前那篇寫的內容之外，有可能是 Visual C++ Redistributable 套件需要安裝，我是在 Visual Studio 2015 編譯的，找 <a href="https://www.microsoft.com/en-us/download/details.aspx?id=48145" target="_blank" rel="noopener">Visual C++ Redistributable for Visual Studio 2015</a> 安裝就可以了。</p>
 </div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">
 var disqus_shortname = 'sujunmin';
 var disqus_identifier = '2016/11/08/從 SQL Server 到 MariaDB - [8] User-defined Functions 與擴增 Event 功能/';

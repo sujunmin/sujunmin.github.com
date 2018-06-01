@@ -4,64 +4,53 @@
  });
 </script></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>最近這段時間寫個系統，一些可以記錄下來的東西整理(4)</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2010-06-22</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/Net/">.Net</a></div></div></div><article><div class="container post"><p>隨著系統的慢慢完備，需要做到的功能也越來越多，畫面也要更方便些，所以又多了一些東西可以記錄一下的。</p>
 <p>12. GridView的新增、修改、刪除按鈕的應用(1)：在設定GridView的時候，可以加入CommandField，來做新增、修改、刪除。不過這個裡面的新增是跛腳的新增，怎麼說呢?只有能夠插入的Data控制項才能夠使用這個功能(如DetailView等)，那對於要新增就要做一點方式來處理了。</p>
-<p>首先對於CommandField，開啟了相關的按鈕。<img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/35238391/0.png" alt=""><br>接下來對OnRowCommand這個Event的Handler做一下處理。</p>
-<p></p><p class="code-caption" data-lang="cs" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
-<pre><code class="cs">protected void GridView1_RowCommand(object sender, GridViewCommandEventArgs e)
- {          
-     if (e.CommandName == &quot;New&quot;)
-     {
-         GridView1.DataSourceID = &quot;&quot;;
-         GridView1.DataBind();
-     }
- }
-</code></pre>
+<p>首先對於CommandField，開啟了相關的按鈕。<img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/35238391/0.png" alt="">
+接下來對OnRowCommand這個Event的Handler做一下處理。</p>
+<p><figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">GridView1_RowCommand</span>(<span class="params"><span class="keyword">object</span> sender, GridViewCommandEventArgs e</span>)</span></span><br><span class="line"><span class="function"> </span>&#123;          </span><br><span class="line">     <span class="keyword">if</span> (e.CommandName == <span class="string">"New"</span>)</span><br><span class="line">     &#123;</span><br><span class="line">         GridView1.DataSourceID = <span class="string">""</span>;</span><br><span class="line">         GridView1.DataBind();</span><br><span class="line">     &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure></p>
 <p>這邊可以說明一下：新增的部份，CommandName是New，然後在抓到這個Event的時候，Bind一個空的DataSourceID給GridView，做什麼用呢?為了要觸發EmptyDataRow的Event，好在EmptyDataTemplate裡寫要新增的資料表格。</p>
 <p>在EmptyDataTemplate裡做一個DetailsView來做新增的表格。</p>
 <p><img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/35238391/6.png" alt=""></p>
 <p>最後就只要Handle OnItemInsertring Event就好了。記得要Bind回去正確的DataSource給原來的GridView，不要又跑到空的新增畫面。</p>
 <p>13. GridView的新增、修改、刪除按鈕的應用(2)：對於修改的部份，就不用上述那麼麻煩了，只要注意OnRowDataBound適時的Bind相關資訊，以及OnRowEditing轉換狀態，OnRowCancelingEdit取消編輯。但是在OnRowDataBound的時候，因為GridView<a href="http://connect.microsoft.com/VisualStudio/feedback/details/113543/datacontrolrowstate-edit-has-lower-priority-than-datacontrolrowstate-alternate-where-it-shouldnt" target="_blank" rel="noopener">原始</a>的<a href="http://blogs.msdn.com/b/kcwalina/archive/2004/05/18/134208.aspx" target="_blank" rel="noopener">設計</a>，導致在單數列可以以DataControlRowState.Edit，但是在雙數列的部份會變成DataControlRowState.Edit | DataControlRowState.Alternate兩個參數互相連集關係，所以在偵測(GridViewRowEventArgs.Row.RowState)是否要修改某列時，要注意考慮到上面情況。</p>
-<p>14. <a href="http://msdn.microsoft.com/zh-tw/library/system.web.ui.webcontrols.dropdownlist_members(v=VS.80" target="_blank" rel="noopener">DropDownList</a>.aspx)的SelectXXX屬性的真義：DropDownList會常常在程式裡用到，通常也會根據一些特殊情況設定相關屬性，但是有時候可能會搞錯相關的意義，經過一些測試才知道問題在哪。以下就是相關說明。</p>
+<p>14. <a href="http://msdn.microsoft.com/zh-tw/library/system.web.ui.webcontrols.dropdownlist_members(v=VS.80).aspx" target="_blank" rel="noopener">DropDownList</a>的SelectXXX屬性的真義：DropDownList會常常在程式裡用到，通常也會根據一些特殊情況設定相關屬性，但是有時候可能會搞錯相關的意義，經過一些測試才知道問題在哪。以下就是相關說明。</p>
 <ul>
 <li>SelectedIndex：選取的那個東西的Index，可以設定。</li>
 <li>SelectedValue：選取的那個東西的Value，可以設定。</li>
-<li><span style="background-color: #ffff00;"><strong>SelectedItem：這個不是被選到東西的Item喔，是取得清單控制項中具有最低索引的選取項目，不能去設定，這個就是我常搞錯的地方</strong>。</span></li>
+<li>&lt;span style=&quot;background-color: #ffff00;&quot;&gt;<strong>SelectedItem：這個不是被選到東西的Item喔，是取得清單控制項中具有最低索引的選取項目，不能去設定，這個就是我常搞錯的地方</strong>。&lt;/span&gt;</li>
 </ul>
 <p>所以基本上來說，有Index或Value就能設定DropDownList。但是好像沒有看Text設定的(原來以為SelectedItem可以)，那有沒有變通方法呢?</p>
 <p>如果你能確定你的DropDownList的Text都是獨一無二的，那可以使用DropDownList.Items.FindByText()來得到ListItem，再拿該Instance的Value去指定DropDownList。</p>
-<p></p><p class="code-caption" data-lang="cs" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
-<pre><code class="cs">DDL2.SelectedValue = DDL2.Items.FindByText(&quot;data&quot;).Value;
-</code></pre>
+<p><figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DDL2.SelectedValue = DDL2.Items.FindByText(<span class="string">"data"</span>).Value;</span><br></pre></td></tr></table></figure></p>
 <p>15. 控制項的Parent概念：基本上ASP.NET網頁裡的控制項都有階層關係，有時候在某一些階段裡的Event Handler無法取得相關的Instance。這時候就需要Parent來取得相關資訊。譬如說在12裡提到的方法，裡面有個DropDownList，想要取得當時的DetailsView，就可以用連續的Parent取得。不過仍然是要看當時的架構而定。</p>
-<p></p><p class="code-caption" data-lang="cs" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
-<pre><code class="cs">DetailsView gvr = (DetailsView)DDL2.Parent.Parent.Parent.Parent
-</code></pre>
+<p><figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DetailsView gvr = (DetailsView)DDL2.Parent.Parent.Parent.Parent</span><br></pre></td></tr></table></figure></p>
 <p>原來的Layout像這樣。</p>
-<p><img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/35238391/7.png" alt=""><br>所以DDL2-&gt;TableCell-&gt;TableRow-&gt;Table-&gt;DetailsView，像這樣就能得到其他的Instance了。</p>
+<p><img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/35238391/7.png" alt="">
+所以DDL2-&gt;TableCell-&gt;TableRow-&gt;Table-&gt;DetailsView，像這樣就能得到其他的Instance了。</p>
 <hr>
 <ul>
 <li>留言者: 米斯特‧載卡多</li>
-<li>Email:<em>   網址:</em>   日期: 2010-08-04 22:00:28</li>
+<li>Email:*   網址:*   日期: 2010-08-04 22:00:28</li>
 </ul>
 <p>應該可以，Dropdownlist的ListItem本身就可視為陣列，可以利用相關的方式來搜詢你要的文字</p>
 <hr>
 <ul>
 <li>留言者: 小蘇</li>
-<li>Email:<em>   網址:</em>   日期: 2010-08-04 22:20:53</li>
+<li>Email:*   網址:*   日期: 2010-08-04 22:20:53</li>
 </ul>
 <p>是沒錯啦，不過他是Listcontrol集合， 需要看text才知道index(需要iterative find)，但是用FindByText()就直接完成了~</p>
 <hr>
 <ul>
 <li>留言者: 米斯特‧載卡多</li>
-<li>Email:<em>   網址:</em>   日期: 2010-07-30 02:50:50</li>
+<li>Email:*   網址:*   日期: 2010-07-30 02:50:50</li>
 </ul>
-<p>引用【…，有Index或Value就能設定DropDownList。但是好像沒有看Text設定的…】</p>
-<p>&nbsp;</p>
+<p>引用【...，有Index或Value就能設定DropDownList。但是好像沒有看Text設定的...】</p>
+<p> </p>
 <p>DropDownList的Item設定是</p>
-<p>dropdownlistDemo.item(i).text = “就這樣”</p>
+<p>dropdownlistDemo.item(i).text = &quot;就這樣&quot;</p>
 <hr>
 <ul>
 <li>留言者: 小蘇</li>
-<li>Email:<em>   網址:</em>   日期: 2010-08-01 12:44:54</li>
+<li>Email:*   網址:*   日期: 2010-08-01 12:44:54</li>
 </ul>
 <p>恩恩，這個是設定item文字的，但我內容是寫要從item找是哪個值，您這樣寫只是設定值喔~</p>
 </div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">

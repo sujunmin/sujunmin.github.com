@@ -2,8 +2,10 @@
  google_ad_client: "ca-pub-0187888667607442",
  enable_page_level_ads: true
  });
-</script></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>從 SQL Server 到 MariaDB - [0] 起始</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2016-08-07</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/MSSQL/">MSSQL</a>/<a class="post-tag-link" href="/blog/tags/MariaDB/">MariaDB</a></div></div></div><article><div class="container post"><h2 id="需求說明"><a href="#需求說明" class="headerlink" title="需求說明"></a>需求說明</h2><p>公司因為 SQL Server 的支援快要到期，加上資料的等級與加值性不如預期，所以開始有從 SQL Server 轉到 MariaDB 的計劃。</p>
-<h2 id="測試環境"><a href="#測試環境" class="headerlink" title="測試環境"></a>測試環境</h2><ol>
+</script></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>從 SQL Server 到 MariaDB - [0] 起始</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2016-08-07</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/MSSQL/">MSSQL</a>/<a class="post-tag-link" href="/blog/tags/MariaDB/">MariaDB</a></div></div></div><article><div class="container post"><h2>需求說明</h2>
+<p>公司因為 SQL Server 的支援快要到期，加上資料的等級與加值性不如預期，所以開始有從 SQL Server 轉到 MariaDB 的計劃。</p>
+<h2>測試環境</h2>
+<ol>
 <li>SQL Server 2008 R2 64 bits (要汰換的)</li>
 <li>Oracle DB 12c (要汰換的)</li>
 <li>MariaDB 10.1.16 64 bits</li>
@@ -13,18 +15,19 @@
 <li>MariaDB ODBC 2.0.12 64bits</li>
 <li>Visual Studio 2015 Community</li>
 </ol>
-<h2 id="移轉紀錄"><a href="#移轉紀錄" class="headerlink" title="移轉紀錄"></a>移轉紀錄</h2><ol>
-<li><a href="https://sujunmin.github.io/blog/2016/08/08/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[1]%20%E5%82%99%E4%BB%BD%E8%88%87%E9%82%84%E5%8E%9F/">從 SQL Server 到 MariaDB - [1] 備份與還原</a></li>
-<li><a href="https://sujunmin.github.io/blog/2016/08/10/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[2]%20%E8%B3%87%E6%96%99%E5%BA%AB%20ACL%20%E8%88%87%E5%B8%B3%E8%99%9F%E7%AE%A1%E7%90%86/">從 SQL Server 到 MariaDB - [2] 資料庫 ACL 與帳號管理</a></li>
-<li><a href="https://sujunmin.github.io/blog/2016/09/06/SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[3]%20%E8%B3%87%E6%96%99%E5%BA%AB%E7%A7%BB%E8%BD%89%E8%88%87%E7%B3%BB%E7%B5%B1%E7%A8%8B%E5%BC%8F%E4%BF%AE%E6%94%B9/">從 SQL Server 到 MariaDB - [3] 資料庫移轉與系統程式修改</a></li>
-<li><a href="https://sujunmin.github.io/blog/2016/09/10/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[4]%20SQL%20Agent%20%E8%88%87%20MariaDB%20Event/">從 SQL Server 到 MariaDB - [4] SQL Agent 與 MariaDB Event</a></li>
-<li><a href="https://sujunmin.github.io/blog/2016/09/19/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[5]%20Log-shipping%20%E8%88%87%20MariaDB%20Replication/">從 SQL Server 到 MariaDB - [5] Log-shipping 與 MariaDB Replication</a></li>
-<li><a href="https://sujunmin.github.io/blog/2016/10/03/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[6]%20Audit%20%E7%9A%84%E5%AF%A6%E4%BD%9C/">從 SQL Server 到 MariaDB - [6] Audit 的實作</a></li>
-<li><a href="https://sujunmin.github.io/blog/2016/10/05/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[7]%20Linked%20Server%20%E8%88%87%20FederatedX%20Storage%20Engine/">從 SQL Server 到 MariaDB - [7] Linked Server 與 FederatedX Storage Engine</a></li>
-<li><a href="https://sujunmin.github.io/blog/2017/06/08/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[8]%20User-defined%20Functions%20%E8%88%87%E6%93%B4%E5%A2%9E%20Event%20%E5%8A%9F%E8%83%BD/">從 SQL Server 到 MariaDB - [8] User-defined Functions 與擴增 Event 功能</a></li>
-<li><a href="https://sujunmin.github.io/blog/2016/12/27/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[9]%20DBA%20Daily%20Check%20Report%20%E7%9A%84%E8%A3%BD%E4%BD%9C%20[1]/">從 SQL Server 到 MariaDB - [9] DBA Daily Check Report 的製作 [1]</a></li>
-<li><a href="https://sujunmin.github.io/blog/2016/12/27/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[10]%20DBA%20Daily%20Check%20Report%20%E7%9A%84%E8%A3%BD%E4%BD%9C%20[2]/">從 SQL Server 到 MariaDB - [10] DBA Daily Check Report 的製作 [2]</a></li>
-<li><a href="https://sujunmin.github.io/blog/2016/12/29/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[11]%20Audit%20Log%20Parser%20%E7%9A%84%E5%AF%A6%E5%81%9A/">從 SQL Server 到 MariaDB - [11] Audit Log Parser 的實做</a></li>
+<h2>移轉紀錄</h2>
+<ol>
+<li><a href="https://sujunmin.github.io/blog/2016/08/08/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20%5B1%5D%20%E5%82%99%E4%BB%BD%E8%88%87%E9%82%84%E5%8E%9F/">從 SQL Server 到 MariaDB - [1] 備份與還原</a></li>
+<li><a href="https://sujunmin.github.io/blog/2016/08/10/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20%5B2%5D%20%E8%B3%87%E6%96%99%E5%BA%AB%20ACL%20%E8%88%87%E5%B8%B3%E8%99%9F%E7%AE%A1%E7%90%86/">從 SQL Server 到 MariaDB - [2] 資料庫 ACL 與帳號管理</a></li>
+<li><a href="https://sujunmin.github.io/blog/2016/09/06/SQL%20Server%20%E5%88%B0%20MariaDB%20-%20%5B3%5D%20%E8%B3%87%E6%96%99%E5%BA%AB%E7%A7%BB%E8%BD%89%E8%88%87%E7%B3%BB%E7%B5%B1%E7%A8%8B%E5%BC%8F%E4%BF%AE%E6%94%B9/">從 SQL Server 到 MariaDB - [3] 資料庫移轉與系統程式修改</a></li>
+<li><a href="https://sujunmin.github.io/blog/2016/09/10/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20%5B4%5D%20SQL%20Agent%20%E8%88%87%20MariaDB%20Event/">從 SQL Server 到 MariaDB - [4] SQL Agent 與 MariaDB Event</a></li>
+<li><a href="https://sujunmin.github.io/blog/2016/09/19/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20%5B5%5D%20Log-shipping%20%E8%88%87%20MariaDB%20Replication/">從 SQL Server 到 MariaDB - [5] Log-shipping 與 MariaDB Replication</a></li>
+<li><a href="https://sujunmin.github.io/blog/2016/10/03/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20%5B6%5D%20Audit%20%E7%9A%84%E5%AF%A6%E4%BD%9C/">從 SQL Server 到 MariaDB - [6] Audit 的實作</a></li>
+<li><a href="https://sujunmin.github.io/blog/2016/10/05/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20%5B7%5D%20Linked%20Server%20%E8%88%87%20FederatedX%20Storage%20Engine/">從 SQL Server 到 MariaDB - [7] Linked Server 與 FederatedX Storage Engine</a></li>
+<li><a href="https://sujunmin.github.io/blog/2017/06/08/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20%5B8%5D%20User-defined%20Functions%20%E8%88%87%E6%93%B4%E5%A2%9E%20Event%20%E5%8A%9F%E8%83%BD/">從 SQL Server 到 MariaDB - [8] User-defined Functions 與擴增 Event 功能</a></li>
+<li><a href="https://sujunmin.github.io/blog/2016/12/27/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20%5B9%5D%20DBA%20Daily%20Check%20Report%20%E7%9A%84%E8%A3%BD%E4%BD%9C%20%5B1%5D/">從 SQL Server 到 MariaDB - [9] DBA Daily Check Report 的製作 [1]</a></li>
+<li><a href="https://sujunmin.github.io/blog/2016/12/27/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20%5B10%5D%20DBA%20Daily%20Check%20Report%20%E7%9A%84%E8%A3%BD%E4%BD%9C%20%5B2%5D/">從 SQL Server 到 MariaDB - [10] DBA Daily Check Report 的製作 [2]</a></li>
+<li><a href="https://sujunmin.github.io/blog/2016/12/29/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20%5B11%5D%20Audit%20Log%20Parser%20%E7%9A%84%E5%AF%A6%E5%81%9A/">從 SQL Server 到 MariaDB - [11] Audit Log Parser 的實做</a></li>
 </ol>
 </div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">
 var disqus_shortname = 'sujunmin';

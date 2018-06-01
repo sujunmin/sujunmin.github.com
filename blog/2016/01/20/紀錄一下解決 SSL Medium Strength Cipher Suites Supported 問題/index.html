@@ -6,14 +6,14 @@
 <ul>
 <li>SSH 連到該台 ESXi</li>
 <li>修改  /etc/vmware/rhttpproxy/config.xml</li>
-<li><cipherlist> 一節須修改成你想要的，譬如說 High Cipher Method 就是 +HIGH:!MEDIUM:!LOW</cipherlist></li>
-<li><cipherlist> 裡頭可用到的參數</cipherlist></li>
-<li><cipherlist> 裡頭只能調整 Cipher Suites，不能調整 Protocol</cipherlist></li>
+<li>&lt;cipherList&gt; 一節須修改成你想要的，譬如說 High Cipher Method 就是 +HIGH:!MEDIUM:!LOW</li>
+<li>&lt;cipherList&gt; 裡頭可用到的參數</li>
+<li>&lt;cipherList&gt; 裡頭只能調整 Cipher Suites，不能調整 Protocol</li>
 <li>前頭的 TLSv1.2 要加(指所有 Protocol 會用到的 Cipher 都先加進去)</li>
 <li>用:隔開，+的意思是一定要在候選 List 裡，且優先權最高，!的意思是一定不會在候選 List裡，沒寫的是在候選 List 裡，但會在 + 的後面</li>
 <li>設定原則為沒寫的一定會在候選 List 裡，除非明示</li>
 <li>所以  SSL Medium Strength Cipher Suites Supported 要用 +HIGH:!MEDIUM:!LOW 解決(只用HIGH，不用MEDIUM 與 LOW)</li>
-<li>/etc/init.d/rhttpproxy restart </li>
+<li>/etc/init.d/rhttpproxy restart</li>
 </ul>
 </div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">
 var disqus_shortname = 'sujunmin';

@@ -2,7 +2,8 @@
  google_ad_client: "ca-pub-0187888667607442",
  enable_page_level_ads: true
  });
-</script></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>Windows 7 忘記密碼不用透過密碼忘記磁碟</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2016-01-27</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/MIS/">MIS</a></div></div></div><article><div class="container post"><p>今天幫同事解決 Windows 7 忘記密碼的問題，原來是想要用<a href="http://pogostick.net/~pnh/ntpasswd/" target="_blank" rel="noopener">這個</a>來解決，但是開機會 Kernel Panic @@，網路上找到的一些程式都要 $$，忽然發現到<a href="http://www.oxhow.com/reset-windows-7-password-without-password-reset-disk/" target="_blank" rel="noopener">一篇</a>寫得不賴，拿來用也成功，特別紀錄一下如何使用的。雖然覺得之前看過一樣的方法，今天算是第一次使用XD<br>這個方法是把 sethc.exe (<a href="http://windows.microsoft.com/zh-tw/windows/make-keyboard-easier-to-use#1TC=windows-7" target="_blank" rel="noopener">Windows 相黏鍵</a>) 功能替換成 cmd.exe (Shell)，進而使用指令修改密碼。</p>
+</script></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>Windows 7 忘記密碼不用透過密碼忘記磁碟</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2016-01-27</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/MIS/">MIS</a></div></div></div><article><div class="container post"><p>今天幫同事解決 Windows 7 忘記密碼的問題，原來是想要用<a href="http://pogostick.net/~pnh/ntpasswd/" target="_blank" rel="noopener">這個</a>來解決，但是開機會 Kernel Panic @@，網路上找到的一些程式都要 $$，忽然發現到<a href="http://www.oxhow.com/reset-windows-7-password-without-password-reset-disk/" target="_blank" rel="noopener">一篇</a>寫得不賴，拿來用也成功，特別紀錄一下如何使用的。雖然覺得之前看過一樣的方法，今天算是第一次使用XD
+這個方法是把 sethc.exe (<a href="http://windows.microsoft.com/zh-tw/windows/make-keyboard-easier-to-use#1TC=windows-7" target="_blank" rel="noopener">Windows 相黏鍵</a>) 功能替換成 cmd.exe (Shell)，進而使用指令修改密碼。</p>
 <ul>
 <li>重開機到 Windows 修復</li>
 <li>讓她修復一下</li>
@@ -24,14 +25,23 @@
 <p>[20170405] 更新</p>
 <p>今天改了本機密碼以後，就三不五時帳號被鎖定，可能是有其他需要密碼的程式(例如系統排程)因為一直輸入舊的密碼導致一直被鎖定，本機是 Windows 10，跟 Windows 7 的作法比較不一樣，紀錄如下</p>
 <ul>
-<li>登入畫面點選重開機，記得按著 Shift</li>
-<li>會跑出[選擇選項]，點選[疑難排解]\[進階選項]\[命令提示字元] (連修復都不需要了)</li>
-<li><p>開始如同之前的複製修改</p>
+<li>
+<p>登入畫面點選重開機，記得按著 Shift</p>
+</li>
+<li>
+<p>會跑出[選擇選項]，點選[疑難排解]\[進階選項]\[命令提示字元] (連修復都不需要了)</p>
+</li>
+<li>
+<p>開始如同之前的複製修改</p>
 <p><code>c:\windows\system32&gt;copy sethc.exe sethc_bak.exe</code></p>
 <p><code>c:\windows\system32&gt;copy cmd.exe sethc.exe</code></p>
 </li>
-<li>重新啟動電腦</li>
-<li>接下來都跟之前一樣</li>
+<li>
+<p>重新啟動電腦</p>
+</li>
+<li>
+<p>接下來都跟之前一樣</p>
+</li>
 </ul>
 </div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">
 var disqus_shortname = 'sujunmin';

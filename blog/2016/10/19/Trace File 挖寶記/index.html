@@ -3,13 +3,13 @@
  enable_page_level_ads: true
  });
 </script></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>Trace File 挖寶記</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2016-10-19</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/MSSQL/">MSSQL</a></div></div></div><article><div class="container post"><p>昨天下午收到一封告警訊息，發現到是一個從來沒有在告警訊息中出現的帳號 (datareader/datawriter, dbo login)，覺得很奇怪，不知道是不是又被 SQL Injection 攻擊了，於是有了這篇紀錄說明如何從 Trace File 挖寶。</p>
-<p>&lt;img src=<a href="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/eventclass_118_1.png" target="_blank" rel="noopener">https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/eventclass_118_1.png</a> /&gt;</p>
+<p>&lt;img src=https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/eventclass_118_1.png /&gt;</p>
 <p>這篇的結果不是那麼重要，但是怎麼從 Trace File 找到想要的資訊我覺得還蠻重要的。</p>
 <p>基本上 TextData 應該都會有 Query 資訊，大部份都能馬上判定是什麼狀況，但是像這種沒有 TextData 的就要直接去看看 Trace File 裡頭的資訊了。</p>
 <p>Event Class 是 118，<a href="https://msdn.microsoft.com/en-us/library/ms190802.aspx" target="_blank" rel="noopener">Audit Object Derived Permission Event</a>。</p>
 <p>裡頭寫到重要的資訊，就是欄位編號，名稱，跟內容。</p>
 <p>從 <a href="https://github.com/sujunmin/SQLServerTraceFileParser" target="_blank" rel="noopener">Log Server</a> 拿出所要的 csv 檔，取出需要的部份 (如果原來的太大了的話)。</p>
-<p>&lt;img src=<a href="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/eventclass_118_2.png" target="_blank" rel="noopener">https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/eventclass_118_2.png</a> /&gt;</p>
+<p>&lt;img src=https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/eventclass_118_2.png /&gt;</p>
 <p>一些重要的欄位</p>
 <table>
 <thead>
@@ -43,7 +43,7 @@
 <tr>
 <td>21</td>
 <td>EventSubClass</td>
-<td>Type of event subclass.<br>1=Create<br>2=Alter<br>3=Drop<br>4=Dump<br>11=Load</td>
+<td>Type of event subclass.&lt;br/&gt;1=Create&lt;br/&gt;2=Alter&lt;br/&gt;3=Drop&lt;br/&gt;4=Dump&lt;br/&gt;11=Load</td>
 </tr>
 <tr>
 <td>23</td>
@@ -77,10 +77,10 @@
 </tr>
 </tbody>
 </table>
-<p>其中除了帳號來源之外，最重要的就是 EventSubClass = Create，ObjectName = _WA_Sys_…。</p>
+<p>其中除了帳號來源之外，最重要的就是 EventSubClass = Create，ObjectName = _WA_Sys_...。</p>
 <p>所以我們知道是 Create Statistics。</p>
 <p>看一下統計資料</p>
-<p>&lt;img src=<a href="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/eventclass_118_3.png" target="_blank" rel="noopener">https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/eventclass_118_3.png</a> /&gt;</p>
+<p>&lt;img src=https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/eventclass_118_3.png /&gt;</p>
 <p>正式當時產生的：某個 Query 需要其他類型的統計資料，所以就產生了。</p>
 <p>總結：如果要從 Trace File 挖寶，可以這麼做</p>
 <ol>
