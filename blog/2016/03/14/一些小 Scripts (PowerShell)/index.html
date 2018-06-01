@@ -2,29 +2,28 @@
  google_ad_client: "ca-pub-0187888667607442",
  enable_page_level_ads: true
  });
-</script><link rel="stylesheet" href="/blog/css/prism.css" type="text/css">
-<link rel="stylesheet" href="/blog/css/prism-line-numbers.css" type="text/css"></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>一些小 Scripts (PowerShell)</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2016-03-14</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/MIS/">MIS</a></div></div></div><article><div class="container post"><p>上星期五幫同事生出一些 Scripts，因為急著下班就沒分享了，今天分享給大家。</p>
+</script></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>一些小 Scripts (PowerShell)</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2016-03-14</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/MIS/">MIS</a></div></div></div><article><div class="container post"><p>上星期五幫同事生出一些 Scripts，因為急著下班就沒分享了，今天分享給大家。</p>
 <ol>
-<li>在一個目錄裡的檔案 Syslogyyyy-mm-dd-hh.txt 檔案分時間壓縮成一個檔案，並放在同名的資料夾裡面。<br>假設 Syslogyyyy-mm-dd-hh.txt 在 $src_dir，要放到 $dst_dir 裡，壓縮程式是 $7zexe<pre class="line-numbers language-powershell"><code class="language-powershell"> <span class="token variable">$ErrorActionPreference</span> = <span class="token string">"Stop"</span> <span class="token comment" spellcheck="true">#20160712 修改，當有發生錯誤馬上停止</span>
- <span class="token variable">$src_dir</span> = <span class="token string">"C:\Users\sujunmin\Desktop\x"</span>
- <span class="token variable">$dst_dir</span> = <span class="token string">"C:\Users\sujunmin\Desktop\y"</span>
- <span class="token variable">$7zexe</span> = <span class="token string">"C:\Program Files\7-Zip\7z.exe"</span>
- <span class="token function">dir</span> <span class="token variable">$src_dir</span> <span class="token punctuation">|</span> <span class="token operator">%</span><span class="token punctuation">{</span> 
- <span class="token variable">$id</span> = <span class="token variable">$_</span><span class="token punctuation">.</span>Name<span class="token punctuation">.</span>SubString<span class="token punctuation">(</span>6<span class="token punctuation">,</span>10<span class="token punctuation">)</span><span class="token punctuation">;</span> 
- <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token operator">-not</span> <span class="token punctuation">(</span><span class="token function">Test-Path</span> <span class="token string">"<span class="token variable">$dst_dir</span>\<span class="token variable">$id</span>"</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>mkdir <span class="token string">"<span class="token variable">$dst_dir</span>\<span class="token variable">$id</span>"</span><span class="token punctuation">}</span><span class="token punctuation">;</span> 
- &amp;<span class="token variable">$7zexe</span> a <span class="token operator">-</span>tzip <span class="token string">"<span class="token variable">$dst_dir</span>\<span class="token variable">$id</span>\<span class="token variable">$id</span>.zip"</span> <span class="token string">"<span class="token variable">$src_dir</span>\<span class="token variable">$_</span>"</span> <span class="token punctuation">;</span>
- <span class="token function">del</span> <span class="token string">"<span class="token variable">$src_dir</span>\<span class="token variable">$_</span>"</span><span class="token punctuation">;</span><span class="token punctuation">}</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<li>在一個目錄裡的檔案 Syslogyyyy-mm-dd-hh.txt 檔案分時間壓縮成一個檔案，並放在同名的資料夾裡面。<br>假設 Syslogyyyy-mm-dd-hh.txt 在 $src_dir，要放到 $dst_dir 裡，壓縮程式是 $7zexe<br><p class="code-caption" data-lang="powershell" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><pre><code class="powershell">$ErrorActionPreference = &quot;Stop&quot; #20160712 修改，當有發生錯誤馬上停止
+$src_dir = &quot;C:\Users\sujunmin\Desktop\x&quot;
+$dst_dir = &quot;C:\Users\sujunmin\Desktop\y&quot;
+$7zexe = &quot;C:\Program Files\7-Zip\7z.exe&quot;
+dir $src_dir | %{ 
+$id = $_.Name.SubString(6,10); 
+if(-not (Test-Path &quot;$dst_dir\$id&quot;)) {mkdir &quot;$dst_dir\$id&quot;}; 
+&amp;$7zexe a -tzip &quot;$dst_dir\$id\$id.zip&quot; &quot;$src_dir\$_&quot; ;
+del &quot;$src_dir\$_&quot;;}
+</code></pre>
 </li>
-<li>每天將前一天的 Syslogyyyy-mm-dd-*.txt 壓起來放在並放在同名的資料夾裡面。<br>假設 Syslogyyyy-mm-dd-hh.txt 在 $src_dir，要放到 $dst_dir 裡，壓縮程式是 $7zexe<pre class="line-numbers language-powershell"><code class="language-powershell"> <span class="token variable">$ErrorActionPreference</span> = <span class="token string">"Stop"</span> <span class="token comment" spellcheck="true">#20160712 修改，當有發生錯誤馬上停止</span>
- <span class="token variable">$src_dir</span> = <span class="token string">"C:\Users\sujunmin\Desktop\x"</span>
- <span class="token variable">$dst_dir</span> = <span class="token string">"C:\Users\sujunmin\Desktop\y"</span>
- <span class="token variable">$7zexe</span> = <span class="token string">"C:\Program Files\7-Zip\7z.exe"</span>
- <span class="token variable">$id</span> = <span class="token punctuation">(</span><span class="token function">get-date</span><span class="token punctuation">)</span><span class="token punctuation">.</span>AddDays<span class="token punctuation">(</span><span class="token operator">-</span>1<span class="token punctuation">)</span><span class="token punctuation">.</span>ToString<span class="token punctuation">(</span><span class="token string">"yyyy-MM-dd"</span><span class="token punctuation">)</span>
- mkdir <span class="token string">"<span class="token variable">$dst_dir</span>\<span class="token variable">$id</span>"</span>
- &amp;<span class="token variable">$7zexe</span> a <span class="token operator">-</span>tzip <span class="token string">"<span class="token variable">$dst_dir</span>\<span class="token variable">$id</span>\<span class="token variable">$id</span>.zip"</span> <span class="token string">"<span class="token variable">$src_dir</span>\Syslog<span class="token variable">$id</span>*.txt"</span><span class="token punctuation">;</span>
- <span class="token function">del</span> <span class="token string">"<span class="token variable">$src_dir</span>\Syslog<span class="token variable">$id</span>*.txt"</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<li>每天將前一天的 Syslogyyyy-mm-dd-*.txt 壓起來放在並放在同名的資料夾裡面。<br>假設 Syslogyyyy-mm-dd-hh.txt 在 $src_dir，要放到 $dst_dir 裡，壓縮程式是 $7zexe<br><p class="code-caption" data-lang="powershell" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><pre><code class="powershell">$ErrorActionPreference = &quot;Stop&quot; #20160712 修改，當有發生錯誤馬上停止
+$src_dir = &quot;C:\Users\sujunmin\Desktop\x&quot;
+$dst_dir = &quot;C:\Users\sujunmin\Desktop\y&quot;
+$7zexe = &quot;C:\Program Files\7-Zip\7z.exe&quot;
+$id = (get-date).AddDays(-1).ToString(&quot;yyyy-MM-dd&quot;)
+mkdir &quot;$dst_dir\$id&quot;
+&amp;$7zexe a -tzip &quot;$dst_dir\$id\$id.zip&quot; &quot;$src_dir\Syslog$id*.txt&quot;;
+del &quot;$src_dir\Syslog$id*.txt&quot;
+</code></pre>
 </li>
 </ol>
 </div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">

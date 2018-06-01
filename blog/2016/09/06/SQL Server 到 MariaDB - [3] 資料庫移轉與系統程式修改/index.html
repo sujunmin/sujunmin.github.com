@@ -2,8 +2,7 @@
  google_ad_client: "ca-pub-0187888667607442",
  enable_page_level_ads: true
  });
-</script><link rel="stylesheet" href="/blog/css/prism.css" type="text/css">
-<link rel="stylesheet" href="/blog/css/prism-line-numbers.css" type="text/css"></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>從 SQL Server 到 MariaDB - [3] 資料庫移轉與系統程式修改</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2016-09-06</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/MSSQL/">MSSQL</a>/<a class="post-tag-link" href="/blog/tags/MariaDB/">MariaDB</a></div></div></div><article><div class="container post"><h2 id="需求說明"><a href="#需求說明" class="headerlink" title="需求說明"></a>需求說明</h2><p>在資料庫移轉的部份，原來的資料庫有廠商使用的部份，然後也有我們自己維護的系統的部份。廠商的部份使用 <a href="https://www.mysql.com/products/workbench/" target="_blank" rel="noopener">MySQL Workbench</a> 的 Database Migrate 功能，花了一點時間轉置，基本上沒有太大的問題，系統程式都能正常運行，因此我想我們這邊的程式應該也可以如法泡製吧。</p>
+</script></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>從 SQL Server 到 MariaDB - [3] 資料庫移轉與系統程式修改</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2016-09-06</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/MSSQL/">MSSQL</a>/<a class="post-tag-link" href="/blog/tags/MariaDB/">MariaDB</a></div></div></div><article><div class="container post"><h2 id="需求說明"><a href="#需求說明" class="headerlink" title="需求說明"></a>需求說明</h2><p>在資料庫移轉的部份，原來的資料庫有廠商使用的部份，然後也有我們自己維護的系統的部份。廠商的部份使用 <a href="https://www.mysql.com/products/workbench/" target="_blank" rel="noopener">MySQL Workbench</a> 的 Database Migrate 功能，花了一點時間轉置，基本上沒有太大的問題，系統程式都能正常運行，因此我想我們這邊的程式應該也可以如法泡製吧。</p>
 <p>結果花了一個星期的時間才完成進入測試，相關的過程紀錄如下。</p>
 <p>系統架構</p>
 <ol>
@@ -31,22 +30,22 @@
 </ol>
 <p>所以後來是自己寫 Script 處理</p>
 <ol>
-<li>使用 bcp 匯出資料，用 tab 分隔資料欄位，用 | 分隔資料行<pre class="line-numbers language-cmd"><code class="language-cmd">bcp "select * from table" queryout "query.csv" -c -t"\t" -r"|" -S Server -U username -P password
+<li>使用 bcp 匯出資料，用 tab 分隔資料欄位，用 | 分隔資料行<br><p class="code-caption" data-lang="cmd" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><pre><code class="cmd">bcp &quot;select * from table&quot; queryout &quot;query.csv&quot; -c -t&quot;\t&quot; -r&quot;|&quot; -S Server -U username -P password
 ...
-bcp "open symmetric key ...; select cast(descryptbykey(key, ...) as nvarchar) ... from table2" queryout "table2.csv" -c -t"\t" -r"|" -S Server -U username -P password 
+bcp &quot;open symmetric key ...; select cast(descryptbykey(key, ...) as nvarchar) ... from table2&quot; queryout &quot;table2.csv&quot; -c -t&quot;\t&quot; -r&quot;|&quot; -S Server -U username -P password 
 ...
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+</code></pre>
 </li>
 <li><p>因為 bcp 不支援 Unicode 輸出 (SQL Server does not support code page 65001 (UTF-8 encoding).)，只支援雙字元輸出 (-w)，但那看起來會十分奇怪，所以要轉檔成為 UTF-8</p>
 </li>
-<li><p>使用 load data local infile 來匯入資料</p>
-<pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">truncate</span> <span class="token keyword">table</span> tab_name<span class="token punctuation">;</span>
-<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
-<span class="token keyword">load</span> <span class="token keyword">data</span> <span class="token keyword">local</span> <span class="token keyword">infile</span> <span class="token string">'query.csv'</span> <span class="token keyword">into</span> <span class="token keyword">table</span> tab_name
-<span class="token keyword">fields</span> <span class="token keyword">terminated by</span> <span class="token string">'\t'</span>
-<span class="token keyword">lines</span> <span class="token keyword">terminated by</span> <span class="token string">'|'</span>
-<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<li><p>使用 load data local infile 來匯入資料<br></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="sql">truncate table tab_name;
+...
+load data local infile &#39;query.csv&#39; into table tab_name
+fields terminated by &#39;\t&#39;
+lines terminated by &#39;|&#39;
+...
+</code></pre>
 </li>
 <li>細部調整一些資料</li>
 </ol>
@@ -81,24 +80,30 @@ bcp "open symmetric key ...; select cast(descryptbykey(key, ...) as nvarchar) ..
 </tbody>
 </table>
 <h3 id="limit-的問題"><a href="#limit-的問題" class="headerlink" title="limit 的問題"></a>limit 的問題</h3><p>基本上不會有什麼問題，但是在程式裡有類似這樣的動作</p>
-<pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">select</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token keyword">from</span> <span class="token keyword">table</span> <span class="token keyword">where</span> idx <span class="token operator">not</span> <span class="token operator">in</span> <span class="token punctuation">(</span><span class="token keyword">select</span> idx <span class="token keyword">from</span> table2 <span class="token keyword">where</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token keyword">limit</span> <span class="token number">10</span><span class="token punctuation">)</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="sql">select ... from table where idx not in (select idx from table2 where ... limit 10)
+</code></pre>
 <p>會有如下的錯誤</p>
-<pre class="line-numbers language-cmd"><code class="language-cmd">This version of MariaDB doesn't yet support 'LIMIT & IN/ALL/ANY/SOME subquery'
-<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p></p><p class="code-caption" data-lang="cmd" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="cmd">This version of MariaDB doesn&#39;t yet support &#39;LIMIT &amp; IN/ALL/ANY/SOME subquery&#39;
+</code></pre>
 <p>不過有神人<a href="http://stackoverflow.com/questions/7124418/mysql-subquery-limit" target="_blank" rel="noopener">幫忙</a>，這個是有解的</p>
-<pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">select</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token keyword">from</span> <span class="token keyword">table</span> <span class="token keyword">where</span> idx <span class="token operator">not</span> <span class="token operator">in</span> <span class="token punctuation">(</span><span class="token keyword">select</span> idx <span class="token keyword">from</span> <span class="token punctuation">(</span><span class="token keyword">select</span> idx <span class="token keyword">from</span> table2 <span class="token keyword">where</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token keyword">limit</span> <span class="token number">10</span><span class="token punctuation">)</span> <span class="token keyword">as</span> i<span class="token punctuation">)</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="sql">select ... from table where idx not in (select idx from (select idx from table2 where ... limit 10) as i)
+</code></pre>
 <p>只要多一層 select，不要直接接上 in 就可以解決了</p>
 <h2 id="Invalid-string-or-buffer-length-錯誤"><a href="#Invalid-string-or-buffer-length-錯誤" class="headerlink" title="Invalid string or buffer length 錯誤"></a>Invalid string or buffer length 錯誤</h2><p>這個錯誤已經在 2.0.12 版後更新了，感謝神人!</p>
-<strike><br><br>在上面的基本語法轉換以後，基本上 99% 的功能已經是沒有問題了，但是在這最後的 1% 卻花了我好幾天的時間。<br><br>這個問題的發生是這樣的，當遇到某些欄位的時候就會發生這個錯誤<br><code>cmd
-[ma-2.0.11][mariadb-10.1.16] Invalid string or buffer length</code><br>這還不是一直發生，有的時候會有，有的時候很正常，功能的部份有的會發生，有的不會，這樣就要去看看程式碼有關那些欄位的存取情形與資料庫狀態，但是這就跟基本需求裏面說的相違背 (需要了解更多的 Code)，所以首先懷疑是 ODBC 的關係。<br><br>換了 1.0 版本更慘，連原來 SQL Statement 都會被截斷，基本上是不能退到 1.0 版了<br><br>只好硬著頭皮看 Codes 跟資料庫，終於發現到問題<br><br>當欄位是空字串 (不是 Null 喔) 時，透過 ODBC Select 到 ADODB.RecordSet 會有問題 (在其他 client 都沒問題)，無論有幾個欄位有這樣的情形，只要有一個它就 Error 給你看<br><br>所以就要改寫那些 SQL 語法 (通常都是 select <em>) 為明確欄位且要先轉為 Null 或是其他的值<br><br>原來 (有 a b c d e 5 個欄位，其中 c d e 有可能是空字串)<br><br><code>`</code>sql<br>select </em> from table where …<br><code>改寫成</code>sql<br>select *, (case c when ‘’ then NULL else c end) as c, (case d when ‘’ then ‘ ‘ else d end) as d, (case e when ‘’ then ‘x’ else e end) as e from table where …<br><code>Codes 馬上暴增超多的，Debug 更困難了
+<strike><br><br>在上面的基本語法轉換以後，基本上 99% 的功能已經是沒有問題了，但是在這最後的 1% 卻花了我好幾天的時間。<br><br>這個問題的發生是這樣的，當遇到某些欄位的時候就會發生這個錯誤<br><p class="code-caption" data-lang="cmd" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><code>cmd 
+[ma-2.0.11][mariadb-10.1.16] Invalid string or buffer length</code><br>這還不是一直發生，有的時候會有，有的時候很正常，功能的部份有的會發生，有的不會，這樣就要去看看程式碼有關那些欄位的存取情形與資料庫狀態，但是這就跟基本需求裏面說的相違背 (需要了解更多的 Code)，所以首先懷疑是 ODBC 的關係。<br><br>換了 1.0 版本更慘，連原來 SQL Statement 都會被截斷，基本上是不能退到 1.0 版了<br><br>只好硬著頭皮看 Codes 跟資料庫，終於發現到問題<br><br>當欄位是空字串 (不是 Null 喔) 時，透過 ODBC Select 到 ADODB.RecordSet 會有問題 (在其他 client 都沒問題)，無論有幾個欄位有這樣的情形，只要有一個它就 Error 給你看<br><br>所以就要改寫那些 SQL 語法 (通常都是 select <em>) 為明確欄位且要先轉為 Null 或是其他的值<br><br>原來 (有 a b c d e 5 個欄位，其中 c d e 有可能是空字串)<br><br><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><code>`</code> sql<br>select </em> from table where …<br><code>改寫成
+
+&lt;p class=&quot;code-caption&quot; data-lang=&quot;sql&quot; data-line_number=&quot;frontend&quot; data-trim_indent=&quot;backend&quot; data-label_position=&quot;outer&quot; data-labels_left=&quot;Code&quot; data-labels_right=&quot;:&quot; data-labels_copy=&quot;Copy Code&quot;&gt;&lt;span class=&quot;code-caption-label&quot;&gt;&lt;/span&gt;&lt;a class=&quot;code-caption-copy&quot;&gt;Copy Code&lt;/a&gt;&lt;/p&gt;</code> sql<br>select *, (case c when ‘’ then NULL else c end) as c, (case d when ‘’ then ‘ ‘ else d end) as d, (case e when ‘’ then ‘x’ else e end) as e from table where …<br><code>Codes 馬上暴增超多的，Debug 更困難了
 
 以前的 SQL Server ADODB 不會這樣，所以都沒有任何轉換機制，現在就要為了這個寫一堆多餘的 Codes
 
 這個問題我有發個 [issue](https://jira.mariadb.org/browse/ODBC-52)，希望未來能解決
 
-另外有個錯誤訊息，也是一樣的</code>cmd<br>Data provider or other service returned an E_FAIL status<br><code>`</code><br></strike>
+另外有個錯誤訊息，也是一樣的 
+&lt;p class=&quot;code-caption&quot; data-lang=&quot;cmd&quot; data-line_number=&quot;frontend&quot; data-trim_indent=&quot;backend&quot; data-label_position=&quot;outer&quot; data-labels_left=&quot;Code&quot; data-labels_right=&quot;:&quot; data-labels_copy=&quot;Copy Code&quot;&gt;&lt;span class=&quot;code-caption-label&quot;&gt;&lt;/span&gt;&lt;a class=&quot;code-caption-copy&quot;&gt;Copy Code&lt;/a&gt;&lt;/p&gt;</code> cmd<br>Data provider or other service returned an E_FAIL status<br><code>`</code><br></strike>
 </div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">
 var disqus_shortname = 'sujunmin';
 var disqus_identifier = '2016/09/06/SQL Server 到 MariaDB - [3] 資料庫移轉與系統程式修改/';

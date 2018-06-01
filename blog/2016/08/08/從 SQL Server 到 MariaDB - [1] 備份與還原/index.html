@@ -2,8 +2,7 @@
  google_ad_client: "ca-pub-0187888667607442",
  enable_page_level_ads: true
  });
-</script><link rel="stylesheet" href="/blog/css/prism.css" type="text/css">
-<link rel="stylesheet" href="/blog/css/prism-line-numbers.css" type="text/css"></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>從 SQL Server 到 MariaDB - [1] 備份與還原</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2016-08-08</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/MSSQL/">MSSQL</a>/<a class="post-tag-link" href="/blog/tags/MariaDB/">MariaDB</a></div></div></div><article><div class="container post"><h2 id="需求說明"><a href="#需求說明" class="headerlink" title="需求說明"></a>需求說明</h2><p>從 SQL Server 要轉到 MariaDB 第一件碰到管理上的轉變，就是備份與還原。</p>
+</script></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>從 SQL Server 到 MariaDB - [1] 備份與還原</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2016-08-08</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/MSSQL/">MSSQL</a>/<a class="post-tag-link" href="/blog/tags/MariaDB/">MariaDB</a></div></div></div><article><div class="container post"><h2 id="需求說明"><a href="#需求說明" class="headerlink" title="需求說明"></a>需求說明</h2><p>從 SQL Server 要轉到 MariaDB 第一件碰到管理上的轉變，就是備份與還原。</p>
 <p>在 SQL Server 管理備份這回事，有幾個方式達成最少資料遺失的方式：</p>
 <ol>
 <li>Full Backups 完整備份</li>
@@ -31,109 +30,116 @@
 </ol>
 <p>接下來就是來做個實驗。</p>
 <h2 id="實驗"><a href="#實驗" class="headerlink" title="實驗"></a>實驗</h2><p>a. 首先開啟 binlog 功能，在 my.ini 裡可以設定，重開 mariadb 就可以開始了。</p>
+<p></p><p class="code-caption" data-lang="" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
 <pre><code>log_bin
 </code></pre><p>這個是沒加參數的，預設會放在 <code>%mariadb_root%\data\</code>，詳細可以加<a href="https://mariadb.com/kb/en/mariadb/replication-and-binary-log-server-system-variables/#log_bin" target="_blank" rel="noopener">路徑</a>。</p>
 <p>開完裡頭應該會出現 <code>XXX-bin.00001</code> 字樣的檔案， <code>XXX</code> 是 Hostname。</p>
 <p>b. 準備一個 database <code>test1</code>，裡頭一個資料表 <code>test1</code> ，欄位 <code>aaaa</code> 為 <code>int</code> 。</p>
 <p>先做一次 full backup。</p>
-<pre class="line-numbers language-msdos"><code class="language-msdos">E:\backup>mysqldump -u sujunmin -p test1 > test1.sql
+<p></p><p class="code-caption" data-lang="msdos" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="msdos">E:\backup&gt;mysqldump -u sujunmin -p test1 &gt; test1.sql
 Enter password: ************
 
-E:\backup>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+E:\backup&gt;
+</code></pre>
 <p>c. 新增一筆資料 <code>1234</code>。</p>
 <p>d. <code>trucnate test1.test1;</code></p>
 <p>e. 來看看 binlog 裡頭有什麼東西。</p>
-<pre class="line-numbers language-msdos"><code class="language-msdos">E:\backup>mysqlbinlog "e:\MariaDB 10.1\data\WSTest-bin.000001" -v > test.sql
+<p></p><p class="code-caption" data-lang="msdos" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="msdos">E:\backup&gt;mysqlbinlog &quot;e:\MariaDB 10.1\data\WSTest-bin.000001&quot; -v &gt; test.sql
 
-E:\backup>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+E:\backup&gt;
+</code></pre>
 <p>f. test.sql 內容</p>
-<pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">/*!50530 SET @@SESSION.PSEUDO_SLAVE_MODE=1*/</span><span class="token punctuation">;</span>
-<span class="token comment" spellcheck="true">/*!40019 SET @@session.max_insert_delayed_threads=0*/</span><span class="token punctuation">;</span>
-<span class="token comment" spellcheck="true">/*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/</span><span class="token punctuation">;</span>
-<span class="token keyword">DELIMITER</span> <span class="token comment" spellcheck="true">/*!*/</span><span class="token punctuation">;</span>
-<span class="token comment" spellcheck="true"># at 4</span>
-<span class="token comment" spellcheck="true">#160808 14:25:16 server id 1  end_log_pos 249     Start: binlog v 4, server v 10.1.14-MariaDB created 160808 14:25:16 at startup</span>
-<span class="token comment" spellcheck="true"># Warning: this binlog is either in use or was not closed properly.</span>
-<span class="token keyword">ROLLBACK</span><span class="token comment" spellcheck="true">/*!*/</span><span class="token punctuation">;</span>
-BINLOG <span class="token string">'
+<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="sql">/*!50530 SET @@SESSION.PSEUDO_SLAVE_MODE=1*/;
+/*!40019 SET @@session.max_insert_delayed_threads=0*/;
+/*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
+DELIMITER /*!*/;
+# at 4
+#160808 14:25:16 server id 1  end_log_pos 249     Start: binlog v 4, server v 10.1.14-MariaDB created 160808 14:25:16 at startup
+# Warning: this binlog is either in use or was not closed properly.
+ROLLBACK/*!*/;
+BINLOG &#39;
 zCWoVw8BAAAA9QAAAPkAAAABAAQAMTAuMS4xNC1NYXJpYURCAGxvZwAAAAAAAAAAAAAAAAAAAAAA
 AAAAAAAAAAAAAAAAAADMJahXEzgNAAgAEgAEBAQEEgAA3QAEGggAAAAICAgCAAAACgoKAAAAAAAA
 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 AAAAAAAAAAAEEwQAAK+oLro=
-'</span><span class="token comment" spellcheck="true">/*!*/</span><span class="token punctuation">;</span>
-<span class="token comment" spellcheck="true"># at 249</span>
-<span class="token comment" spellcheck="true">#160808 14:25:16 server id 1  end_log_pos 274     Gtid list []</span>
-<span class="token comment" spellcheck="true"># at 274</span>
-<span class="token comment" spellcheck="true">#160808 14:25:16 server id 1  end_log_pos 314     Binlog checkpoint WSTest-bin.000001</span>
-<span class="token comment" spellcheck="true"># at 314</span>
-<span class="token comment" spellcheck="true">#160808 14:28:32 server id 1  end_log_pos 352     GTID 0-1-1 trans</span>
-<span class="token comment" spellcheck="true">/*!100101 SET @@session.skip_parallel_replication=0*/</span><span class="token comment" spellcheck="true">/*!*/</span><span class="token punctuation">;</span>
-<span class="token comment" spellcheck="true">/*!100001 SET @@session.gtid_domain_id=0*/</span><span class="token comment" spellcheck="true">/*!*/</span><span class="token punctuation">;</span>
-<span class="token comment" spellcheck="true">/*!100001 SET @@session.server_id=1*/</span><span class="token comment" spellcheck="true">/*!*/</span><span class="token punctuation">;</span>
-<span class="token comment" spellcheck="true">/*!100001 SET @@session.gtid_seq_no=1*/</span><span class="token comment" spellcheck="true">/*!*/</span><span class="token punctuation">;</span>
-<span class="token keyword">BEGIN</span>
-<span class="token comment" spellcheck="true">/*!*/</span><span class="token punctuation">;</span>
-<span class="token comment" spellcheck="true"># at 352</span>
-<span class="token comment" spellcheck="true">#160808 14:28:32 server id 1  end_log_pos 466     Query    thread_id=3    exec_time=0    error_code=0</span>
-<span class="token keyword">use</span> <span class="token punctuation">`</span>test1<span class="token punctuation">`</span><span class="token comment" spellcheck="true">/*!*/</span><span class="token punctuation">;</span>
-<span class="token keyword">SET</span> <span class="token keyword">TIMESTAMP</span><span class="token operator">=</span><span class="token number">1470637712</span><span class="token comment" spellcheck="true">/*!*/</span><span class="token punctuation">;</span>
-<span class="token keyword">SET</span> @<span class="token variable">@session.pseudo_thread_id</span><span class="token operator">=</span><span class="token number">3</span><span class="token comment" spellcheck="true">/*!*/</span><span class="token punctuation">;</span>
-<span class="token keyword">SET</span> @<span class="token variable">@session.foreign_key_checks</span><span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span> @<span class="token variable">@session.sql_auto_is_null</span><span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> @<span class="token variable">@session.unique_checks</span><span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span> @<span class="token variable">@session.autocommit</span><span class="token operator">=</span><span class="token number">1</span><span class="token comment" spellcheck="true">/*!*/</span><span class="token punctuation">;</span>
-<span class="token keyword">SET</span> @<span class="token variable">@session.sql_mode</span><span class="token operator">=</span><span class="token number">1075838976</span><span class="token comment" spellcheck="true">/*!*/</span><span class="token punctuation">;</span>
-<span class="token keyword">SET</span> @<span class="token variable">@session.auto_increment_increment</span><span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span> @<span class="token variable">@session.auto_increment_offset</span><span class="token operator">=</span><span class="token number">1</span><span class="token comment" spellcheck="true">/*!*/</span><span class="token punctuation">;</span>
-<span class="token comment" spellcheck="true">/*!\C utf8mb4 */</span><span class="token comment" spellcheck="true">/*!*/</span><span class="token punctuation">;</span>
-<span class="token keyword">SET</span> @<span class="token variable">@session.character_set_client</span><span class="token operator">=</span><span class="token number">45</span><span class="token punctuation">,</span>@<span class="token variable">@session.collation_connection</span><span class="token operator">=</span><span class="token number">45</span><span class="token punctuation">,</span>@<span class="token variable">@session.collation_server</span><span class="token operator">=</span><span class="token number">33</span><span class="token comment" spellcheck="true">/*!*/</span><span class="token punctuation">;</span>
-<span class="token keyword">SET</span> @<span class="token variable">@session.lc_time_names</span><span class="token operator">=</span><span class="token number">0</span><span class="token comment" spellcheck="true">/*!*/</span><span class="token punctuation">;</span>
-<span class="token keyword">SET</span> @<span class="token variable">@session.collation_database</span><span class="token operator">=</span><span class="token keyword">DEFAULT</span><span class="token comment" spellcheck="true">/*!*/</span><span class="token punctuation">;</span>
-<span class="token keyword">INSERT</span> <span class="token keyword">INTO</span> <span class="token punctuation">`</span>test1<span class="token punctuation">`</span><span class="token punctuation">.</span><span class="token punctuation">`</span>test1<span class="token punctuation">`</span> <span class="token punctuation">(</span><span class="token punctuation">`</span><span class="token number">aaaa</span><span class="token punctuation">`</span><span class="token punctuation">)</span> <span class="token keyword">VALUES</span> <span class="token punctuation">(</span><span class="token number">1234</span><span class="token punctuation">)</span>
-<span class="token comment" spellcheck="true">/*!*/</span><span class="token punctuation">;</span>
-<span class="token comment" spellcheck="true"># at 466</span>
-<span class="token comment" spellcheck="true">#160808 14:28:32 server id 1  end_log_pos 493     Xid = 55</span>
-<span class="token keyword">COMMIT</span><span class="token comment" spellcheck="true">/*!*/</span><span class="token punctuation">;</span>
-<span class="token comment" spellcheck="true"># at 493</span>
-<span class="token comment" spellcheck="true">#160808 14:31:19 server id 1  end_log_pos 531     GTID 0-1-2 ddl</span>
-<span class="token comment" spellcheck="true">/*!100001 SET @@session.gtid_seq_no=2*/</span><span class="token comment" spellcheck="true">/*!*/</span><span class="token punctuation">;</span>
-<span class="token comment" spellcheck="true"># at 531</span>
-<span class="token comment" spellcheck="true">#160808 14:31:19 server id 1  end_log_pos 611     Query    thread_id=3    exec_time=14    error_code=0</span>
-<span class="token keyword">SET</span> <span class="token keyword">TIMESTAMP</span><span class="token operator">=</span><span class="token number">1470637879</span><span class="token comment" spellcheck="true">/*!*/</span><span class="token punctuation">;</span>
-<span class="token keyword">TRUNCATE</span> <span class="token punctuation">`</span>test1<span class="token punctuation">`</span>
-<span class="token comment" spellcheck="true">/*!*/</span><span class="token punctuation">;</span>
-<span class="token keyword">DELIMITER</span> <span class="token punctuation">;</span>
-<span class="token comment" spellcheck="true"># End of log file</span>
-<span class="token keyword">ROLLBACK</span> <span class="token comment" spellcheck="true">/* added by mysqlbinlog */</span><span class="token punctuation">;</span>
-<span class="token comment" spellcheck="true">/*!50003 SET COMPLETION_TYPE=@OLD_COMPLETION_TYPE*/</span><span class="token punctuation">;</span>
-<span class="token comment" spellcheck="true">/*!50530 SET @@SESSION.PSEUDO_SLAVE_MODE=0*/</span><span class="token punctuation">;</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+&#39;/*!*/;
+# at 249
+#160808 14:25:16 server id 1  end_log_pos 274     Gtid list []
+# at 274
+#160808 14:25:16 server id 1  end_log_pos 314     Binlog checkpoint WSTest-bin.000001
+# at 314
+#160808 14:28:32 server id 1  end_log_pos 352     GTID 0-1-1 trans
+/*!100101 SET @@session.skip_parallel_replication=0*//*!*/;
+/*!100001 SET @@session.gtid_domain_id=0*//*!*/;
+/*!100001 SET @@session.server_id=1*//*!*/;
+/*!100001 SET @@session.gtid_seq_no=1*//*!*/;
+BEGIN
+/*!*/;
+# at 352
+#160808 14:28:32 server id 1  end_log_pos 466     Query    thread_id=3    exec_time=0    error_code=0
+use `test1`/*!*/;
+SET TIMESTAMP=1470637712/*!*/;
+SET @@session.pseudo_thread_id=3/*!*/;
+SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=0, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+SET @@session.sql_mode=1075838976/*!*/;
+SET @@session.auto_increment_increment=1, @@session.auto_increment_offset=1/*!*/;
+/*!\C utf8mb4 *//*!*/;
+SET @@session.character_set_client=45,@@session.collation_connection=45,@@session.collation_server=33/*!*/;
+SET @@session.lc_time_names=0/*!*/;
+SET @@session.collation_database=DEFAULT/*!*/;
+INSERT INTO `test1`.`test1` (`aaaa`) VALUES (1234)
+/*!*/;
+# at 466
+#160808 14:28:32 server id 1  end_log_pos 493     Xid = 55
+COMMIT/*!*/;
+# at 493
+#160808 14:31:19 server id 1  end_log_pos 531     GTID 0-1-2 ddl
+/*!100001 SET @@session.gtid_seq_no=2*//*!*/;
+# at 531
+#160808 14:31:19 server id 1  end_log_pos 611     Query    thread_id=3    exec_time=14    error_code=0
+SET TIMESTAMP=1470637879/*!*/;
+TRUNCATE `test1`
+/*!*/;
+DELIMITER ;
+# End of log file
+ROLLBACK /* added by mysqlbinlog */;
+/*!50003 SET COMPLETION_TYPE=@OLD_COMPLETION_TYPE*/;
+/*!50530 SET @@SESSION.PSEUDO_SLAVE_MODE=0*/;
+</code></pre>
 <p>其中我們可以看到重要的兩筆資料，它們在整個時間序列的狀態為何。</p>
-<pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">INSERT</span> <span class="token keyword">INTO</span> <span class="token punctuation">`</span>test1<span class="token punctuation">`</span><span class="token punctuation">.</span><span class="token punctuation">`</span>test1<span class="token punctuation">`</span> <span class="token punctuation">(</span><span class="token punctuation">`</span><span class="token number">aaaa</span><span class="token punctuation">`</span><span class="token punctuation">)</span> <span class="token keyword">VALUES</span> <span class="token punctuation">(</span><span class="token number">1234</span><span class="token punctuation">)</span>
-<span class="token comment" spellcheck="true">/*!*/</span><span class="token punctuation">;</span>
-<span class="token comment" spellcheck="true"># at 466</span>
-<span class="token comment" spellcheck="true">#160808 14:28:32 server id 1  end_log_pos 493     Xid = 55</span>
-<span class="token keyword">COMMIT</span><span class="token comment" spellcheck="true">/*!*/</span><span class="token punctuation">;</span>
-<span class="token comment" spellcheck="true"># at 493</span>
-<span class="token comment" spellcheck="true">#160808 14:31:19 server id 1  end_log_pos 531     GTID 0-1-2 ddl</span>
-<span class="token comment" spellcheck="true">/*!100001 SET @@session.gtid_seq_no=2*/</span><span class="token comment" spellcheck="true">/*!*/</span><span class="token punctuation">;</span>
-<span class="token comment" spellcheck="true"># at 531</span>
-<span class="token comment" spellcheck="true">#160808 14:31:19 server id 1  end_log_pos 611     Query    thread_id=3    exec_time=14    error_code=0</span>
-<span class="token keyword">SET</span> <span class="token keyword">TIMESTAMP</span><span class="token operator">=</span><span class="token number">1470637879</span><span class="token comment" spellcheck="true">/*!*/</span><span class="token punctuation">;</span>
-<span class="token keyword">TRUNCATE</span> <span class="token punctuation">`</span>test1<span class="token punctuation">`</span>
-<span class="token comment" spellcheck="true">/*!*/</span><span class="token punctuation">;</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="sql">INSERT INTO `test1`.`test1` (`aaaa`) VALUES (1234)
+/*!*/;
+# at 466
+#160808 14:28:32 server id 1  end_log_pos 493     Xid = 55
+COMMIT/*!*/;
+# at 493
+#160808 14:31:19 server id 1  end_log_pos 531     GTID 0-1-2 ddl
+/*!100001 SET @@session.gtid_seq_no=2*//*!*/;
+# at 531
+#160808 14:31:19 server id 1  end_log_pos 611     Query    thread_id=3    exec_time=14    error_code=0
+SET TIMESTAMP=1470637879/*!*/;
+TRUNCATE `test1`
+/*!*/;
+</code></pre>
 <p>g. 所以如果我們要恢復到 truncate table 之前的話，首先就是 restore full backup。</p>
-<pre class="line-numbers language-msdos"><code class="language-msdos">E:\backup>mysql -u sujunmin -p test1 < test1.sql
+<p></p><p class="code-caption" data-lang="msdos" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="msdos">E:\backup&gt;mysql -u sujunmin -p test1 &lt; test1.sql
 Enter password: ************
 
 E:\backup
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+</code></pre>
 <p>h. 接著還原 binlog 到 14:31:19 之前(因為接下來就要 truncate table 了)。</p>
-<pre class="line-numbers language-msdos"><code class="language-msdos">E:\backup>mysqlbinlog "e:\MariaDB 10.1\data\WSTest-bin.000001" --stop-datetime="2016/08/08 14:31:00" | mysql -u sujunmin -p test1
+<p></p><p class="code-caption" data-lang="msdos" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="msdos">E:\backup&gt;mysqlbinlog &quot;e:\MariaDB 10.1\data\WSTest-bin.000001&quot; --stop-datetime=&quot;2016/08/08 14:31:00&quot; | mysql -u sujunmin -p test1
 Enter password: ************
 
-E:\backup>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+E:\backup&gt;
+</code></pre>
 <p>i. 看一下 <code>test1.test1</code>，資料應該又回來了。</p>
 <h2 id="運用規劃"><a href="#運用規劃" class="headerlink" title="運用規劃"></a>運用規劃</h2><p>因為這個 binlog 會在系統的狀態改變(重新啟動，記憶體資料寫入 disk…)時產生，加上沒有其他的備份機制(類似像 Oracle DB 的 Archive 模式)，其實當有事情時會不能知道能夠還原到哪。</p>
 <p>所以要透過強制 rotate 與備份資料來幫忙，以下是規劃的方式。</p>

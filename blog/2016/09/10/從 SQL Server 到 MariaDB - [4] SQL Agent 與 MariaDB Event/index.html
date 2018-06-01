@@ -2,8 +2,7 @@
  google_ad_client: "ca-pub-0187888667607442",
  enable_page_level_ads: true
  });
-</script><link rel="stylesheet" href="/blog/css/prism.css" type="text/css">
-<link rel="stylesheet" href="/blog/css/prism-line-numbers.css" type="text/css"></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>從 SQL Server 到 MariaDB - [4] SQL Agent 與 MariaDB Event</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2016-09-10</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/MSSQL/">MSSQL</a>/<a class="post-tag-link" href="/blog/tags/MariaDB/">MariaDB</a></div></div></div><article><div class="container post"><h2 id="需求說明"><a href="#需求說明" class="headerlink" title="需求說明"></a>需求說明</h2><p>回到維運面的處理，在 SQL Server 有 SQL Server Agent Service 作為 Job System，說實在真的好用，在 msdb 裡儲存了很多 Job 的資料，不管是統計還是錯誤時的資料收集都做的非常好，因此系統每天會出資料庫系統狀態報表，其中有兩個項目有很多東西能看</p>
+</script></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>從 SQL Server 到 MariaDB - [4] SQL Agent 與 MariaDB Event</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2016-09-10</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/MSSQL/">MSSQL</a>/<a class="post-tag-link" href="/blog/tags/MariaDB/">MariaDB</a></div></div></div><article><div class="container post"><h2 id="需求說明"><a href="#需求說明" class="headerlink" title="需求說明"></a>需求說明</h2><p>回到維運面的處理，在 SQL Server 有 SQL Server Agent Service 作為 Job System，說實在真的好用，在 msdb 裡儲存了很多 Job 的資料，不管是統計還是錯誤時的資料收集都做的非常好，因此系統每天會出資料庫系統狀態報表，其中有兩個項目有很多東西能看</p>
 <p><img src="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/SQLServerAgentLog_1.png"><br><img src="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/SQLServerAgentLog_2.png"> </p>
 <p>因此每天的檢查大部份都是看這些 Log 的狀態，希望在 MariaDB 上面希望也有類似的方法實作。</p>
 <h2 id="Job-System-的選擇"><a href="#Job-System-的選擇" class="headerlink" title="Job System 的選擇"></a>Job System 的選擇</h2><p>在 MariaDB 上有 <a href="https://mariadb.com/kb/en/mariadb/events/" target="_blank" rel="noopener"><code>Event</code></a> 可以用，在 Windows 裡有 Windows Tasks 可以用，但他們跟 SQL Server Agent Service 真的是差太多了，這兩個服務 MariaDB 的 <code>Event</code> 幾乎是射後不理，Windows 的 Tasks 也只有少少的 Log 可以用，基本上直接用是沒法達到原來維運的要求的，最後仍然是選擇 MariaDB 的 <code>Event</code> 配合一點紀錄來實作 Job System。</p>
@@ -43,21 +42,22 @@
 <p>這個時間系統很重要的是因為它會關係到後續報表怎麼出，所以要先了解一下</p>
 <p>另外的是處理情形的資訊，在 <code>mysql.event</code> 沒有任何紀錄最後一次狀態的資訊 (所以才說它幾乎是射後不理的系統)，這邊就需要自己紀錄了。 </p>
 <h2 id="紀錄-Event-執行狀態的-table"><a href="#紀錄-Event-執行狀態的-table" class="headerlink" title="紀錄 Event 執行狀態的 table"></a>紀錄 <code>Event</code> 執行狀態的 table</h2><p>根據需求，我在 <code>master</code> Create 了 <code>event_history</code> 資料表</p>
-<pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">CREATE</span> <span class="token keyword">TABLE</span> event_history <span class="token punctuation">(</span>
-    <span class="token number">db</span> CHAR<span class="token punctuation">(</span><span class="token number">64</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span> <span class="token keyword">DEFAULT</span> <span class="token string">''</span><span class="token punctuation">,</span>
-    name CHAR<span class="token punctuation">(</span><span class="token number">64</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span> <span class="token keyword">DEFAULT</span> <span class="token string">''</span><span class="token punctuation">,</span>
-    <span class="token keyword">start</span> <span class="token keyword">DATETIME</span> <span class="token boolean">NULL</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
-    <span class="token keyword">end</span> <span class="token keyword">DATETIME</span> <span class="token boolean">NULL</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
-    sqlstate CHAR<span class="token punctuation">(</span><span class="token number">64</span><span class="token punctuation">)</span> <span class="token boolean">NULL</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
-    errno CHAR<span class="token punctuation">(</span><span class="token number">64</span><span class="token punctuation">)</span> <span class="token boolean">NULL</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
-    message_text <span class="token keyword">VARCHAR</span><span class="token punctuation">(</span><span class="token number">500</span><span class="token punctuation">)</span> <span class="token boolean">NULL</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
-    record_time <span class="token keyword">DATETIME</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span> <span class="token keyword">DEFAULT</span> <span class="token keyword">CURRENT_TIMESTAMP</span><span class="token punctuation">,</span>
-    <span class="token keyword">INDEX</span> idx1 <span class="token punctuation">(</span><span class="token number">db</span><span class="token punctuation">,</span> name<span class="token punctuation">)</span>
-<span class="token punctuation">)</span>
-<span class="token keyword">COLLATE</span><span class="token operator">=</span><span class="token string">'utf8_general_ci'</span>
-<span class="token keyword">ENGINE</span><span class="token operator">=</span><span class="token keyword">InnoDB</span>
-<span class="token punctuation">;</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="sql">CREATE TABLE event_history (
+    db CHAR(64) NOT NULL DEFAULT &#39;&#39;,
+    name CHAR(64) NOT NULL DEFAULT &#39;&#39;,
+    start DATETIME NULL DEFAULT NULL,
+    end DATETIME NULL DEFAULT NULL,
+    sqlstate CHAR(64) NULL DEFAULT NULL,
+    errno CHAR(64) NULL DEFAULT NULL,
+    message_text VARCHAR(500) NULL DEFAULT NULL,
+    record_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx1 (db, name)
+)
+COLLATE=&#39;utf8_general_ci&#39;
+ENGINE=InnoDB
+;
+</code></pre>
 <table>
 <thead>
 <tr>
@@ -105,35 +105,36 @@
 <h3 id="Prepare-Statements"><a href="#Prepare-Statements" class="headerlink" title="Prepare Statements"></a>Prepare Statements</h3><p>由上面的準備，幾乎是可以完成表裡需要的欄位項目，但是如果要每個 <code>Event</code>都要前面加 <code>Handler</code> 與 <code>Diagnostics</code> 來塞資料，這樣太麻煩也有可能會忘記，所以要做個 Store Procedure 來達成這個需求。</p>
 <p>其中需要讓 Store Procedure 執行傳進來的 SQL Statements，有 <a href="https://mariadb.com/kb/en/mariadb/prepare-statement/" target="_blank" rel="noopener">Prepare Statement</a> 可以用，這樣就差不多了</p>
 <p>不過這個 Prepare Statement 有限制使用的語法，而且只能執行一行。</p>
-<pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">CREATE</span> <span class="token keyword">PROCEDURE</span> proc_for_event_history<span class="token punctuation">(</span><span class="token operator">IN</span> idb char<span class="token punctuation">(</span><span class="token number">64</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token operator">IN</span> iname char<span class="token punctuation">(</span><span class="token number">64</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token operator">IN</span> sql <span class="token keyword">TEXT</span><span class="token punctuation">)</span>
-    <span class="token keyword">LANGUAGE SQL</span>
-    <span class="token operator">NOT</span> <span class="token keyword">DETERMINISTIC</span>
-    <span class="token keyword">CONTAINS</span> SQL
-    SQL SECURITY <span class="token keyword">DEFINER</span>
-    <span class="token keyword">COMMENT</span> <span class="token string">''</span>
-<span class="token keyword">BEGIN</span>
-      <span class="token keyword">DECLARE</span> <span class="token keyword">EXIT</span> <span class="token keyword">HANDLER</span> <span class="token keyword">FOR</span> SQLEXCEPTION
-      <span class="token keyword">BEGIN</span>
-        GET DIAGNOSTICS CONDITION <span class="token number">1</span> <span class="token variable">@sqlstate</span> <span class="token operator">=</span> RETURNED_SQLSTATE<span class="token punctuation">,</span>  <span class="token variable">@errno</span> <span class="token operator">=</span> MYSQL_ERRNO<span class="token punctuation">,</span> <span class="token variable">@text</span> <span class="token operator">=</span> MESSAGE_TEXT<span class="token punctuation">;</span>
-        <span class="token keyword">select</span> <span class="token function">now</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">into</span> <span class="token variable">@start</span> <span class="token keyword">from</span> dual<span class="token punctuation">;</span>
-        <span class="token keyword">insert</span> <span class="token keyword">into</span> master<span class="token punctuation">.</span>event_history <span class="token punctuation">(</span><span class="token number">db</span><span class="token punctuation">,</span> name<span class="token punctuation">,</span> <span class="token keyword">start</span><span class="token punctuation">,</span> <span class="token keyword">end</span><span class="token punctuation">,</span> sqlstate<span class="token punctuation">,</span> errno<span class="token punctuation">,</span> message_text<span class="token punctuation">)</span> <span class="token keyword">values</span> <span class="token punctuation">(</span>idb<span class="token punctuation">,</span> iname<span class="token punctuation">,</span> <span class="token variable">@start</span><span class="token punctuation">,</span> <span class="token function">now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token variable">@sqlstate</span><span class="token punctuation">,</span> <span class="token variable">@errno</span><span class="token punctuation">,</span> <span class="token variable">@text</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-      <span class="token keyword">END</span><span class="token punctuation">;</span>
+<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="sql">CREATE PROCEDURE proc_for_event_history(IN idb char(64), IN iname char(64), IN sql TEXT)
+    LANGUAGE SQL
+    NOT DETERMINISTIC
+    CONTAINS SQL
+    SQL SECURITY DEFINER
+    COMMENT &#39;&#39;
+BEGIN
+      DECLARE EXIT HANDLER FOR SQLEXCEPTION
+      BEGIN
+        GET DIAGNOSTICS CONDITION 1 @sqlstate = RETURNED_SQLSTATE,  @errno = MYSQL_ERRNO, @text = MESSAGE_TEXT;
+        select now() into @start from dual;
+        insert into master.event_history (db, name, start, end, sqlstate, errno, message_text) values (idb, iname, @start, now(), @sqlstate, @errno, @text);
+      END;
 
-     <span class="token keyword">set</span> <span class="token variable">@sql</span> :<span class="token operator">=</span> sql<span class="token punctuation">;</span>
-     prepare stmt <span class="token keyword">from</span> <span class="token variable">@sql</span><span class="token punctuation">;</span>
+     set @sql := sql;
+     prepare stmt from @sql;
 
-     <span class="token keyword">select</span> <span class="token function">now</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">into</span> <span class="token variable">@start</span> <span class="token keyword">from</span> dual<span class="token punctuation">;</span>
-     <span class="token keyword">set</span> <span class="token variable">@outs</span> :<span class="token operator">=</span> <span class="token string">''</span><span class="token punctuation">;</span>
-      <span class="token keyword">execute</span> stmt<span class="token punctuation">;</span>
-      <span class="token keyword">select</span> sleep<span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-      <span class="token keyword">if</span> instr<span class="token punctuation">(</span><span class="token variable">@sql</span><span class="token punctuation">,</span> <span class="token string">'@outv'</span><span class="token punctuation">)</span> <span class="token operator">&lt;></span> <span class="token number">0</span> <span class="token keyword">then</span>
-      <span class="token keyword">select</span> concat<span class="token punctuation">(</span><span class="token string">'OK '</span><span class="token punctuation">,</span> <span class="token variable">@outv</span><span class="token punctuation">)</span> <span class="token keyword">into</span> <span class="token variable">@outs</span><span class="token punctuation">;</span>
-     <span class="token keyword">else</span>
-      <span class="token keyword">select</span> <span class="token string">'OK'</span> <span class="token keyword">into</span> <span class="token variable">@outs</span><span class="token punctuation">;</span>
-     <span class="token keyword">end</span> <span class="token keyword">if</span><span class="token punctuation">;</span>
-        <span class="token keyword">insert</span> <span class="token keyword">into</span> master<span class="token punctuation">.</span>event_history <span class="token punctuation">(</span><span class="token punctuation">`</span><span class="token number">db</span><span class="token punctuation">`</span><span class="token punctuation">,</span> <span class="token punctuation">`</span>name<span class="token punctuation">`</span><span class="token punctuation">,</span> <span class="token punctuation">`</span><span class="token keyword">start</span><span class="token punctuation">`</span><span class="token punctuation">,</span> <span class="token punctuation">`</span><span class="token keyword">end</span><span class="token punctuation">`</span><span class="token punctuation">,</span> <span class="token punctuation">`</span>sqlstate<span class="token punctuation">`</span><span class="token punctuation">,</span> <span class="token punctuation">`</span>errno<span class="token punctuation">`</span><span class="token punctuation">,</span> <span class="token punctuation">`</span>message_text<span class="token punctuation">`</span><span class="token punctuation">)</span> <span class="token keyword">values</span> <span class="token punctuation">(</span>idb<span class="token punctuation">,</span> iname<span class="token punctuation">,</span> <span class="token variable">@start</span><span class="token punctuation">,</span> <span class="token function">now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span> <span class="token variable">@outs</span><span class="token punctuation">)</span><span class="token punctuation">;</span> 
-<span class="token keyword">END</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+     select now() into @start from dual;
+     set @outs := &#39;&#39;;
+      execute stmt;
+      select sleep(10);
+      if instr(@sql, &#39;@outv&#39;) &lt;&gt; 0 then
+      select concat(&#39;OK &#39;, @outv) into @outs;
+     else
+      select &#39;OK&#39; into @outs;
+     end if;
+        insert into master.event_history (`db`, `name`, `start`, `end`, `sqlstate`, `errno`, `message_text`) values (idb, iname, @start, now(), NULL, NULL, @outs); 
+END
+</code></pre>
 <p>錯誤的時候有錯誤訊息，但正確的時候不知道那邊可以找到訊息，只好先打個 OK 了。</p>
 <p>有一個 <code>select sleep(10);</code> 是拿來做實驗用的，平時可以拿掉。</p>
 <h2 id="實驗"><a href="#實驗" class="headerlink" title="實驗"></a>實驗</h2><ol>
@@ -141,41 +142,27 @@
 <p><code>SET Global event_schedular=1</code></p>
 <p>或是在 <code>my.cnf</code> 加上 <code>events_scheduler=1</code></p>
 </li>
-<li><p>一個簡單 table，然後做一個 <code>Event</code> 是一直加一的</p>
-<pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">CREATE</span> <span class="token keyword">Database</span> test1<span class="token punctuation">;</span>
-
-<span class="token keyword">CREATE</span> <span class="token keyword">TABLE</span> test2 <span class="token punctuation">(</span>
- idtest2 <span class="token keyword">int</span><span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
- <span class="token keyword">PRIMARY</span> <span class="token keyword">KEY</span> <span class="token punctuation">(</span>idtest2<span class="token punctuation">)</span>
-<span class="token punctuation">)</span> <span class="token keyword">ENGINE</span><span class="token operator">=</span><span class="token keyword">InnoDB</span> <span class="token keyword">DEFAULT</span> <span class="token keyword">CHARSET</span><span class="token operator">=</span>utf8<span class="token punctuation">;</span>
-
-<span class="token keyword">CREATE</span> EVENT test_event
- <span class="token keyword">ON</span> SCHEDULE
-     EVERY <span class="token number">1</span> MINUTE STARTS <span class="token string">'2016-09-07 16:00:58'</span>
- <span class="token keyword">ON</span> COMPLETION <span class="token operator">NOT</span> PRESERVE
- <span class="token keyword">ENABLE</span>
- <span class="token keyword">COMMENT</span> <span class="token string">''</span>
- <span class="token keyword">DO</span> <span class="token keyword">begin</span>
-  <span class="token keyword">call</span> master<span class="token punctuation">.</span>proc_for_event_history<span class="token punctuation">(</span><span class="token string">'test1'</span><span class="token punctuation">,</span> <span class="token string">'test_event'</span><span class="token punctuation">,</span> <span class="token string">'UPDATE test1.test22 SET idtest2 = idtest2 + 1'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token keyword">end</span><span class="token punctuation">;</span>
-
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>這裡的 <code>test22</code> 是故意打錯的，看看結果如何</p>
-</li>
-<li>看一下結果<pre class="line-numbers language-cmd"><code class="language-cmd">MariaDB [master]> select * from event_history order by record_time desc limit 1\G
+<li>一個簡單 table，然後做一個 <code>Event</code> 是一直加一的<br><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><code>`</code> sql<br>CREATE Database test1;</li>
+</ol>
+<p>CREATE TABLE test2 (<br> idtest2 int(11) NOT NULL,<br> PRIMARY KEY (idtest2)<br>) ENGINE=InnoDB DEFAULT CHARSET=utf8;</p>
+<p>CREATE EVENT test_event<br> ON SCHEDULE<br>     EVERY 1 MINUTE STARTS ‘2016-09-07 16:00:58’<br> ON COMPLETION NOT PRESERVE<br> ENABLE<br> COMMENT ‘’<br> DO begin<br>  call master.proc_for_event_history(‘test1’, ‘test_event’, ‘UPDATE test1.test22 SET idtest2 = idtest2 + 1’);<br>end;</p>
+<pre><code>   這裡的 `test22` 是故意打錯的，看看結果如何
+3. 看一下結果
+&lt;p class=&quot;code-caption&quot; data-lang=&quot;cmd&quot; data-line_number=&quot;frontend&quot; data-trim_indent=&quot;backend&quot; data-label_position=&quot;outer&quot; data-labels_left=&quot;Code&quot; data-labels_right=&quot;:&quot; data-labels_copy=&quot;Copy Code&quot;&gt;&lt;span class=&quot;code-caption-label&quot;&gt;&lt;/span&gt;&lt;a class=&quot;code-caption-copy&quot;&gt;Copy Code&lt;/a&gt;&lt;/p&gt;
+``` cmd 
+MariaDB [master]&gt; select * from event_history order by record_time desc limit 1\G
 *************************** 1. row ***************************
-       db: test1
-     name: test_event
-    start: 2016-09-10 15:57:58
-      end: 2016-09-10 15:57:58
- sqlstate: 42S02
-    errno: 1146
-message_text: Table 'test1.test22' doesn't exist
-record_time: 2016-09-10 15:57:58
+          db: test1
+        name: test_event
+       start: 2016-09-10 15:57:58
+         end: 2016-09-10 15:57:58
+    sqlstate: 42S02
+       errno: 1146
+message_text: Table &#39;test1.test22&#39; doesn&#39;t exist
+ record_time: 2016-09-10 15:57:58
 1 row in set (0.00 sec)
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-</li>
-<li>調回來正確的，再看一下結果<pre class="line-numbers language-cmd"><code class="language-cmd">MariaDB [master]> select * from event_history order by record_time desc limit 1\G
+</code></pre><ol start="4">
+<li>調回來正確的，再看一下結果<br><p class="code-caption" data-lang="cmd" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><pre><code class="cmd">MariaDB [master]&gt; select * from event_history order by record_time desc limit 1\G
 *************************** 1. row ***************************
        db: test1
      name: test_event
@@ -186,7 +173,7 @@ record_time: 2016-09-10 15:57:58
 message_text: OK
 record_time: 2016-09-10 16:01:08
 1 row in set (0.00 sec)
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</code></pre>
 開始跟結束差 10 秒鐘是之前加的 <code>select sleep(10)</code> 的關係。</li>
 </ol>
 <h2 id="還需要解決的項目"><a href="#還需要解決的項目" class="headerlink" title="還需要解決的項目"></a>還需要解決的項目</h2><ol>

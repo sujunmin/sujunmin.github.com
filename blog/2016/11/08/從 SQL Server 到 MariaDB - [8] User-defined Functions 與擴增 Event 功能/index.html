@@ -2,8 +2,7 @@
  google_ad_client: "ca-pub-0187888667607442",
  enable_page_level_ads: true
  });
-</script><link rel="stylesheet" href="/blog/css/prism.css" type="text/css">
-<link rel="stylesheet" href="/blog/css/prism-line-numbers.css" type="text/css"></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>從 SQL Server 到 MariaDB - [8] User-defined Functions 與擴增 Event 功能</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2016-11-08</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/MSSQL/">MSSQL</a>/<a class="post-tag-link" href="/blog/tags/MariaDB/">MariaDB</a></div></div></div><article><div class="container post"><h2 id="需求說明"><a href="#需求說明" class="headerlink" title="需求說明"></a>需求說明</h2><p>雖然一些排程或是資訊可以透過系統排程來處理，但是原有的 SQL Server 管理方式幾乎都是透過 SQL Server Job 系統執行，加上 SQL Server 有許多可以在 Server 本體就能做完的方式，為了追求一樣的管理方式，導入 User-defined Functions (UDF) 來擴增 Server 功能。</p>
+</script></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>從 SQL Server 到 MariaDB - [8] User-defined Functions 與擴增 Event 功能</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2016-11-08</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/MSSQL/">MSSQL</a>/<a class="post-tag-link" href="/blog/tags/MariaDB/">MariaDB</a></div></div></div><article><div class="container post"><h2 id="需求說明"><a href="#需求說明" class="headerlink" title="需求說明"></a>需求說明</h2><p>雖然一些排程或是資訊可以透過系統排程來處理，但是原有的 SQL Server 管理方式幾乎都是透過 SQL Server Job 系統執行，加上 SQL Server 有許多可以在 Server 本體就能做完的方式，為了追求一樣的管理方式，導入 User-defined Functions (UDF) 來擴增 Server 功能。</p>
 <h2 id="透過-MariaDB-裡的-Event-System-進行備份"><a href="#透過-MariaDB-裡的-Event-System-進行備份" class="headerlink" title="透過 MariaDB 裡的 Event System 進行備份"></a>透過 MariaDB 裡的 Event System 進行備份</h2><p>基本上 Google 搜尋 MariaDB/MySQL 備份，不外乎是利用 cron jobs 或是 Windows tasks 來進行備份，這樣進行備份一則與原來的 SQL Server 管理不一樣，另外一個也沒辦法知道備份的情況 (要登入主機看 Task 狀態)。</p>
 <p>如果能透過 MariaDB 來發動備份 (透過 Event) 感覺能夠與以前的管理方式一樣，Server 要的排程 Server 自己發動，而且也能收集相關資料進行監控。</p>
 <p>但是 MariaDB 沒有什麼介面可以來執行系統作業，這時候剛好找到 <a href="https://mariadb.com/kb/en/mariadb/user-defined-functions/" target="_blank" rel="noopener">UDF</a>，還有一大堆神人做好的 <a href="http://www.mysqludf.org/" target="_blank" rel="noopener">MySQLUDF</a> Repository，裡頭剛好有我要的與系統處理有關的 <a href="https://github.com/mysqludf/lib_mysqludf_sys#readme" target="_blank" rel="noopener">UDF</a>，正好可以拿來用。</p>
@@ -20,18 +19,19 @@
 <p>MariaDB 的是 <code>&lt;MariaDB&gt;\lib</code> 。</p>
 <h4 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h4><p>編譯的時候會一直有 <code>snprintf</code> 重複定義的問題，為了減少麻煩，直接把 MariaDB 的 Include Files 裡有相關的定義先拿掉，待編譯完再改回來。</p>
 <h3 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h3><p>將產生出來的 dll 與 pdf 檔複製到 <code>&lt;MariaDB&gt;\lib\plugin</code>，透過 github 裡的 <a href="https://github.com/mysqludf/lib_mysqludf_sys/blob/master/lib_mysqludf_sys.sql" target="_blank" rel="noopener"><code>lib_mysqludf_sys.sql</code></a> 安裝，記得 so 要改成 dll。</p>
-<pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">DROP</span> <span class="token keyword">FUNCTION</span> <span class="token keyword">IF</span> <span class="token keyword">EXISTS</span> lib_mysqludf_sys_info<span class="token punctuation">;</span>
-<span class="token keyword">DROP</span> <span class="token keyword">FUNCTION</span> <span class="token keyword">IF</span> <span class="token keyword">EXISTS</span> sys_get<span class="token punctuation">;</span>
-<span class="token keyword">DROP</span> <span class="token keyword">FUNCTION</span> <span class="token keyword">IF</span> <span class="token keyword">EXISTS</span> sys_set<span class="token punctuation">;</span>
-<span class="token keyword">DROP</span> <span class="token keyword">FUNCTION</span> <span class="token keyword">IF</span> <span class="token keyword">EXISTS</span> sys_exec<span class="token punctuation">;</span>
-<span class="token keyword">DROP</span> <span class="token keyword">FUNCTION</span> <span class="token keyword">IF</span> <span class="token keyword">EXISTS</span> sys_eval<span class="token punctuation">;</span>
+<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="sql">DROP FUNCTION IF EXISTS lib_mysqludf_sys_info;
+DROP FUNCTION IF EXISTS sys_get;
+DROP FUNCTION IF EXISTS sys_set;
+DROP FUNCTION IF EXISTS sys_exec;
+DROP FUNCTION IF EXISTS sys_eval;
 
-<span class="token keyword">CREATE</span> <span class="token keyword">FUNCTION</span> lib_mysqludf_sys_info <span class="token keyword">RETURNS</span> string <span class="token keyword">SONAME</span> <span class="token string">'lib_mysqludf_sys.dll'</span><span class="token punctuation">;</span>
-<span class="token keyword">CREATE</span> <span class="token keyword">FUNCTION</span> sys_get <span class="token keyword">RETURNS</span> string <span class="token keyword">SONAME</span> <span class="token string">'lib_mysqludf_sys.dll'</span><span class="token punctuation">;</span>
-<span class="token keyword">CREATE</span> <span class="token keyword">FUNCTION</span> sys_set <span class="token keyword">RETURNS</span> <span class="token keyword">int</span> <span class="token keyword">SONAME</span> <span class="token string">'lib_mysqludf_sys.dll'</span><span class="token punctuation">;</span>
-<span class="token keyword">CREATE</span> <span class="token keyword">FUNCTION</span> sys_exec <span class="token keyword">RETURNS</span> <span class="token keyword">int</span> <span class="token keyword">SONAME</span> <span class="token string">'lib_mysqludf_sys.dll'</span><span class="token punctuation">;</span>
-<span class="token keyword">CREATE</span> <span class="token keyword">FUNCTION</span> sys_eval <span class="token keyword">RETURNS</span> string <span class="token keyword">SONAME</span> <span class="token string">'lib_mysqludf_sys.dll'</span><span class="token punctuation">;</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+CREATE FUNCTION lib_mysqludf_sys_info RETURNS string SONAME &#39;lib_mysqludf_sys.dll&#39;;
+CREATE FUNCTION sys_get RETURNS string SONAME &#39;lib_mysqludf_sys.dll&#39;;
+CREATE FUNCTION sys_set RETURNS int SONAME &#39;lib_mysqludf_sys.dll&#39;;
+CREATE FUNCTION sys_exec RETURNS int SONAME &#39;lib_mysqludf_sys.dll&#39;;
+CREATE FUNCTION sys_eval RETURNS string SONAME &#39;lib_mysqludf_sys.dll&#39;;
+</code></pre>
 <h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><p>可以看 <a href="https://github.com/mysqludf/lib_mysqludf_sys/blob/master/lib_mysqludf_sys.html" target="_blank" rel="noopener"><code>lib_mysqludf_sys.html</code></a>，基本上很簡單。</p>
 <table>
 <thead>
@@ -70,27 +70,30 @@
 </tbody>
 </table>
 <p>來跑一下試試看</p>
-<pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">select</span> sys_eval<span class="token punctuation">(</span><span class="token string">'ipconfig'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="sql">select sys_eval(&#39;ipconfig&#39;);
+</code></pre>
 <p>&lt;img src=<a href="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/lib_mysqludf_sys_01.png" target="_blank" rel="noopener">https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/lib_mysqludf_sys_01.png</a> /&gt;</p>
 <p>竟然是亂碼，但是 cmd 的沒有問題</p>
 <p>&lt;img src=<a href="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/lib_mysqludf_sys_02.png" target="_blank" rel="noopener">https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/lib_mysqludf_sys_02.png</a> /&gt;</p>
 <p>顯然是 Windows 編碼問題，最後是這樣解決的。</p>
-<pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">select</span> <span class="token keyword">convert</span><span class="token punctuation">(</span><span class="token keyword">convert</span><span class="token punctuation">(</span>sys_eval<span class="token punctuation">(</span><span class="token string">'ipconfig'</span><span class="token punctuation">)</span> <span class="token keyword">using</span> big5<span class="token punctuation">)</span> <span class="token keyword">using</span> utf8<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="sql">select convert(convert(sys_eval(&#39;ipconfig&#39;) using big5) using utf8);
+</code></pre>
 <p>&lt;img src=<a href="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/lib_mysqludf_sys_03.png" target="_blank" rel="noopener">https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/lib_mysqludf_sys_03.png</a> /&gt;</p>
 <h2 id="與-Event-實作備份"><a href="#與-Event-實作備份" class="headerlink" title="與 Event 實作備份"></a>與 Event 實作備份</h2><p>首先透過之前做的 <a href="https://sujunmin.github.io/blog/2016/09/10/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[4]%20SQL%20Agent%20%E8%88%87%20MariaDB%20Event/">Event 紀錄系統</a>來做處理，不過因為 <code>sys_eval</code> 與 <code>sys_exec</code> 有珍貴的 Log 資料，所以不能只是紀錄單純的 OK 就好，加上兼容一般 SQL 的排程，所以修改了一下 Event 紀錄系統。</p>
 <h3 id="備份排程"><a href="#備份排程" class="headerlink" title="備份排程"></a>備份排程</h3><p>做一個備份排程如下</p>
-<pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">CREATE</span> <span class="token keyword">DEFINER</span><span class="token operator">=</span><span class="token punctuation">`</span>sujunmin<span class="token punctuation">`</span><span class="token variable">@`%`</span> EVENT <span class="token punctuation">`</span>backups<span class="token punctuation">`</span>
-    <span class="token keyword">ON</span> SCHEDULE
-        EVERY <span class="token number">1</span> MINUTE STARTS <span class="token string">'2016-11-07 13:42:26'</span>
-    <span class="token keyword">ON</span> COMPLETION <span class="token operator">NOT</span> PRESERVE
-    <span class="token keyword">ENABLE</span>
-    <span class="token keyword">COMMENT</span> <span class="token string">''</span>
-    <span class="token keyword">DO</span> <span class="token keyword">BEGIN</span>
-    <span class="token keyword">call</span> master<span class="token punctuation">.</span>proc_for_event_history<span class="token punctuation">(</span><span class="token string">'master'</span><span class="token punctuation">,</span> <span class="token string">'backups'</span><span class="token punctuation">,</span> <span class="token string">'select sys_eval(\'</span>"E:<span class="token comment" spellcheck="true">//MariaDB 10.1//bin//mysqldump.exe" -u sujunmin -pabcdef@12345 --master-data --verbose --all-databases --events --routines --gtid 2>&amp;1 > E://backup//all_db.sql\') into @outv;');</span>
-<span class="token keyword">END</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="sql">CREATE DEFINER=`sujunmin`@`%` EVENT `backups`
+    ON SCHEDULE
+        EVERY 1 MINUTE STARTS &#39;2016-11-07 13:42:26&#39;
+    ON COMPLETION NOT PRESERVE
+    ENABLE
+    COMMENT &#39;&#39;
+    DO BEGIN
+    call master.proc_for_event_history(&#39;master&#39;, &#39;backups&#39;, &#39;select sys_eval(\&#39;&quot;E://MariaDB 10.1//bin//mysqldump.exe&quot; -u sujunmin -pabcdef@12345 --master-data --verbose --all-databases --events --routines --gtid 2&gt;&amp;1 &gt; E://backup//all_db.sql\&#39;) into @outv;&#39;);
+END
+</code></pre>
 <p>要注意的是中間那個 <code>2&gt;&amp;1</code>，因為 <code>mysqldump</code> 是拿 <a href="http://dba.stackexchange.com/questions/14305/how-to-log-verbose-output-from-mysqldump" target="_blank" rel="noopener">Standard Error</a> 來 Output 訊息，但是 <code>sys_eval</code> 只會送回 Standard Outupt 內容。</p>
 <p>執行完以後看看結果。</p>
 <p>&lt;img src=<a href="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/lib_mysqludf_sys_04.png" target="_blank" rel="noopener">https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/lib_mysqludf_sys_04.png</a> /&gt;</p>

@@ -2,8 +2,7 @@
  google_ad_client: "ca-pub-0187888667607442",
  enable_page_level_ads: true
  });
-</script><link rel="stylesheet" href="/blog/css/prism.css" type="text/css">
-<link rel="stylesheet" href="/blog/css/prism-line-numbers.css" type="text/css"></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>從 SQL Server 到 MariaDB - [6] Audit 的實作</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2016-10-03</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/MSSQL/">MSSQL</a>/<a class="post-tag-link" href="/blog/tags/MariaDB/">MariaDB</a></div></div></div><article><div class="container post"><h2 id="需求說明"><a href="#需求說明" class="headerlink" title="需求說明"></a>需求說明</h2><p>在資料庫的 Audit (稽核) 部份，需要有一套如同 SQL Server 的方式來執行。</p>
+</script></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>從 SQL Server 到 MariaDB - [6] Audit 的實作</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2016-10-03</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/MSSQL/">MSSQL</a>/<a class="post-tag-link" href="/blog/tags/MariaDB/">MariaDB</a></div></div></div><article><div class="container post"><h2 id="需求說明"><a href="#需求說明" class="headerlink" title="需求說明"></a>需求說明</h2><p>在資料庫的 Audit (稽核) 部份，需要有一套如同 SQL Server 的方式來執行。</p>
 <h2 id="MariaDB-Server-Audit-Plugin"><a href="#MariaDB-Server-Audit-Plugin" class="headerlink" title="MariaDB Server Audit Plugin"></a>MariaDB Server Audit Plugin</h2><p>好在 MariaDB 有 Server Audit Plugin，相關文件<a href="https://mariadb.com/kb/en/mariadb/about-the-mariadb-audit-plugin/" target="_blank" rel="noopener">在此</a>。</p>
 <p>開起來很簡單，設定也很容易。</p>
 <h2 id="MariaDB-Server-Audit-Plugin-與-SQL-Sever-Trace-File-Audit-的比較"><a href="#MariaDB-Server-Audit-Plugin-與-SQL-Sever-Trace-File-Audit-的比較" class="headerlink" title="MariaDB Server Audit Plugin 與 SQL Sever Trace File Audit 的比較"></a>MariaDB Server Audit Plugin 與 SQL Sever Trace File Audit 的比較</h2><p>SQL Server 的 Audit 是用 Trace File 來儲存 Audit 資料，以下用一個表格做一個比較</p>
@@ -52,187 +51,193 @@
 <h2 id="客製化-Server-Audit-Plugin"><a href="#客製化-Server-Audit-Plugin" class="headerlink" title="客製化 Server Audit Plugin"></a>客製化 Server Audit Plugin</h2><p>原來的 Server Audit Plugin 其實大部份的需求都可以達成了，如果有<a href="https://github.com/sujunmin/SQLServerTraceFileParser" target="_blank" rel="noopener">自己</a>做 Log Server 的需求，需要更細緻的分類，因為有些資訊可以延遲送出(如日報表)，但是特權帳號的使用要馬上通報給其他長官，光只有這 8 種情形無法滿足需求。</p>
 <h3 id="針對-DDL-與-DCL-加入更細緻的分類"><a href="#針對-DDL-與-DCL-加入更細緻的分類" class="headerlink" title="針對 DDL 與 DCL 加入更細緻的分類"></a>針對 DDL 與 DCL 加入更細緻的分類</h3><p>這邊先來看看 MariaDB 對於 DDL 與 DCL 是怎麼判斷的，首先到官網下載原始碼 (如 10.1.17)，不要到 github 上抓，因為那太新了。</p>
 <h4 id="Code-分析與修改"><a href="#Code-分析與修改" class="headerlink" title="Code 分析與修改"></a>Code 分析與修改</h4><p>到 <code>plugin\server_audit\server_audit.c</code> 找到以下程式碼</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">enum</span> sa_keywords
-<span class="token punctuation">{</span>
-  SQLCOM_NOTHING<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span>
-  SQLCOM_DDL<span class="token punctuation">,</span>
-  SQLCOM_DML<span class="token punctuation">,</span>
-  SQLCOM_GRANT<span class="token punctuation">,</span>
-  SQLCOM_CREATE_USER<span class="token punctuation">,</span>
-  SQLCOM_CHANGE_MASTER<span class="token punctuation">,</span>
-  SQLCOM_CREATE_SERVER<span class="token punctuation">,</span>
-  SQLCOM_SET_OPTION<span class="token punctuation">,</span>
-  SQLCOM_ALTER_SERVER<span class="token punctuation">,</span>
-  SQLCOM_TRUNCATE<span class="token punctuation">,</span>
-  SQLCOM_QUERY_ADMIN<span class="token punctuation">,</span>
-  SQLCOM_DCL<span class="token punctuation">,</span>
-<span class="token punctuation">}</span><span class="token punctuation">;</span>
+<p></p><p class="code-caption" data-lang="c" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="c">enum sa_keywords
+{
+  SQLCOM_NOTHING=0,
+  SQLCOM_DDL,
+  SQLCOM_DML,
+  SQLCOM_GRANT,
+  SQLCOM_CREATE_USER,
+  SQLCOM_CHANGE_MASTER,
+  SQLCOM_CREATE_SERVER,
+  SQLCOM_SET_OPTION,
+  SQLCOM_ALTER_SERVER,
+  SQLCOM_TRUNCATE,
+  SQLCOM_QUERY_ADMIN,
+  SQLCOM_DCL,
+};
 
-<span class="token keyword">struct</span> sa_keyword
-<span class="token punctuation">{</span>
-  <span class="token keyword">int</span> length<span class="token punctuation">;</span>
-  <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>wd<span class="token punctuation">;</span>
-  <span class="token keyword">struct</span> sa_keyword <span class="token operator">*</span>next<span class="token punctuation">;</span>
-  <span class="token keyword">enum</span> sa_keywords type<span class="token punctuation">;</span>
-<span class="token punctuation">}</span><span class="token punctuation">;</span>
-
-
-<span class="token keyword">struct</span> sa_keyword xml_word<span class="token operator">=</span>   <span class="token punctuation">{</span><span class="token number">3</span><span class="token punctuation">,</span> <span class="token string">"XML"</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> SQLCOM_NOTHING<span class="token punctuation">}</span><span class="token punctuation">;</span>
-<span class="token keyword">struct</span> sa_keyword user_word<span class="token operator">=</span>   <span class="token punctuation">{</span><span class="token number">4</span><span class="token punctuation">,</span> <span class="token string">"USER"</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> SQLCOM_NOTHING<span class="token punctuation">}</span><span class="token punctuation">;</span>
-<span class="token keyword">struct</span> sa_keyword data_word<span class="token operator">=</span>   <span class="token punctuation">{</span><span class="token number">4</span><span class="token punctuation">,</span> <span class="token string">"DATA"</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> SQLCOM_NOTHING<span class="token punctuation">}</span><span class="token punctuation">;</span>
-<span class="token keyword">struct</span> sa_keyword server_word<span class="token operator">=</span> <span class="token punctuation">{</span><span class="token number">6</span><span class="token punctuation">,</span> <span class="token string">"SERVER"</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> SQLCOM_NOTHING<span class="token punctuation">}</span><span class="token punctuation">;</span>
-<span class="token keyword">struct</span> sa_keyword master_word<span class="token operator">=</span> <span class="token punctuation">{</span><span class="token number">6</span><span class="token punctuation">,</span> <span class="token string">"MASTER"</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> SQLCOM_NOTHING<span class="token punctuation">}</span><span class="token punctuation">;</span>
-<span class="token keyword">struct</span> sa_keyword password_word<span class="token operator">=</span> <span class="token punctuation">{</span><span class="token number">8</span><span class="token punctuation">,</span> <span class="token string">"PASSWORD"</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> SQLCOM_NOTHING<span class="token punctuation">}</span><span class="token punctuation">;</span>
-<span class="token keyword">struct</span> sa_keyword function_word<span class="token operator">=</span> <span class="token punctuation">{</span><span class="token number">8</span><span class="token punctuation">,</span> <span class="token string">"FUNCTION"</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> SQLCOM_NOTHING<span class="token punctuation">}</span><span class="token punctuation">;</span>
-<span class="token keyword">struct</span> sa_keyword statement_word<span class="token operator">=</span> <span class="token punctuation">{</span><span class="token number">9</span><span class="token punctuation">,</span> <span class="token string">"STATEMENT"</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> SQLCOM_NOTHING<span class="token punctuation">}</span><span class="token punctuation">;</span>
-<span class="token keyword">struct</span> sa_keyword procedure_word<span class="token operator">=</span> <span class="token punctuation">{</span><span class="token number">9</span><span class="token punctuation">,</span> <span class="token string">"PROCEDURE"</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> SQLCOM_NOTHING<span class="token punctuation">}</span><span class="token punctuation">;</span>
+struct sa_keyword
+{
+  int length;
+  const char *wd;
+  struct sa_keyword *next;
+  enum sa_keywords type;
+};
 
 
-<span class="token keyword">struct</span> sa_keyword keywords_to_skip<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">=</span>
-<span class="token punctuation">{</span>
-  <span class="token punctuation">{</span><span class="token number">3</span><span class="token punctuation">,</span> <span class="token string">"SET"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>statement_word<span class="token punctuation">,</span> SQLCOM_QUERY_ADMIN<span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">{</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token constant">NULL</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> SQLCOM_DDL<span class="token punctuation">}</span>
-<span class="token punctuation">}</span><span class="token punctuation">;</span>
+struct sa_keyword xml_word=   {3, &quot;XML&quot;, 0, SQLCOM_NOTHING};
+struct sa_keyword user_word=   {4, &quot;USER&quot;, 0, SQLCOM_NOTHING};
+struct sa_keyword data_word=   {4, &quot;DATA&quot;, 0, SQLCOM_NOTHING};
+struct sa_keyword server_word= {6, &quot;SERVER&quot;, 0, SQLCOM_NOTHING};
+struct sa_keyword master_word= {6, &quot;MASTER&quot;, 0, SQLCOM_NOTHING};
+struct sa_keyword password_word= {8, &quot;PASSWORD&quot;, 0, SQLCOM_NOTHING};
+struct sa_keyword function_word= {8, &quot;FUNCTION&quot;, 0, SQLCOM_NOTHING};
+struct sa_keyword statement_word= {9, &quot;STATEMENT&quot;, 0, SQLCOM_NOTHING};
+struct sa_keyword procedure_word= {9, &quot;PROCEDURE&quot;, 0, SQLCOM_NOTHING};
 
 
-<span class="token keyword">struct</span> sa_keyword not_ddl_keywords<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">=</span>
-<span class="token punctuation">{</span>
-  <span class="token punctuation">{</span><span class="token number">4</span><span class="token punctuation">,</span> <span class="token string">"DROP"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>function_word<span class="token punctuation">,</span> SQLCOM_QUERY_ADMIN<span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">{</span><span class="token number">4</span><span class="token punctuation">,</span> <span class="token string">"DROP"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>procedure_word<span class="token punctuation">,</span> SQLCOM_QUERY_ADMIN<span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">{</span><span class="token number">4</span><span class="token punctuation">,</span> <span class="token string">"DROP"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>user_word<span class="token punctuation">,</span> SQLCOM_DCL<span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">{</span><span class="token number">6</span><span class="token punctuation">,</span> <span class="token string">"CREATE"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>user_word<span class="token punctuation">,</span> SQLCOM_DCL<span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">{</span><span class="token number">6</span><span class="token punctuation">,</span> <span class="token string">"CREATE"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>function_word<span class="token punctuation">,</span> SQLCOM_QUERY_ADMIN<span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">{</span><span class="token number">6</span><span class="token punctuation">,</span> <span class="token string">"CREATE"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>procedure_word<span class="token punctuation">,</span> SQLCOM_QUERY_ADMIN<span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">{</span><span class="token number">6</span><span class="token punctuation">,</span> <span class="token string">"RENAME"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>user_word<span class="token punctuation">,</span> SQLCOM_DCL<span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">{</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token constant">NULL</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> SQLCOM_DDL<span class="token punctuation">}</span>
-<span class="token punctuation">}</span><span class="token punctuation">;</span>
+struct sa_keyword keywords_to_skip[]=
+{
+  {3, &quot;SET&quot;, &amp;statement_word, SQLCOM_QUERY_ADMIN},
+  {0, NULL, 0, SQLCOM_DDL}
+};
 
 
-<span class="token keyword">struct</span> sa_keyword ddl_keywords<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">=</span>
-<span class="token punctuation">{</span>
-  <span class="token punctuation">{</span><span class="token number">4</span><span class="token punctuation">,</span> <span class="token string">"DROP"</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> SQLCOM_DDL<span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">{</span><span class="token number">5</span><span class="token punctuation">,</span> <span class="token string">"ALTER"</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> SQLCOM_DDL<span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">{</span><span class="token number">6</span><span class="token punctuation">,</span> <span class="token string">"CREATE"</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> SQLCOM_DDL<span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">{</span><span class="token number">6</span><span class="token punctuation">,</span> <span class="token string">"RENAME"</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> SQLCOM_DDL<span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">{</span><span class="token number">8</span><span class="token punctuation">,</span> <span class="token string">"TRUNCATE"</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> SQLCOM_DDL<span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">{</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token constant">NULL</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> SQLCOM_DDL<span class="token punctuation">}</span>
-<span class="token punctuation">}</span><span class="token punctuation">;</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+struct sa_keyword not_ddl_keywords[]=
+{
+  {4, &quot;DROP&quot;, &amp;function_word, SQLCOM_QUERY_ADMIN},
+  {4, &quot;DROP&quot;, &amp;procedure_word, SQLCOM_QUERY_ADMIN},
+  {4, &quot;DROP&quot;, &amp;user_word, SQLCOM_DCL},
+  {6, &quot;CREATE&quot;, &amp;user_word, SQLCOM_DCL},
+  {6, &quot;CREATE&quot;, &amp;function_word, SQLCOM_QUERY_ADMIN},
+  {6, &quot;CREATE&quot;, &amp;procedure_word, SQLCOM_QUERY_ADMIN},
+  {6, &quot;RENAME&quot;, &amp;user_word, SQLCOM_DCL},
+  {0, NULL, 0, SQLCOM_DDL}
+};
+
+
+struct sa_keyword ddl_keywords[]=
+{
+  {4, &quot;DROP&quot;, 0, SQLCOM_DDL},
+  {5, &quot;ALTER&quot;, 0, SQLCOM_DDL},
+  {6, &quot;CREATE&quot;, 0, SQLCOM_DDL},
+  {6, &quot;RENAME&quot;, 0, SQLCOM_DDL},
+  {8, &quot;TRUNCATE&quot;, 0, SQLCOM_DDL},
+  {0, NULL, 0, SQLCOM_DDL}
+};
+</code></pre>
 <p>以上可以看的的出來 DDL 是哪些會算，哪些不會算，譬如說 <code>DROP</code>, <code>DROP User</code> 算是 DDL，但是 <code>DROP Function</code> 不算 DDL。</p>
-<pre class="line-numbers language-c"><code class="language-c">
-<span class="token keyword">struct</span> sa_keyword dml_keywords<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">=</span>
-<span class="token punctuation">{</span>
-  <span class="token punctuation">{</span><span class="token number">2</span><span class="token punctuation">,</span> <span class="token string">"DO"</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> SQLCOM_DML<span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">{</span><span class="token number">4</span><span class="token punctuation">,</span> <span class="token string">"CALL"</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> SQLCOM_DML<span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">{</span><span class="token number">4</span><span class="token punctuation">,</span> <span class="token string">"LOAD"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>data_word<span class="token punctuation">,</span> SQLCOM_DML<span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">{</span><span class="token number">4</span><span class="token punctuation">,</span> <span class="token string">"LOAD"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>xml_word<span class="token punctuation">,</span> SQLCOM_DML<span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">{</span><span class="token number">6</span><span class="token punctuation">,</span> <span class="token string">"DELETE"</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> SQLCOM_DML<span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">{</span><span class="token number">6</span><span class="token punctuation">,</span> <span class="token string">"INSERT"</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> SQLCOM_DML<span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">{</span><span class="token number">6</span><span class="token punctuation">,</span> <span class="token string">"SELECT"</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> SQLCOM_DML<span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">{</span><span class="token number">6</span><span class="token punctuation">,</span> <span class="token string">"UPDATE"</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> SQLCOM_DML<span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">{</span><span class="token number">7</span><span class="token punctuation">,</span> <span class="token string">"HANDLER"</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> SQLCOM_DML<span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">{</span><span class="token number">7</span><span class="token punctuation">,</span> <span class="token string">"REPLACE"</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> SQLCOM_DML<span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">{</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token constant">NULL</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> SQLCOM_DML<span class="token punctuation">}</span>
-<span class="token punctuation">}</span><span class="token punctuation">;</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p></p><p class="code-caption" data-lang="c" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="c">
+struct sa_keyword dml_keywords[]=
+{
+  {2, &quot;DO&quot;, 0, SQLCOM_DML},
+  {4, &quot;CALL&quot;, 0, SQLCOM_DML},
+  {4, &quot;LOAD&quot;, &amp;data_word, SQLCOM_DML},
+  {4, &quot;LOAD&quot;, &amp;xml_word, SQLCOM_DML},
+  {6, &quot;DELETE&quot;, 0, SQLCOM_DML},
+  {6, &quot;INSERT&quot;, 0, SQLCOM_DML},
+  {6, &quot;SELECT&quot;, 0, SQLCOM_DML},
+  {6, &quot;UPDATE&quot;, 0, SQLCOM_DML},
+  {7, &quot;HANDLER&quot;, 0, SQLCOM_DML},
+  {7, &quot;REPLACE&quot;, 0, SQLCOM_DML},
+  {0, NULL, 0, SQLCOM_DML}
+};
+</code></pre>
 <p>這邊可以看得出來 DML。</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">struct</span> sa_keyword dcl_keywords<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">=</span>
-<span class="token punctuation">{</span>
-  <span class="token punctuation">{</span><span class="token number">6</span><span class="token punctuation">,</span> <span class="token string">"CREATE"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>user_word<span class="token punctuation">,</span> SQLCOM_DCL<span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">{</span><span class="token number">4</span><span class="token punctuation">,</span> <span class="token string">"DROP"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>user_word<span class="token punctuation">,</span> SQLCOM_DCL<span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">{</span><span class="token number">6</span><span class="token punctuation">,</span> <span class="token string">"RENAME"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>user_word<span class="token punctuation">,</span> SQLCOM_DCL<span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">{</span><span class="token number">5</span><span class="token punctuation">,</span> <span class="token string">"GRANT"</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> SQLCOM_DCL<span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">{</span><span class="token number">6</span><span class="token punctuation">,</span> <span class="token string">"REVOKE"</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> SQLCOM_DCL<span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">{</span><span class="token number">3</span><span class="token punctuation">,</span> <span class="token string">"SET"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>password_word<span class="token punctuation">,</span> SQLCOM_DCL<span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">{</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token constant">NULL</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> SQLCOM_DDL<span class="token punctuation">}</span>
-<span class="token punctuation">}</span><span class="token punctuation">;</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p></p><p class="code-caption" data-lang="c" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="c">struct sa_keyword dcl_keywords[]=
+{
+  {6, &quot;CREATE&quot;, &amp;user_word, SQLCOM_DCL},
+  {4, &quot;DROP&quot;, &amp;user_word, SQLCOM_DCL},
+  {6, &quot;RENAME&quot;, &amp;user_word, SQLCOM_DCL},
+  {5, &quot;GRANT&quot;, 0, SQLCOM_DCL},
+  {6, &quot;REVOKE&quot;, 0, SQLCOM_DCL},
+  {3, &quot;SET&quot;, &amp;password_word, SQLCOM_DCL},
+  {0, NULL, 0, SQLCOM_DDL}
+};
+</code></pre>
 <p>這邊可以看得出來 DCL。</p>
-<pre class="line-numbers language-c"><code class="language-c">
-<span class="token keyword">struct</span> sa_keyword passwd_keywords<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">=</span>
-<span class="token punctuation">{</span>
-  <span class="token punctuation">{</span><span class="token number">3</span><span class="token punctuation">,</span> <span class="token string">"SET"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>password_word<span class="token punctuation">,</span> SQLCOM_SET_OPTION<span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">{</span><span class="token number">5</span><span class="token punctuation">,</span> <span class="token string">"ALTER"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>server_word<span class="token punctuation">,</span> SQLCOM_ALTER_SERVER<span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">{</span><span class="token number">5</span><span class="token punctuation">,</span> <span class="token string">"GRANT"</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> SQLCOM_GRANT<span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">{</span><span class="token number">6</span><span class="token punctuation">,</span> <span class="token string">"CREATE"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>user_word<span class="token punctuation">,</span> SQLCOM_CREATE_USER<span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">{</span><span class="token number">6</span><span class="token punctuation">,</span> <span class="token string">"CREATE"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>server_word<span class="token punctuation">,</span> SQLCOM_CREATE_SERVER<span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">{</span><span class="token number">6</span><span class="token punctuation">,</span> <span class="token string">"CHANGE"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>master_word<span class="token punctuation">,</span> SQLCOM_CHANGE_MASTER<span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">{</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token constant">NULL</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> SQLCOM_NOTHING<span class="token punctuation">}</span>
-<span class="token punctuation">}</span><span class="token punctuation">;</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p></p><p class="code-caption" data-lang="c" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="c">
+struct sa_keyword passwd_keywords[]=
+{
+  {3, &quot;SET&quot;, &amp;password_word, SQLCOM_SET_OPTION},
+  {5, &quot;ALTER&quot;, &amp;server_word, SQLCOM_ALTER_SERVER},
+  {5, &quot;GRANT&quot;, 0, SQLCOM_GRANT},
+  {6, &quot;CREATE&quot;, &amp;user_word, SQLCOM_CREATE_USER},
+  {6, &quot;CREATE&quot;, &amp;server_word, SQLCOM_CREATE_SERVER},
+  {6, &quot;CHANGE&quot;, &amp;master_word, SQLCOM_CHANGE_MASTER},
+  {0, NULL, 0, SQLCOM_NOTHING}
+};
+</code></pre>
 <p>這邊說明什麼時候會碰到密碼 (在 log 裡會紀錄動作，然後把密碼用星號表示)。</p>
 <p>接下來找到以下的程式碼</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">static</span> <span class="token keyword">int</span> <span class="token function">log_statement_ex</span><span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">struct</span> connection_info <span class="token operator">*</span>cn<span class="token punctuation">,</span>
-                            time_t ev_time<span class="token punctuation">,</span> <span class="token keyword">unsigned</span> <span class="token keyword">long</span> thd_id<span class="token punctuation">,</span>
-                            <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>query<span class="token punctuation">,</span> <span class="token keyword">unsigned</span> <span class="token keyword">int</span> query_len<span class="token punctuation">,</span>
-                            <span class="token keyword">int</span> error_code<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>type<span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-  size_t csize<span class="token punctuation">;</span>
-  <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
-  <span class="token keyword">if</span> <span class="token punctuation">(</span>query <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span>
-  <span class="token punctuation">{</span>
-    <span class="token comment" spellcheck="true">/* Can happen after the error in mysqld_prepare_stmt() */</span>
-    query<span class="token operator">=</span> cn<span class="token operator">-></span>query<span class="token punctuation">;</span>
-    query_len<span class="token operator">=</span> cn<span class="token operator">-></span>query_length<span class="token punctuation">;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>query <span class="token operator">==</span> <span class="token number">0</span> <span class="token operator">||</span> query_len <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span>
-      <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span>
+<p></p><p class="code-caption" data-lang="c" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="c">static int log_statement_ex(const struct connection_info *cn,
+                            time_t ev_time, unsigned long thd_id,
+                            const char *query, unsigned int query_len,
+                            int error_code, const char *type)
+{
+  size_t csize;
+  ...
+  if (query == 0)
+  {
+    /* Can happen after the error in mysqld_prepare_stmt() */
+    query= cn-&gt;query;
+    query_len= cn-&gt;query_length;
+    if (query == 0 || query_len == 0)
+      return 0;
+  }
 
-  <span class="token keyword">if</span> <span class="token punctuation">(</span>query <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span><span class="token punctuation">(</span>events <span class="token operator">&amp;</span> EVENT_QUERY_ALL<span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span>
-      <span class="token punctuation">(</span>events <span class="token operator">&amp;</span> EVENT_QUERY<span class="token punctuation">)</span><span class="token punctuation">)</span>
-  <span class="token punctuation">{</span>
-    <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>orig_query<span class="token operator">=</span> query<span class="token punctuation">;</span>
-    <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
-    <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
-    <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
-csize<span class="token operator">=</span> <span class="token function">log_header</span><span class="token punctuation">(</span>message<span class="token punctuation">,</span> message_size<span class="token number">-1</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>ev_time<span class="token punctuation">,</span>
-                    servhost<span class="token punctuation">,</span> servhost_len<span class="token punctuation">,</span>
-                    cn<span class="token operator">-></span>user<span class="token punctuation">,</span> cn<span class="token operator">-></span>user_length<span class="token punctuation">,</span>cn<span class="token operator">-></span>host<span class="token punctuation">,</span> cn<span class="token operator">-></span>host_length<span class="token punctuation">,</span>
-                    cn<span class="token operator">-></span>ip<span class="token punctuation">,</span> cn<span class="token operator">-></span>ip_length<span class="token punctuation">,</span> thd_id<span class="token punctuation">,</span> query_id<span class="token punctuation">,</span> type<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>    
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+  if (query &amp;&amp; !(events &amp; EVENT_QUERY_ALL) &amp;&amp;
+      (events &amp; EVENT_QUERY))
+  {
+    const char *orig_query= query;
+    ...
+    ...
+    ...
+csize= log_header(message, message_size-1, &amp;ev_time,
+                    servhost, servhost_len,
+                    cn-&gt;user, cn-&gt;user_length,cn-&gt;host, cn-&gt;host_length,
+                    cn-&gt;ip, cn-&gt;ip_length, thd_id, query_id, type);
+    ...
+</code></pre>
 <p>這邊的 Code 說明有許多的紀錄後來會被標記成 <code>QUERY</code>，如果要利用原來已經分類的 DCL 與 DDL 架構，這邊就要先來利用一下。</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">static</span> <span class="token keyword">int</span> <span class="token function">log_statement_ex</span><span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">struct</span> connection_info <span class="token operator">*</span>cn<span class="token punctuation">,</span>
-                            time_t ev_time<span class="token punctuation">,</span> <span class="token keyword">unsigned</span> <span class="token keyword">long</span> thd_id<span class="token punctuation">,</span>
-                            <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>query<span class="token punctuation">,</span> <span class="token keyword">unsigned</span> <span class="token keyword">int</span> query_len<span class="token punctuation">,</span>
-                            <span class="token keyword">int</span> error_code<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>type<span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-  size_t csize<span class="token punctuation">;</span>
-  <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
-  <span class="token keyword">char</span> <span class="token operator">*</span>modtype <span class="token operator">=</span> type<span class="token punctuation">;</span>
+<p></p><p class="code-caption" data-lang="c" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="c">static int log_statement_ex(const struct connection_info *cn,
+                            time_t ev_time, unsigned long thd_id,
+                            const char *query, unsigned int query_len,
+                            int error_code, const char *type)
+{
+  size_t csize;
+  ...
+  char *modtype = type;
 
-  <span class="token keyword">if</span> <span class="token punctuation">(</span>query <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span>
-  <span class="token punctuation">{</span>
-    <span class="token comment" spellcheck="true">/* Can happen after the error in mysqld_prepare_stmt() */</span>
-    query<span class="token operator">=</span> cn<span class="token operator">-></span>query<span class="token punctuation">;</span>
-    query_len<span class="token operator">=</span> cn<span class="token operator">-></span>query_length<span class="token punctuation">;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>query <span class="token operator">==</span> <span class="token number">0</span> <span class="token operator">||</span> query_len <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span>
-      <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span>
+  if (query == 0)
+  {
+    /* Can happen after the error in mysqld_prepare_stmt() */
+    query= cn-&gt;query;
+    query_len= cn-&gt;query_length;
+    if (query == 0 || query_len == 0)
+      return 0;
+  }
 
-  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">filter_query_type</span><span class="token punctuation">(</span>query<span class="token punctuation">,</span> not_ddl_keywords<span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span>
-      <span class="token function">filter_query_type</span><span class="token punctuation">(</span>query<span class="token punctuation">,</span> ddl_keywords<span class="token punctuation">)</span><span class="token punctuation">)</span>
-      modtype <span class="token operator">=</span> <span class="token string">"QUERY_DDL"</span><span class="token punctuation">;</span>
+  if (!filter_query_type(query, not_ddl_keywords) &amp;&amp;
+      filter_query_type(query, ddl_keywords))
+      modtype = &quot;QUERY_DDL&quot;;
 
-  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">filter_query_type</span><span class="token punctuation">(</span>query<span class="token punctuation">,</span> dml_keywords<span class="token punctuation">)</span><span class="token punctuation">)</span>
-      modtype <span class="token operator">=</span> <span class="token string">"QUERY_DML"</span><span class="token punctuation">;</span>
+  if (filter_query_type(query, dml_keywords))
+      modtype = &quot;QUERY_DML&quot;;
 
-  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">filter_query_type</span><span class="token punctuation">(</span>query<span class="token punctuation">,</span> dcl_keywords<span class="token punctuation">)</span><span class="token punctuation">)</span>
-      modtype <span class="token operator">=</span> <span class="token string">"QUERY_DCL"</span><span class="token punctuation">;</span>
+  if (filter_query_type(query, dcl_keywords))
+      modtype = &quot;QUERY_DCL&quot;;
 
-  <span class="token keyword">if</span> <span class="token punctuation">(</span>query <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span><span class="token punctuation">(</span>events <span class="token operator">&amp;</span> EVENT_QUERY_ALL<span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span>
-      <span class="token punctuation">(</span>events <span class="token operator">&amp;</span> EVENT_QUERY<span class="token punctuation">)</span><span class="token punctuation">)</span>
-  <span class="token punctuation">{</span>
-    <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>orig_query<span class="token operator">=</span> query<span class="token punctuation">;</span>
-    <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
-    <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
-    <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
-  csize<span class="token operator">=</span> <span class="token function">log_header</span><span class="token punctuation">(</span>message<span class="token punctuation">,</span> message_size<span class="token number">-1</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>ev_time<span class="token punctuation">,</span>
-                    servhost<span class="token punctuation">,</span> servhost_len<span class="token punctuation">,</span>
-                    cn<span class="token operator">-></span>user<span class="token punctuation">,</span> cn<span class="token operator">-></span>user_length<span class="token punctuation">,</span>cn<span class="token operator">-></span>host<span class="token punctuation">,</span> cn<span class="token operator">-></span>host_length<span class="token punctuation">,</span>
-                    cn<span class="token operator">-></span>ip<span class="token punctuation">,</span> cn<span class="token operator">-></span>ip_length<span class="token punctuation">,</span> thd_id<span class="token punctuation">,</span> query_id<span class="token punctuation">,</span> modtype<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>  
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+  if (query &amp;&amp; !(events &amp; EVENT_QUERY_ALL) &amp;&amp;
+      (events &amp; EVENT_QUERY))
+  {
+    const char *orig_query= query;
+    ...
+    ...
+    ...
+  csize= log_header(message, message_size-1, &amp;ev_time,
+                    servhost, servhost_len,
+                    cn-&gt;user, cn-&gt;user_length,cn-&gt;host, cn-&gt;host_length,
+                    cn-&gt;ip, cn-&gt;ip_length, thd_id, query_id, modtype);
+    ...
+</code></pre>
 <h4 id="Build-Plugin"><a href="#Build-Plugin" class="headerlink" title="Build Plugin"></a>Build Plugin</h4><p>接下來要來 Build Plugin，根據這個<a href="https://mariadb.com/kb/en/mariadb/Building_MariaDB_on_Windows/" target="_blank" rel="noopener">文件</a>，安裝該安裝的函式庫與工具，以下紀錄一下</p>
 <ol>
 <li>Visual Studio 2015 Community 版</li>
@@ -258,11 +263,13 @@ csize<span class="token operator">=</span> <span class="token function">log_head
 </ol>
 <h3 id="測試"><a href="#測試" class="headerlink" title="測試"></a>測試</h3><p>把 MariaDB 停掉，從 <code>bld\plugin\server_audit\RelWithDebInfo</code> 把 dll 跟 pdb 複製到 <code>MariaDB\lib</code> 下，重開看看。</p>
 <p>原來的 log 大概像這樣</p>
-<pre class="line-numbers language-syslog"><code class="language-syslog">20161003 13:15:58,WSTest,sujunmin,localhost,98,783,QUERY,test1,'REVOKE RELOAD  ON *.* FROM \'lsuser\'@\'%\'',0
-<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p></p><p class="code-caption" data-lang="syslog" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="syslog">20161003 13:15:58,WSTest,sujunmin,localhost,98,783,QUERY,test1,&#39;REVOKE RELOAD  ON *.* FROM \&#39;lsuser\&#39;@\&#39;%\&#39;&#39;,0
+</code></pre>
 <p>應該會變成這樣</p>
-<pre class="line-numbers language-syslog"><code class="language-syslog">20161003 16:31:14,WSTest,sujunmin,localhost,98,783,QUERY_DCL,test1,'REVOKE RELOAD  ON *.* FROM \'lsuser\'@\'%\'',0
-<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p></p><p class="code-caption" data-lang="syslog" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="syslog">20161003 16:31:14,WSTest,sujunmin,localhost,98,783,QUERY_DCL,test1,&#39;REVOKE RELOAD  ON *.* FROM \&#39;lsuser\&#39;@\&#39;%\&#39;&#39;,0
+</code></pre>
 <p>後續的 Log Parser 就可以根據這些關鍵字來分析使用了。</p>
 </div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">
 var disqus_shortname = 'sujunmin';

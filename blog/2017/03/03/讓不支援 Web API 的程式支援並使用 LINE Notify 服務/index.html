@@ -2,35 +2,36 @@
  google_ad_client: "ca-pub-0187888667607442",
  enable_page_level_ads: true
  });
-</script><link rel="stylesheet" href="/blog/css/prism.css" type="text/css">
-<link rel="stylesheet" href="/blog/css/prism-line-numbers.css" type="text/css"></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>讓不支援 Web API 的程式支援並使用 LINE Notify 服務</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2017-03-03</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/Networks/">Networks</a></div></div></div><article><div class="container post"><h2 id="需求說明"><a href="#需求說明" class="headerlink" title="需求說明"></a>需求說明</h2><p>在開發某個應用的時候，使用 <a href="https://notify-bot.line.me/zh_TW/" target="_blank" rel="noopener">LINE Notify</a> 作為通知功能，卻發現到該架構沒有使用 Web API 的函式 (<code>Webrequest</code>, <code>HttpWebRequest</code>, <code>RestGet</code>, …)，透過執行外部程式的方式來達成目的。</p>
+</script></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>讓不支援 Web API 的程式支援並使用 LINE Notify 服務</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2017-03-03</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/Networks/">Networks</a></div></div></div><article><div class="container post"><h2 id="需求說明"><a href="#需求說明" class="headerlink" title="需求說明"></a>需求說明</h2><p>在開發某個應用的時候，使用 <a href="https://notify-bot.line.me/zh_TW/" target="_blank" rel="noopener">LINE Notify</a> 作為通知功能，卻發現到該架構沒有使用 Web API 的函式 (<code>Webrequest</code>, <code>HttpWebRequest</code>, <code>RestGet</code>, …)，透過執行外部程式的方式來達成目的。</p>
 <h2 id="LINE-Notify"><a href="#LINE-Notify" class="headerlink" title="LINE Notify"></a><a href="https://notify-bot.line.me/zh_TW/" target="_blank" rel="noopener">LINE Notify</a></h2><p>這個服務蠻方便的，如果要作簡易的通知機器人又不想要作複雜的機器人開發，只要註冊一下就可以使用了，<a href="https://www.google.com.tw/#q=Line+Notify+%E4%BD%BF%E7%94%A8&amp;*" target="_blank" rel="noopener">Google</a> 一下有很多人都有使用經驗，是個不錯的服務。</p>
 <h2 id="讓不支援-Web-API-的程式支援"><a href="#讓不支援-Web-API-的程式支援" class="headerlink" title="讓不支援 Web API 的程式支援"></a>讓不支援 Web API 的程式支援</h2><p>如果你的架構能支援使用外部程式，或是可以使用其他類 (如 C++ export function) 函式庫的話，以下的說明可以讓該架構可以使用 Web API。</p>
 <p>我的架構中是沒有支援使用外部程式，但可以用 C++ 的外部函式庫，在 Windows 上面。</p>
 <p>首先，我使用 Windows 都有的 <code>shell32.dll</code>。</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token macro property">#<span class="token directive keyword">import</span> "shell32.dll" </span>
-        <span class="token keyword">int</span> <span class="token function">ShellExecuteW</span><span class="token punctuation">(</span> <span class="token keyword">int</span>       hWnd<span class="token punctuation">,</span>
-                           string    lpVerb<span class="token punctuation">,</span>
-                           string    lpFile<span class="token punctuation">,</span>
-                           string    lpParameters<span class="token punctuation">,</span>
-                           string    lpDirectory<span class="token punctuation">,</span>
-                           <span class="token keyword">int</span>       nCmdShow
-                           <span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token macro property">#<span class="token directive keyword">import</span>                 </span>
-
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p></p><p class="code-caption" data-lang="c" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="c">#import &quot;shell32.dll&quot; 
+        int ShellExecuteW( int       hWnd,
+                           string    lpVerb,
+                           string    lpFile,
+                           string    lpParameters,
+                           string    lpDirectory,
+                           int       nCmdShow
+                           );
+#import
+</code></pre>
 <p>其中 <a href="https://goo.gl/mhpXpg" target="_blank" rel="noopener"><code>ShellExecuteW</code></a> 是拿來執行外部程式的函數。</p>
 <p>接下來使用 <a href="https://curl.haxx.se/download.html" target="_blank" rel="noopener">curl</a> 來作為發動 Http Request 的外部程式，這個 curl 支援多種平台，真的很方便。</p>
 <p>因為環境在 Windows 上，所以下載 Windows 版的 (記得裡頭的檔案都要在同個目錄下才能運作)。</p>
 <p>最後在要使用 Web API 的地方加</p>
-<pre class="line-numbers language-c"><code class="language-c">          <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
-          string cmd <span class="token operator">=</span> <span class="token string">" -X POST -H \"Authorization: Bearer "</span> <span class="token operator">+</span> LineNotifyAccessToken <span class="token operator">+</span> <span class="token string">"\" -F \"message="</span> <span class="token operator">+</span> msg <span class="token operator">+</span> <span class="token string">"\" -F \"imageFile="</span><span class="token operator">+</span>filename<span class="token operator">+</span><span class="token string">"\" https://notify-api.line.me/api/notify"</span><span class="token punctuation">;</span> 
-          <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
-          <span class="token function">ShellExecuteW</span> <span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token string">"Open"</span><span class="token punctuation">,</span> <span class="token string">"curl.exe"</span><span class="token punctuation">,</span> cmd<span class="token punctuation">,</span> workpath<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-          <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p></p><p class="code-caption" data-lang="c" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="c">...
+string cmd = &quot; -X POST -H \&quot;Authorization: Bearer &quot; + LineNotifyAccessToken + &quot;\&quot; -F \&quot;message=&quot; + msg + &quot;\&quot; -F \&quot;imageFile=&quot;+filename+&quot;\&quot; https://notify-api.line.me/api/notify&quot;; 
+          ...
+          ShellExecuteW (0, &quot;Open&quot;, &quot;curl.exe&quot;, cmd, workpath, 0);
+...
+</code></pre>
 <p>其中 <code>imageFile</code> 的格式是 jpeg/png ，自己電腦裡的路徑 <code>@C:/test/abc.png</code>，所以就是 <code>imageFile=@C:/test/abc.png</code>。</p>
 <p>另外這個服務是每個小時有一個<a href="https://notify-bot.line.me/doc/en/" target="_blank" rel="noopener">上限</a>，API Rate Limit，可以參考一下。</p>
+<p></p><p class="code-caption" data-lang="" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
 <pre><code>F:\Test&gt;curl -X GET -H &quot;Authorization: Bearer &lt;token&gt;&quot; https://notify-api.line.me/api/status -I
 HTTP/1.1 200 OK
 Server: nginx

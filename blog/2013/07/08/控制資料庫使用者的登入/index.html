@@ -2,8 +2,7 @@
  google_ad_client: "ca-pub-0187888667607442",
  enable_page_level_ads: true
  });
-</script><link rel="stylesheet" href="/blog/css/prism.css" type="text/css">
-<link rel="stylesheet" href="/blog/css/prism-line-numbers.css" type="text/css"></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>控制資料庫使用者的登入</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2013-07-08</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/MSSQL/">MSSQL</a></div></div></div><article><div class="container post"><p>很久沒有寫blog了，自從上次的<a href="http://blog.xuite.net/retsamsu/diary/56507473" target="_blank" rel="noopener">旅遊紀錄</a>。</p>
+</script></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>控制資料庫使用者的登入</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2013-07-08</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/MSSQL/">MSSQL</a></div></div></div><article><div class="container post"><p>很久沒有寫blog了，自從上次的<a href="http://blog.xuite.net/retsamsu/diary/56507473" target="_blank" rel="noopener">旅遊紀錄</a>。</p>
 <p>最近做了比較多技術層面的東西，想想一方面也該是要回饋以外，另一方面也是怕自己忘記了(哈哈)。</p>
 <p>開始來記錄一些技術的東西吧(旅遊的話就…XD)~</p>
 <p>這篇是來說明控制MSSQL資料庫使用者的登入。<span style="line-height: 1.2;">&nbsp;</span></p>
@@ -11,28 +10,29 @@
 <p>網路上大部分的<a href="https://www.google.com.tw/search?q=mssql+login+trigger&amp;oq=mssql+login+trigger&amp;aqs=chrome.0.57j59l3j62l2.7585j0&amp;sourceid=chrome&amp;ie=UTF-8" target="_blank" rel="noopener">解法</a>都是使用Login Trigger來做處理，因此我也做了一個Login Trigger到資料庫上，以下是我的作法。</p>
 <p>目標：能夠控管資料庫上的帳號(必要)，根據來源IP(必要)、使用的程式(非必要)、作業時間(AP帳號(全時暢通)或是管理用帳號(上班日可使用)，必要)來控管。</p>
 <ol>
-<li><span style="line-height: 1.2;">資料庫設定</span><pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">USE</span> master
+<li><span style="line-height: 1.2;">資料庫設定</span><br><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><pre><code class="sql">USE master
 GO
-<span class="token keyword">GRANT</span> <span class="token keyword">SELECT</span> <span class="token keyword">ON</span> LoginMain <span class="token keyword">TO</span> <span class="token keyword">public</span>
+GRANT SELECT ON LoginMain TO public
 GO
-<span class="token keyword">GRANT</span> <span class="token keyword">SELECT</span> <span class="token keyword">ON</span> LoginDate <span class="token keyword">TO</span> <span class="token keyword">public</span>
+GRANT SELECT ON LoginDate TO public
 GO
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</code></pre>
 </li>
 </ol>
-<pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">USE</span> master
+<pre><code class="sql">USE master
 GO
-<span class="token keyword">ALTER</span> <span class="token keyword">DATABASE</span> master <span class="token keyword">SET</span> ANSI_PADDING <span class="token keyword">ON</span>
+ALTER DATABASE master SET ANSI_PADDING ON
 GO
-<span class="token keyword">ALTER</span> <span class="token keyword">DATABASE</span> master <span class="token keyword">SET</span> CONCAT_NULL_YIELDS_NULL <span class="token keyword">ON</span>
+ALTER DATABASE master SET CONCAT_NULL_YIELDS_NULL ON
 GO
-<span class="token keyword">ALTER</span> <span class="token keyword">DATABASE</span> master <span class="token keyword">SET</span> ANSI_WARNINGS <span class="token keyword">ON</span>
+ALTER DATABASE master SET ANSI_WARNINGS ON
 GO
-<span class="token keyword">ALTER</span> <span class="token keyword">DATABASE</span> master <span class="token keyword">SET</span> ANSI_NULL_DEFAULT <span class="token keyword">ON</span>
+ALTER DATABASE master SET ANSI_NULL_DEFAULT ON
 GO
-<span class="token keyword">ALTER</span> <span class="token keyword">DATABASE</span> master <span class="token keyword">SET</span> ANSI_NULLS <span class="token keyword">ON</span>
+ALTER DATABASE master SET ANSI_NULLS ON
 GO
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+&lt;p class=&quot;code-caption&quot; data-lang=&quot;&quot; data-line_number=&quot;frontend&quot; data-trim_indent=&quot;backend&quot; data-label_position=&quot;outer&quot; data-labels_left=&quot;Code&quot; data-labels_right=&quot;:&quot; data-labels_copy=&quot;Copy Code&quot;&gt;&lt;span class=&quot;code-caption-label&quot;&gt;&lt;/span&gt;&lt;a class=&quot;code-caption-copy&quot;&gt;Copy Code&lt;/a&gt;&lt;/p&gt;
+</code></pre>
 <ol>
 <li><span style="line-height: 1.2;">加入<a href="https://googledrive.com/host/0B6HWfJSgyadTSWdfdnp3NloxcXc/Trig_Connection_Limit.sql" target="_blank" rel="noopener">Login Trigger</a></span></li>
 </ol>
@@ -40,35 +40,35 @@ GO
 <li><p><span style="line-height: 1.2;">執行該Script新增。</span></p>
 </li>
 <li><p><span style="line-height: 1.2;">這個Trigger透過Logon Event得到的</span><a href="http://technet.microsoft.com/en-us/library/hh213611.aspx" target="_blank" rel="noopener">XML</a><span style="line-height: 1.2;">來做判斷。</span></p>
-<pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">SET</span> <span class="token variable">@data</span> <span class="token operator">=</span> EVENTDATA<span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token keyword">SET</span> <span class="token variable">@srcip</span> <span class="token operator">=</span> <span class="token variable">@data.value</span><span class="token punctuation">(</span><span class="token string">'(/EVENT_INSTANCE/ClientHost)[1]'</span><span class="token punctuation">,</span> <span class="token string">'varchar(50)'</span><span class="token punctuation">)</span>
-<span class="token keyword">SET</span> <span class="token variable">@username</span> <span class="token operator">=</span> <span class="token variable">@data.value</span><span class="token punctuation">(</span><span class="token string">'(/EVENT_INSTANCE/LoginName)[1]'</span><span class="token punctuation">,</span> <span class="token string">'varchar(50)'</span><span class="token punctuation">)</span>
-<span class="token keyword">SET</span> <span class="token variable">@LoginDate</span> <span class="token operator">=</span> <span class="token variable">@data.value</span><span class="token punctuation">(</span><span class="token string">'(/EVENT_INSTANCE/PostTime)[1]'</span><span class="token punctuation">,</span> <span class="token string">'datetime'</span><span class="token punctuation">)</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<pre><code class="sql">SET @data = EVENTDATA()
+SET @srcip = @data.value(&#39;(/EVENT_INSTANCE/ClientHost)[1]&#39;, &#39;varchar(50)&#39;)
+SET @username = @data.value(&#39;(/EVENT_INSTANCE/LoginName)[1]&#39;, &#39;varchar(50)&#39;)
+SET @LoginDate = @data.value(&#39;(/EVENT_INSTANCE/PostTime)[1]&#39;, &#39;datetime&#39;)
+</code></pre>
 </li>
-<li><p><span style="line-height: 1.2;">第一個IF免除掉不被分析的帳號(如系統帳號、Domain帳號等)。</span></p>
-<pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">IF</span> <span class="token punctuation">(</span><span class="token variable">@username</span> <span class="token operator">NOT</span> <span class="token operator">LIKE</span> <span class="token string">'%\%'</span><span class="token punctuation">)</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<li><p><span style="line-height: 1.2;">第一個IF免除掉不被分析的帳號(如系統帳號、Domain帳號等)。</span><br></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="sql">IF (@username NOT LIKE &#39;%\%&#39;)
+</code></pre>
 </li>
-<li><p><span style="line-height: 1.2;">判斷式中對於帳號、程式名、IP等有限制。</span></p>
-<pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">BEGIN</span>
-<span class="token keyword">SELECT</span> <span class="token variable">@lm_idx</span> <span class="token operator">=</span> idx <span class="token keyword">FROM</span> LoginMain <span class="token keyword">WHERE</span> username<span class="token operator">=</span><span class="token variable">@username</span> <span class="token operator">AND</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>CHARINDEX<span class="token punctuation">(</span><span class="token variable">@srcip</span><span class="token punctuation">,</span>srcip<span class="token punctuation">)</span> <span class="token operator">&amp;</span>lt<span class="token punctuation">;</span><span class="token operator">&amp;</span>gt<span class="token punctuation">;</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">OR</span> srcip <span class="token operator">=</span> <span class="token string">''</span><span class="token punctuation">)</span> <span class="token operator">AND</span> APP_NAME<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">like</span> <span class="token string">'%'</span><span class="token operator">+</span>apname<span class="token operator">+</span><span class="token string">'%'</span>
-<span class="token keyword">IF</span> <span class="token variable">@lm_idx</span> <span class="token operator">is</span> <span class="token boolean">null</span>
-<span class="token keyword">BEGIN</span>
-<span class="token keyword">RAISERROR</span> <span class="token punctuation">(</span><span class="token string">'無法在資料庫中找到您的登入帳號、來源IP、或是使用之程式不正確。'</span><span class="token punctuation">,</span><span class="token number">16</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span>
-<span class="token keyword">ROLLBACK</span>
-<span class="token keyword">END</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<li><p><span style="line-height: 1.2;">判斷式中對於帳號、程式名、IP等有限制。</span><br></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="sql">BEGIN
+SELECT @lm_idx = idx FROM LoginMain WHERE username=@username AND ((CHARINDEX(@srcip,srcip) &amp;lt;&amp;gt; 0) OR srcip = &#39;&#39;) AND APP_NAME() like &#39;%&#39;+apname+&#39;%&#39;
+IF @lm_idx is null
+BEGIN
+RAISERROR (&#39;無法在資料庫中找到您的登入帳號、來源IP、或是使用之程式不正確。&#39;,16,1)
+ROLLBACK
+END
+</code></pre>
 </li>
-<li><p><span style="line-height: 1.2;">接下來判斷時間是否正常。</span></p>
-<pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">BEGIN</span>      
-<span class="token keyword">SELECT</span> <span class="token variable">@ld_idx</span> <span class="token operator">=</span> idx <span class="token keyword">FROM</span> LoginDate <span class="token keyword">WHERE</span> lm_idx <span class="token operator">=</span> <span class="token variable">@lm_idx</span> <span class="token operator">AND</span> wkdnum <span class="token operator">=</span> <span class="token variable">@wkdnum</span> <span class="token operator">AND</span> dfrom <span class="token operator">&amp;</span>lt<span class="token punctuation">;</span><span class="token operator">=</span> lgtime<span class="token operator">=</span><span class="token string">""</span> <span class="token operator">and</span><span class="token operator">=</span><span class="token string">""</span> dto<span class="token operator">=</span><span class="token string">""</span><span class="token operator">&amp;</span>gt<span class="token punctuation">;</span><span class="token operator">=</span> <span class="token variable">@lgtime</span>
-<span class="token keyword">IF</span> <span class="token variable">@ld_idx</span> <span class="token operator">is</span> <span class="token boolean">null</span>
-<span class="token keyword">BEGIN</span>
-<span class="token keyword">RAISERROR</span> <span class="token punctuation">(</span><span class="token string">'您的帳號無法在此時段登入。'</span><span class="token punctuation">,</span><span class="token number">16</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span>
-<span class="token keyword">ROLLBACK</span>
-<span class="token keyword">END</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<li><p><span style="line-height: 1.2;">接下來判斷時間是否正常。</span><br></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="sql">BEGIN      
+SELECT @ld_idx = idx FROM LoginDate WHERE lm_idx = @lm_idx AND wkdnum = @wkdnum AND dfrom &amp;lt;= lgtime=&quot;&quot; and=&quot;&quot; dto=&quot;&quot;&amp;gt;= @lgtime
+IF @ld_idx is null
+BEGIN
+RAISERROR (&#39;您的帳號無法在此時段登入。&#39;,16,1)
+ROLLBACK
+END
+</code></pre>
 </li>
 <li><p><span style="line-height: 1.2;">如果登入的條件未達到，就會有如同以下的訊息。</span><img src="http://e.share.photo.xuite.net/retsamsu/1e232b0/5078060/260527236_x.jpg" alt=""></p>
 </li>

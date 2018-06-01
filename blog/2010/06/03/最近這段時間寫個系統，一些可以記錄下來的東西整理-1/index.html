@@ -2,59 +2,64 @@
  google_ad_client: "ca-pub-0187888667607442",
  enable_page_level_ads: true
  });
-</script><link rel="stylesheet" href="/blog/css/prism.css" type="text/css">
-<link rel="stylesheet" href="/blog/css/prism-line-numbers.css" type="text/css"></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>最近這段時間寫個系統，一些可以記錄下來的東西整理(1)</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2010-06-03</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/Net/">.Net</a></div></div></div><article><div class="container post"><p>其實這個系統也是接了一段時間了，不過因為太忙的關係，說實在都沒有空做。最近因為火燒屁股了，只得硬著頭皮做下去。這段期間內大部分是溝通、流程設計、與程式的苦工。學到不少東西，特別來記錄一下，並且隨時更新。</p>
+</script></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>最近這段時間寫個系統，一些可以記錄下來的東西整理(1)</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2010-06-03</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/Net/">.Net</a></div></div></div><article><div class="container post"><p>其實這個系統也是接了一段時間了，不過因為太忙的關係，說實在都沒有空做。最近因為火燒屁股了，只得硬著頭皮做下去。這段期間內大部分是溝通、流程設計、與程式的苦工。學到不少東西，特別來記錄一下，並且隨時更新。</p>
 <p>1. Web Services的asmx頁內容處理：因為寫這個系統的時候，說實在是沒有什麼Spec的(那時候是說某人要設計寫Spec，我要來寫Code的耶，淚)，也就是隨時開發，隨時測試，隨時修改。當然開發人員只有我一人的狀態下，文件是不太可能產生的。所以asmx說明頁的內容就變成一開始跟使用者溝通的橋樑。例如下面的東西要如何產生?</p>
 <p><img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/34615648/0.png" alt=""><br>這時候可以用WebService與WebMethod的Attribute Name與Description 來做修改，如下：</p>
-<pre class="line-numbers language-cs"><code class="language-cs">[WebService(Namespace = "http://www.mtnet.gov.tw/", Name = "MTNet小額支付平台Web Services")]
+<p></p><p class="code-caption" data-lang="cs" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="cs">[WebService(Namespace = &quot;http://www.mtnet.gov.tw/&quot;, Name = &quot;MTNet小額支付平台Web Services&quot;)]
 [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
 public class Service : System.Web.Services.WebService
 {
-    [WebMethod (Description = "新增訂單主檔，每筆訂單只需執行一次。")]
+    [WebMethod (Description = &quot;新增訂單主檔，每筆訂單只需執行一次。&quot;)]
     public string AddOrderMaster(...)
     {
      ...
     }
     ...
 }
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</code></pre>
 <p>2. 如何知道呼叫Web Services的IP：這個系統需要鎖對方的IP，因此要取得IP，再跟資料庫的權限比對，就可以知道要不要讓他用了，取得IP的方法如下：</p>
-<pre class="line-numbers language-cs"><code class="language-cs">string AccessIP = HttpContext.Current.Request.UserHostAddress;
-<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p></p><p class="code-caption" data-lang="cs" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="cs">string AccessIP = HttpContext.Current.Request.UserHostAddress;
+</code></pre>
 <p>3. String太長可以用@來分段，不用辛辛苦苦的用+來自己斷行了：這個Web Services用到大量的資料庫處理，通常那些SQL語法都是落落長，加上一些參數以後，就更長了。如果用＠就省去自己斷行的麻煩。</p>
-<pre class="line-numbers language-cs"><code class="language-cs">//原來的方法
-sqlcmd.CommandText = " INSERT INTO OrderMasterTable (PortId, OrgFormIdx, ROCID, CompanyID, ActualPaymentMethod, TotalAmount, NotifyEmails, Comment, isValidated, crID, crDate, OrderStatusId, UserName) ";
-sqlcmd.CommandText += "VALUES (@PortId, @OrgFormIdx, @ROCID, @CompanyID,'1', 0, @NotifyEmails, @Comment, 'True', @crID, getdate(), '134', @UserName)";
+<p></p><p class="code-caption" data-lang="cs" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="cs">//原來的方法
+sqlcmd.CommandText = &quot; INSERT INTO OrderMasterTable (PortId, OrgFormIdx, ROCID, CompanyID, ActualPaymentMethod, TotalAmount, NotifyEmails, Comment, isValidated, crID, crDate, OrderStatusId, UserName) &quot;;
+sqlcmd.CommandText += &quot;VALUES (@PortId, @OrgFormIdx, @ROCID, @CompanyID,&#39;1&#39;, 0, @NotifyEmails, @Comment, &#39;True&#39;, @crID, getdate(), &#39;134&#39;, @UserName)&quot;;
 //方便的方法
-sqlcmd.CommandText = @" INSERT INTO OrderMasterTable (PortId, OrgFormIdx, ROCID, CompanyID, ActualPaymentMethod, TotalAmount, NotifyEmails, Comment, isValidated, crID, crDate, OrderStatusId, UserName)
-                        VALUES (@PortId, @OrgFormIdx, @ROCID, @CompanyID,'1', 0, @NotifyEmails, @Comment, 'True', @crID, getdate(), '134', @UserName)"
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+sqlcmd.CommandText = @&quot; INSERT INTO OrderMasterTable (PortId, OrgFormIdx, ROCID, CompanyID, ActualPaymentMethod, TotalAmount, NotifyEmails, Comment, isValidated, crID, crDate, OrderStatusId, UserName)
+                        VALUES (@PortId, @OrgFormIdx, @ROCID, @CompanyID,&#39;1&#39;, 0, @NotifyEmails, @Comment, &#39;True&#39;, @crID, getdate(), &#39;134&#39;, @UserName)&quot;
+</code></pre>
 <p>4. 新增一筆資料，想知道他的Index(Ident Insert)：在新增完以後，使用SQL的IDENT_CURRENT變數，看看現在的計數值。</p>
-<pre class="line-numbers language-cs"><code class="language-cs">sqlcmd.CommandText = "SELECT IDENT_CURRENT('OrderMasterTable')";
+<p></p><p class="code-caption" data-lang="cs" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="cs">sqlcmd.CommandText = &quot;SELECT IDENT_CURRENT(&#39;OrderMasterTable&#39;)&quot;;
 index = sqlcmd.ExecuteScalar().ToString();
 sqlcmd.Close();
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+</code></pre>
 <p>2010/6/5補充：PTT C_Sharp的blestadsl推文，有不錯的作法。</p>
 <p><img src="http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/34615648/6.png" alt=""></p>
-<pre class="line-numbers language-cs"><code class="language-cs">sqlcmd.CommandText = "INSERT INTO ....; SELECT SCOPE_IDENTITY()";
+<p></p><p class="code-caption" data-lang="cs" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="cs">sqlcmd.CommandText = &quot;INSERT INTO ....; SELECT SCOPE_IDENTITY()&quot;;
 index = sqlcmd.ExecuteScalar().ToString();
 sqlcmd.Close();
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+</code></pre>
 <p>5. DataSet的後製整理：這個Web Services提供了取出資料集的方法，但是因為使用的系統很多，大家想要的Query方法也不一樣，因此只好先停住搜尋條件，請各應用系統取回資料集以後，自己在做處理(To Lisa，真的不是我不想幫你們做，是因為這個是整合平台，而且…我已經快做不完了，淚)。處理的方法是先把DataSet裡的Table轉成DataView，再用DataView.RowFilter去設定篩選條件，最後再看需要綁定在可綁定的東西上面。</p>
-<pre class="line-numbers language-cs"><code class="language-cs">MTNetPGWS.MTNet小額支付平台WebServices MTPGNS = new MTNetPGWS.MTNet小額支付平台WebServices();
+<p></p><p class="code-caption" data-lang="cs" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="cs">MTNetPGWS.MTNet小額支付平台WebServices MTPGNS = new MTNetPGWS.MTNet小額支付平台WebServices();
 //取得DataSet
-DataSet ds = MTPGNS.QueryOrderMasters("PAYMENTWEB", "", "", "", "", "");
+DataSet ds = MTPGNS.QueryOrderMasters(&quot;PAYMENTWEB&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;);
 //轉成DataView
-DataView dv = new System.Data.DataView(ds.Tables["OrderMasterTable"]);
+DataView dv = new System.Data.DataView(ds.Tables[&quot;OrderMasterTable&quot;]);
 //設定條件
-dv.RowFilter = "isRefund = true";
+dv.RowFilter = &quot;isRefund = true&quot;;
 ...
 //排序
-dv.Sort = "OrderIdx DESC";
+dv.Sort = &quot;OrderIdx DESC&quot;;
 //設定並綁定
 GridView1.DataSource = dv;
 GridView1.DataBind();
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</code></pre>
 <p>待續…</p>
 </div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">
 var disqus_shortname = 'sujunmin';
