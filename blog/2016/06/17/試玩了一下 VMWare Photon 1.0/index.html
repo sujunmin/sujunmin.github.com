@@ -12,14 +12,13 @@
 <li><strong>Yum</strong> 系的 package manager，但是改成了 <strong>tdnf</strong> 。</li>
 <li><a href="https://github.com/vmware/photon/issues/205" target="_blank" rel="noopener">設定 IP</a> /etc/systemd/network/10-dhcp-en.network 裡頭修改 <a href="http://www.linuxfromscratch.org/lfs/view/systemd/chapter07/network.html" target="_blank" rel="noopener">Network</a>。</li>
 <li>開始玩 docker，<a href="https://github.com/vmware/photon/wiki/Frequently-Asked-Questions#q-i-just-booted-into-freshly-installed-photon-os-instance-why-isnt-docker-ps-working" target="_blank" rel="noopener">Q. I just booted into freshly installed Photon OS instance, why isn’t “docker ps” working?</a></li>
-<li><p>啟動 docker 與 port exposed。<br></p><p class="code-caption" data-lang="bash" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -it -p 8000:8000 microsoft/dotnet:latest</span><br></pre></td></tr></table></figure>
+<li>啟動 docker 與 port exposed。<br><p class="code-caption" data-lang="bash" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><pre><code class="bash">docker run -it -p 8000:8000 microsoft/dotnet:latest
+</code></pre>
 </li>
-<li><p>在上面起 asp.net core 1.0 程式，推荐<a href="https://www.sesispla.net/blog/language/en/2016/05/running-asp-net-core-1-0-rc2-in-docker/" target="_blank" rel="noopener">這個</a>，記得 Program.cs 裡頭要多加東西再 build。<br></p><p class="code-caption" data-lang="bash" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.UseUrls(<span class="string">"http://conatiner_ip:8000"</span>)</span><br></pre></td></tr></table></figure>
+<li>在上面起 asp.net core 1.0 程式，推荐<a href="https://www.sesispla.net/blog/language/en/2016/05/running-asp-net-core-1-0-rc2-in-docker/" target="_blank" rel="noopener">這個</a>，記得 Program.cs 裡頭要多加東西再 build。<br><p class="code-caption" data-lang="bash" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><pre><code class="bash">.UseUrls(&quot;http://conatiner_ip:8000&quot;)
+</code></pre>
 </li>
-<li><p>用瀏覽器測試一下。</p>
-</li>
+<li>用瀏覽器測試一下。</li>
 <li>基本上啟動還蠻快的，kernel 不大，不知道匯到 vSphere/Esxi 上有沒有什麼神奇功能，有時間再試試看。</li>
 </ol>
 </div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">

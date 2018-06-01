@@ -42,7 +42,22 @@
 <p>這個時間系統很重要的是因為它會關係到後續報表怎麼出，所以要先了解一下</p>
 <p>另外的是處理情形的資訊，在 <code>mysql.event</code> 沒有任何紀錄最後一次狀態的資訊 (所以才說它幾乎是射後不理的系統)，這邊就需要自己紀錄了。 </p>
 <h2 id="紀錄-Event-執行狀態的-table"><a href="#紀錄-Event-執行狀態的-table" class="headerlink" title="紀錄 Event 執行狀態的 table"></a>紀錄 <code>Event</code> 執行狀態的 table</h2><p>根據需求，我在 <code>master</code> Create 了 <code>event_history</code> 資料表</p>
-<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> event_history (</span><br><span class="line">    db <span class="built_in">CHAR</span>(<span class="number">64</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span>,</span><br><span class="line">    <span class="keyword">name</span> <span class="built_in">CHAR</span>(<span class="number">64</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span>,</span><br><span class="line">    <span class="keyword">start</span> DATETIME <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">    <span class="keyword">end</span> DATETIME <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">    <span class="keyword">sqlstate</span> <span class="built_in">CHAR</span>(<span class="number">64</span>) <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">    errno <span class="built_in">CHAR</span>(<span class="number">64</span>) <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">    message_text <span class="built_in">VARCHAR</span>(<span class="number">500</span>) <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">    record_time DATETIME <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="keyword">CURRENT_TIMESTAMP</span>,</span><br><span class="line">    <span class="keyword">INDEX</span> idx1 (db, <span class="keyword">name</span>)</span><br><span class="line">)</span><br><span class="line"><span class="keyword">COLLATE</span>=<span class="string">'utf8_general_ci'</span></span><br><span class="line"><span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span></span><br><span class="line">;</span><br></pre></td></tr></table></figure><p></p>
+<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="sql">CREATE TABLE event_history (
+    db CHAR(64) NOT NULL DEFAULT &#39;&#39;,
+    name CHAR(64) NOT NULL DEFAULT &#39;&#39;,
+    start DATETIME NULL DEFAULT NULL,
+    end DATETIME NULL DEFAULT NULL,
+    sqlstate CHAR(64) NULL DEFAULT NULL,
+    errno CHAR(64) NULL DEFAULT NULL,
+    message_text VARCHAR(500) NULL DEFAULT NULL,
+    record_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx1 (db, name)
+)
+COLLATE=&#39;utf8_general_ci&#39;
+ENGINE=InnoDB
+;
+</code></pre>
 <table>
 <thead>
 <tr>
@@ -90,7 +105,36 @@
 <h3 id="Prepare-Statements"><a href="#Prepare-Statements" class="headerlink" title="Prepare Statements"></a>Prepare Statements</h3><p>由上面的準備，幾乎是可以完成表裡需要的欄位項目，但是如果要每個 <code>Event</code>都要前面加 <code>Handler</code> 與 <code>Diagnostics</code> 來塞資料，這樣太麻煩也有可能會忘記，所以要做個 Store Procedure 來達成這個需求。</p>
 <p>其中需要讓 Store Procedure 執行傳進來的 SQL Statements，有 <a href="https://mariadb.com/kb/en/mariadb/prepare-statement/" target="_blank" rel="noopener">Prepare Statement</a> 可以用，這樣就差不多了</p>
 <p>不過這個 Prepare Statement 有限制使用的語法，而且只能執行一行。</p>
-<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">PROCEDURE</span> proc_for_event_history(<span class="keyword">IN</span> idb <span class="built_in">char</span>(<span class="number">64</span>), <span class="keyword">IN</span> iname <span class="built_in">char</span>(<span class="number">64</span>), <span class="keyword">IN</span> <span class="keyword">sql</span> <span class="built_in">TEXT</span>)</span><br><span class="line">    <span class="keyword">LANGUAGE</span> <span class="keyword">SQL</span></span><br><span class="line">    <span class="keyword">NOT</span> <span class="keyword">DETERMINISTIC</span></span><br><span class="line">    CONTAINS <span class="keyword">SQL</span></span><br><span class="line">    <span class="keyword">SQL</span> <span class="keyword">SECURITY</span> DEFINER</span><br><span class="line">    <span class="keyword">COMMENT</span> <span class="string">''</span></span><br><span class="line"><span class="keyword">BEGIN</span></span><br><span class="line">      <span class="keyword">DECLARE</span> <span class="keyword">EXIT</span> <span class="keyword">HANDLER</span> <span class="keyword">FOR</span> SQLEXCEPTION</span><br><span class="line">      <span class="keyword">BEGIN</span></span><br><span class="line">        <span class="keyword">GET</span> <span class="keyword">DIAGNOSTICS</span> CONDITION <span class="number">1</span> @<span class="keyword">sqlstate</span> = RETURNED_SQLSTATE,  @errno = MYSQL_ERRNO, @<span class="built_in">text</span> = MESSAGE_TEXT;</span><br><span class="line">        <span class="keyword">select</span> <span class="keyword">now</span>() <span class="keyword">into</span> @<span class="keyword">start</span> <span class="keyword">from</span> dual;</span><br><span class="line">        <span class="keyword">insert</span> <span class="keyword">into</span> master.event_history (db, <span class="keyword">name</span>, <span class="keyword">start</span>, <span class="keyword">end</span>, <span class="keyword">sqlstate</span>, errno, message_text) <span class="keyword">values</span> (idb, iname, @<span class="keyword">start</span>, <span class="keyword">now</span>(), @<span class="keyword">sqlstate</span>, @errno, @<span class="built_in">text</span>);</span><br><span class="line">      <span class="keyword">END</span>;</span><br><span class="line">     </span><br><span class="line">     <span class="keyword">set</span> @<span class="keyword">sql</span> := <span class="keyword">sql</span>;</span><br><span class="line">     <span class="keyword">prepare</span> stmt <span class="keyword">from</span> @<span class="keyword">sql</span>;</span><br><span class="line">    </span><br><span class="line">     <span class="keyword">select</span> <span class="keyword">now</span>() <span class="keyword">into</span> @<span class="keyword">start</span> <span class="keyword">from</span> dual;</span><br><span class="line">     <span class="keyword">set</span> @outs := <span class="string">''</span>;</span><br><span class="line">	  <span class="keyword">execute</span> stmt;</span><br><span class="line">      <span class="keyword">select</span> <span class="keyword">sleep</span>(<span class="number">10</span>);</span><br><span class="line">	  if instr(@sql, '@outv') &lt;&gt; 0 then</span><br><span class="line">      <span class="keyword">select</span> <span class="keyword">concat</span>(<span class="string">'OK '</span>, @outv) <span class="keyword">into</span> @outs;</span><br><span class="line">     else</span><br><span class="line">      <span class="keyword">select</span> <span class="string">'OK'</span> <span class="keyword">into</span> @outs;</span><br><span class="line">     <span class="keyword">end</span> <span class="keyword">if</span>;</span><br><span class="line">  	  <span class="keyword">insert</span> <span class="keyword">into</span> master.event_history (<span class="string">`db`</span>, <span class="string">`name`</span>, <span class="string">`start`</span>, <span class="string">`end`</span>, <span class="string">`sqlstate`</span>, <span class="string">`errno`</span>, <span class="string">`message_text`</span>) <span class="keyword">values</span> (idb, iname, @<span class="keyword">start</span>, <span class="keyword">now</span>(), <span class="literal">NULL</span>, <span class="literal">NULL</span>, @outs); </span><br><span class="line"><span class="keyword">END</span></span><br></pre></td></tr></table></figure><p></p>
+<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="sql">CREATE PROCEDURE proc_for_event_history(IN idb char(64), IN iname char(64), IN sql TEXT)
+    LANGUAGE SQL
+    NOT DETERMINISTIC
+    CONTAINS SQL
+    SQL SECURITY DEFINER
+    COMMENT &#39;&#39;
+BEGIN
+      DECLARE EXIT HANDLER FOR SQLEXCEPTION
+      BEGIN
+        GET DIAGNOSTICS CONDITION 1 @sqlstate = RETURNED_SQLSTATE,  @errno = MYSQL_ERRNO, @text = MESSAGE_TEXT;
+        select now() into @start from dual;
+        insert into master.event_history (db, name, start, end, sqlstate, errno, message_text) values (idb, iname, @start, now(), @sqlstate, @errno, @text);
+      END;
+
+     set @sql := sql;
+     prepare stmt from @sql;
+
+     select now() into @start from dual;
+     set @outs := &#39;&#39;;
+      execute stmt;
+      select sleep(10);
+      if instr(@sql, &#39;@outv&#39;) &lt;&gt; 0 then
+      select concat(&#39;OK &#39;, @outv) into @outs;
+     else
+      select &#39;OK&#39; into @outs;
+     end if;
+        insert into master.event_history (`db`, `name`, `start`, `end`, `sqlstate`, `errno`, `message_text`) values (idb, iname, @start, now(), NULL, NULL, @outs); 
+END
+</code></pre>
 <p>錯誤的時候有錯誤訊息，但正確的時候不知道那邊可以找到訊息，只好先打個 OK 了。</p>
 <p>有一個 <code>select sleep(10);</code> 是拿來做實驗用的，平時可以拿掉。</p>
 <h2 id="實驗"><a href="#實驗" class="headerlink" title="實驗"></a>實驗</h2><ol>
@@ -98,18 +142,40 @@
 <p><code>SET Global event_schedular=1</code></p>
 <p>或是在 <code>my.cnf</code> 加上 <code>events_scheduler=1</code></p>
 </li>
-<li><p>一個簡單 table，然後做一個 <code>Event</code> 是一直加一的<br></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">Database</span> test1;</span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> test2 (</span><br><span class="line"> idtest2 <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line"> PRIMARY <span class="keyword">KEY</span> (idtest2)</span><br><span class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=utf8;</span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">EVENT</span> test_event</span><br><span class="line"> <span class="keyword">ON</span> SCHEDULE</span><br><span class="line">     EVERY <span class="number">1</span> <span class="keyword">MINUTE</span> STARTS <span class="string">'2016-09-07 16:00:58'</span></span><br><span class="line"> <span class="keyword">ON</span> COMPLETION <span class="keyword">NOT</span> <span class="keyword">PRESERVE</span></span><br><span class="line"> <span class="keyword">ENABLE</span></span><br><span class="line"> <span class="keyword">COMMENT</span> <span class="string">''</span></span><br><span class="line"> <span class="keyword">DO</span> <span class="keyword">begin</span></span><br><span class="line">  <span class="keyword">call</span> master.proc_for_event_history(<span class="string">'test1'</span>, <span class="string">'test_event'</span>, <span class="string">'UPDATE test1.test22 SET idtest2 = idtest2 + 1'</span>);</span><br><span class="line"><span class="keyword">end</span>;</span><br></pre></td></tr></table></figure>
-<p>這裡的 <code>test22</code> 是故意打錯的，看看結果如何</p>
-</li>
-<li><p>看一下結果<br></p><p class="code-caption" data-lang="cmd" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
-<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [master]&gt; select * from event_history order by record_time desc limit <span class="number">1</span>\G</span><br><span class="line">*************************** <span class="number">1</span>. row ***************************</span><br><span class="line"><span class="function">          db: <span class="title">test1</span></span></span><br><span class="line"><span class="function">        <span class="title">name</span>: <span class="title">test_event</span></span></span><br><span class="line"><span class="function">       <span class="title">start</span>: 2016-09-10 15:57:58</span></span><br><span class="line"><span class="function">         <span class="title">end</span>: 2016-09-10 15:57:58</span></span><br><span class="line"><span class="function">    <span class="title">sqlstate</span>: 42<span class="title">S02</span></span></span><br><span class="line"><span class="function">       <span class="title">errno</span>: 1146</span></span><br><span class="line"><span class="function"><span class="title">message_text</span>: <span class="title">Table</span> '<span class="title">test1.test22</span>' <span class="title">doesn</span>'<span class="title">t</span> <span class="title">exist</span></span></span><br><span class="line"><span class="function"> <span class="title">record_time</span>: 2016-09-10 15:57:58</span></span><br><span class="line"><span class="function">1 <span class="title">row</span> <span class="title">in</span> <span class="title">set</span> (0.00 <span class="title">sec</span>)</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>調回來正確的，再看一下結果<br></p><p class="code-caption" data-lang="cmd" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
-<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [master]&gt; select * from event_history order by record_time desc limit <span class="number">1</span>\G</span><br><span class="line">*************************** <span class="number">1</span>. row ***************************</span><br><span class="line"><span class="function">          db: <span class="title">test1</span></span></span><br><span class="line"><span class="function">        <span class="title">name</span>: <span class="title">test_event</span></span></span><br><span class="line"><span class="function">       <span class="title">start</span>: 2016-09-10 16:00:58</span></span><br><span class="line"><span class="function">         <span class="title">end</span>: 2016-09-10 16:01:08</span></span><br><span class="line"><span class="function">    <span class="title">sqlstate</span>: <span class="title">NULL</span></span></span><br><span class="line"><span class="function">       <span class="title">errno</span>: <span class="title">NULL</span></span></span><br><span class="line"><span class="function"><span class="title">message_text</span>: <span class="title">OK</span></span></span><br><span class="line"><span class="function"> <span class="title">record_time</span>: 2016-09-10 16:01:08</span></span><br><span class="line"><span class="function">1 <span class="title">row</span> <span class="title">in</span> <span class="title">set</span> (0.00 <span class="title">sec</span>)</span></span><br></pre></td></tr></table></figure>
-</li>
+<li>一個簡單 table，然後做一個 <code>Event</code> 是一直加一的<br><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><code>`</code> sql<br>CREATE Database test1;</li>
 </ol>
-<p>開始跟結束差 10 秒鐘是之前加的 <code>select sleep(10)</code> 的關係。</p>
+<p>CREATE TABLE test2 (<br> idtest2 int(11) NOT NULL,<br> PRIMARY KEY (idtest2)<br>) ENGINE=InnoDB DEFAULT CHARSET=utf8;</p>
+<p>CREATE EVENT test_event<br> ON SCHEDULE<br>     EVERY 1 MINUTE STARTS ‘2016-09-07 16:00:58’<br> ON COMPLETION NOT PRESERVE<br> ENABLE<br> COMMENT ‘’<br> DO begin<br>  call master.proc_for_event_history(‘test1’, ‘test_event’, ‘UPDATE test1.test22 SET idtest2 = idtest2 + 1’);<br>end;</p>
+<pre><code>   這裡的 `test22` 是故意打錯的，看看結果如何
+3. 看一下結果
+&lt;p class=&quot;code-caption&quot; data-lang=&quot;cmd&quot; data-line_number=&quot;frontend&quot; data-trim_indent=&quot;backend&quot; data-label_position=&quot;outer&quot; data-labels_left=&quot;Code&quot; data-labels_right=&quot;:&quot; data-labels_copy=&quot;Copy Code&quot;&gt;&lt;span class=&quot;code-caption-label&quot;&gt;&lt;/span&gt;&lt;a class=&quot;code-caption-copy&quot;&gt;Copy Code&lt;/a&gt;&lt;/p&gt;
+``` cmd 
+MariaDB [master]&gt; select * from event_history order by record_time desc limit 1\G
+*************************** 1. row ***************************
+          db: test1
+        name: test_event
+       start: 2016-09-10 15:57:58
+         end: 2016-09-10 15:57:58
+    sqlstate: 42S02
+       errno: 1146
+message_text: Table &#39;test1.test22&#39; doesn&#39;t exist
+ record_time: 2016-09-10 15:57:58
+1 row in set (0.00 sec)
+</code></pre><ol start="4">
+<li>調回來正確的，再看一下結果<br><p class="code-caption" data-lang="cmd" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><pre><code class="cmd">MariaDB [master]&gt; select * from event_history order by record_time desc limit 1\G
+*************************** 1. row ***************************
+       db: test1
+     name: test_event
+    start: 2016-09-10 16:00:58
+      end: 2016-09-10 16:01:08
+ sqlstate: NULL
+    errno: NULL
+message_text: OK
+record_time: 2016-09-10 16:01:08
+1 row in set (0.00 sec)
+</code></pre>
+開始跟結束差 10 秒鐘是之前加的 <code>select sleep(10)</code> 的關係。</li>
+</ol>
 <h2 id="還需要解決的項目"><a href="#還需要解決的項目" class="headerlink" title="還需要解決的項目"></a>還需要解決的項目</h2><ol>
 <li>Query 正確時的回傳要能抓到</li>
 <li>該次真正開始執行時間</li>

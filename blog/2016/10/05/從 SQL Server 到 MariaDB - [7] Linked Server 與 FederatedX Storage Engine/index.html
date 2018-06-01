@@ -54,7 +54,20 @@
 <p>上面開一個 <code>A_DB</code>，裡頭一個 <code>table</code>，一個欄位 <code>col</code> <code>char(50)</code>，一行 <code>&#39;A&#39;</code>。</p>
 <p>在原來的 MariaDB 假設他是 Site B，開一個 DB <code>B_DB</code> 裡頭一個 <code>table</code>，一個欄位 <code>col</code> <code>char(50)</code>，一行 <code>&#39;B&#39;</code>。</p>
 <p>在 Site B 上執行以下指令</p>
-<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> B_DB;</span><br><span class="line"></span><br><span class="line"><span class="keyword">create</span> <span class="keyword">server</span> <span class="string">'Site_A'</span> foreign <span class="keyword">data</span> wrapper <span class="string">'mysql'</span> options</span><br><span class="line">  (HOST <span class="string">'127.0.0.1'</span>,</span><br><span class="line">  <span class="keyword">DATABASE</span> <span class="string">'A_DB'</span>,</span><br><span class="line">  <span class="keyword">USER</span> <span class="string">'root'</span>,</span><br><span class="line">  <span class="keyword">PASSWORD</span> <span class="string">'passowrd'</span>,</span><br><span class="line">  PORT <span class="number">3308</span>,</span><br><span class="line">  SOCKET <span class="string">''</span>,</span><br><span class="line">  OWNER <span class="string">'root'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> A_table <span class="keyword">ENGINE</span>=FEDERATED <span class="keyword">CONNECTION</span>=<span class="string">'Site_A/table'</span>;</span><br></pre></td></tr></table></figure><p></p>
+<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="sql">use B_DB;
+
+create server &#39;Site_A&#39; foreign data wrapper &#39;mysql&#39; options
+  (HOST &#39;127.0.0.1&#39;,
+  DATABASE &#39;A_DB&#39;,
+  USER &#39;root&#39;,
+  PASSWORD &#39;passowrd&#39;,
+  PORT 3308,
+  SOCKET &#39;&#39;,
+  OWNER &#39;root&#39;);
+
+CREATE TABLE A_table ENGINE=FEDERATED CONNECTION=&#39;Site_A/table&#39;;
+</code></pre>
 <p>接著可以 <code>select * from A_table</code> 看看，應該會看到 A。</p>
 <p>這邊還有一些要注意的</p>
 <ol>
@@ -67,14 +80,27 @@
 <p>到 Site B <code>select * from A_table</code> 看看。</p>
 <p>你會只看到一個欄位 <code>col</code>，結果是 A。</p>
 <p>這時候需要重建 HANDLER</p>
-<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> B_DB;</span><br><span class="line"><span class="keyword">drop</span> <span class="keyword">table</span> A_table;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> A_table <span class="keyword">ENGINE</span>=FEDERATED <span class="keyword">CONNECTION</span>=<span class="string">'Site_A/table'</span>;</span><br></pre></td></tr></table></figure><p></p>
+<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="sql">use B_DB;
+drop table A_table;
+CREATE TABLE A_table ENGINE=FEDERATED CONNECTION=&#39;Site_A/table&#39;;
+</code></pre>
 <p>重新 Select 看看，應該會看到正確的資料。</p>
 <h3 id="在-FEDERATED-Table-上執行-DDL"><a href="#在-FEDERATED-Table-上執行-DDL" class="headerlink" title="在 FEDERATED Table 上執行 DDL"></a>在 FEDERATED Table 上執行 DDL</h3><p>在 Site B 的 <code>B_DB</code> 對 <code>A_table</code> 新增一個欄位</p>
-<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> <span class="string">`A_table`</span> <span class="keyword">ADD</span> <span class="keyword">COLUMN</span> <span class="string">`col3`</span> <span class="built_in">INT</span> <span class="literal">NULL</span> <span class="keyword">AFTER</span> <span class="string">`col2`</span>;</span><br></pre></td></tr></table></figure><p></p>
+<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="sql">ALTER TABLE `A_table` ADD COLUMN `col3` INT NULL AFTER `col2`;
+</code></pre>
 <p>會有以下的錯誤</p>
-<p></p><p class="code-caption" data-lang="cmd" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SQL錯誤（<span class="number">1031</span>）：Storage engine FEDERATED of the table b_db.a_table doesn't have this option</span><br></pre></td></tr></table></figure><p></p>
+<p></p><p class="code-caption" data-lang="cmd" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="cmd">SQL錯誤（1031）：Storage engine FEDERATED of the table b_db.a_table doesn&#39;t have this option
+</code></pre>
 <p>如果透過 <code>execute</code> 呢?</p>
-<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> B_DB;</span><br><span class="line"><span class="keyword">set</span> @<span class="keyword">sql</span> := <span class="string">'ALTER TABLE A_table ADD COLUMN col3 INT NULL AFTER col2'</span>;</span><br><span class="line"><span class="keyword">prepare</span> stmt <span class="keyword">from</span> @<span class="keyword">sql</span>;</span><br><span class="line"><span class="keyword">execute</span> stmt;</span><br></pre></td></tr></table></figure><p></p>
+<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="sql">use B_DB;
+set @sql := &#39;ALTER TABLE A_table ADD COLUMN col3 INT NULL AFTER col2&#39;;
+prepare stmt from @sql;
+execute stmt;
+</code></pre>
 <p>還是跟上面一樣的錯(不能偷渡就是了)。</p>
 <h2 id="一些想法"><a href="#一些想法" class="headerlink" title="一些想法"></a>一些想法</h2><p>這個 FEDERATED Table 有點像 .Net 開發時拉 Web Reference 會產生出 wsdl 檔在本機，然後透過他的定義去使用 Web Services，只是開發時有一些方法可以 auto update wsdl，以確保介面進出的正確性，這裡的 FEDERATED Table 沒有更新的功能。</p>
 <p>不過如果資料表都沒什麼會動的話其實沒什麼差異，這樣就很好用了。</p>

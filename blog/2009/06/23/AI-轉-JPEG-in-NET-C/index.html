@@ -9,7 +9,68 @@
 <p><span style="text-decoration: underline;"><span style="color: #0066cc;"><a href="http://www.lukiya.com/Blogs/2007/07/24/Post-557.html" target="_blank" rel="noopener">關於在.Net中矢量圖向位圖的轉換</a></span></span></p>
 <p>後記：對於大圖檔的使用仍然沒法很完善的轉檔，應該找一天來測測看。</p>
 <p>程式碼：</p>
-<p></p><p class="code-caption" data-lang="cs" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Collections.Generic;</span><br><span class="line"><span class="keyword">using</span> System.Text;</span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> ImageMagickObject;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">AIToJPEG</span></span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (args.Length != <span class="number">0</span>)</span><br><span class="line">            &#123;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">try</span></span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="comment">//抓字串</span></span><br><span class="line">                    String WorkPath = args[<span class="number">0</span>].Remove(args[<span class="number">0</span>].LastIndexOf(<span class="string">@"\"</span>));</span><br><span class="line"></span><br><span class="line">                    String OrgFileName = args[<span class="number">0</span>].Substring(args[<span class="number">0</span>].LastIndexOf(<span class="string">@"\"</span>)+<span class="number">1</span>);</span><br><span class="line">                    String NewFileName = OrgFileName.Remove(OrgFileName.Length - <span class="number">3</span>) + <span class="string">".jpg"</span>;</span><br><span class="line"></span><br><span class="line">                    <span class="comment">//設定工作目錄</span></span><br><span class="line">                    System.Environment.CurrentDirectory = WorkPath;</span><br><span class="line">                    <span class="comment">//原始檔改檔名</span></span><br><span class="line"></span><br><span class="line">                    FileInfo OrgFile = <span class="keyword">new</span> FileInfo(OrgFileName);</span><br><span class="line">                    OrgFile.MoveTo(<span class="string">"test.ai"</span>);</span><br><span class="line"></span><br><span class="line">                    <span class="comment">//轉檔</span></span><br><span class="line">                    <span class="keyword">object</span>[] imgArray = &#123; <span class="string">"test.ai"</span>, <span class="string">"test.jpg"</span> &#125;;</span><br><span class="line"></span><br><span class="line">                    MagickImageClass img = <span class="keyword">new</span> MagickImageClass();</span><br><span class="line">                    img.Convert(<span class="keyword">ref</span> imgArray);</span><br><span class="line"></span><br><span class="line">                    <span class="comment">//原始檔改回原檔名</span></span><br><span class="line">                    OrgFile.MoveTo(OrgFileName);</span><br><span class="line">                    <span class="comment">//轉出的檔也改回原檔名</span></span><br><span class="line">                    FileInfo NewFile = <span class="keyword">new</span> FileInfo(<span class="string">"test.jpg"</span>);</span><br><span class="line"></span><br><span class="line">                    NewFile.MoveTo(NewFileName);</span><br><span class="line"></span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">catch</span> (Exception e)</span><br><span class="line"></span><br><span class="line">                &#123;</span><br><span class="line">                    Console.WriteLine(e.ToString());</span><br><span class="line">                    Console.ReadKey();</span><br><span class="line"></span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p></p>
+<p></p><p class="code-caption" data-lang="cs" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="cs">using System;
+using System.Collections.Generic;
+using System.Text;
+
+using ImageMagickObject;
+using System.IO;
+
+namespace AIToJPEG
+{
+
+    class Program
+    {
+        static void Main(string[] args)
+
+        {
+            if (args.Length != 0)
+            {
+
+                try
+                {
+                    //抓字串
+                    String WorkPath = args[0].Remove(args[0].LastIndexOf(@&quot;\&quot;));
+
+                    String OrgFileName = args[0].Substring(args[0].LastIndexOf(@&quot;\&quot;)+1);
+                    String NewFileName = OrgFileName.Remove(OrgFileName.Length - 3) + &quot;.jpg&quot;;
+
+                    //設定工作目錄
+                    System.Environment.CurrentDirectory = WorkPath;
+                    //原始檔改檔名
+
+                    FileInfo OrgFile = new FileInfo(OrgFileName);
+                    OrgFile.MoveTo(&quot;test.ai&quot;);
+
+                    //轉檔
+                    object[] imgArray = { &quot;test.ai&quot;, &quot;test.jpg&quot; };
+
+                    MagickImageClass img = new MagickImageClass();
+                    img.Convert(ref imgArray);
+
+                    //原始檔改回原檔名
+                    OrgFile.MoveTo(OrgFileName);
+                    //轉出的檔也改回原檔名
+                    FileInfo NewFile = new FileInfo(&quot;test.jpg&quot;);
+
+                    NewFile.MoveTo(NewFileName);
+
+                }
+                catch (Exception e)
+
+                {
+                    Console.WriteLine(e.ToString());
+                    Console.ReadKey();
+
+                }
+
+            }
+
+        }
+    }
+}
+</code></pre>
 </div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">
 var disqus_shortname = 'sujunmin';
 var disqus_identifier = '2009/06/23/AI-轉-JPEG-in-NET-C/';

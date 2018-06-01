@@ -23,21 +23,106 @@
 <p>我看到這篇<a href="http://www.fromdual.com/mysql-logon-and-logoff-trigger-for-auditing" target="_blank" rel="noopener">文章</a>，提到如何加 logon/logoff trigger for audit，十分有幫助。</p>
 <p>以下就是轉換的過程。</p>
 <h2 id="loginmain-與-logindate-的轉換"><a href="#loginmain-與-logindate-的轉換" class="headerlink" title="loginmain 與 logindate 的轉換"></a>loginmain 與 logindate 的轉換</h2><p>首先 create <code>master</code> 資料庫 (向 SQL Server 致敬 XD)，裡頭兩個資料表，參照原來的方式產生。</p>
-<h3 id="master-loginmain-部份"><a href="#master-loginmain-部份" class="headerlink" title="master.loginmain 部份"></a><code>master.loginmain</code> 部份</h3><p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`loginmain`</span> (</span><br><span class="line"><span class="string">`idx`</span> <span class="built_in">char</span>(<span class="number">36</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">'none'</span>,</span><br><span class="line"><span class="string">`username`</span> longtext <span class="keyword">NOT</span> <span class="literal">NULL</span>,  </span><br><span class="line"><span class="string">`srcip`</span> longtext <span class="keyword">NOT</span> <span class="literal">NULL</span>,  </span><br><span class="line"><span class="string">`apname`</span> longtext,  </span><br><span class="line"><span class="string">`crdate`</span> datetime <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="keyword">CURRENT_TIMESTAMP</span>,</span><br><span class="line"><span class="string">`upddate`</span> datetime <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,  </span><br><span class="line">PRIMARY <span class="keyword">KEY</span> (<span class="string">`idx`</span>)</span><br><span class="line">);</span><br></pre></td></tr></table></figure><p></p>
+<h3 id="master-loginmain-部份"><a href="#master-loginmain-部份" class="headerlink" title="master.loginmain 部份"></a><code>master.loginmain</code> 部份</h3><p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="sql">CREATE TABLE `loginmain` (
+`idx` char(36) NOT NULL DEFAULT &#39;none&#39;,
+`username` longtext NOT NULL,  
+`srcip` longtext NOT NULL,  
+`apname` longtext,  
+`crdate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+`upddate` datetime DEFAULT NULL,  
+PRIMARY KEY (`idx`)
+);
+</code></pre>
 <p>因為 MariaDB 的 table 預設值不能是 function，所以要透過 trigger 加以實踐預設值。</p>
 <p>要設兩個 trigger 來達到以下的需求</p>
 <ol>
 <li>idx 為自動編號的 guid/uuid。</li>
 </ol>
-<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">DELIMITER //</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TRIGGER</span> create_uuid_for_loginmain </span><br><span class="line"><span class="keyword">BEFORE</span> <span class="keyword">INSERT</span> <span class="keyword">ON</span> loginmain</span><br><span class="line"><span class="keyword">FOR</span> <span class="keyword">EACH</span> <span class="keyword">ROW</span></span><br><span class="line"><span class="keyword">BEGIN</span>    </span><br><span class="line"><span class="keyword">IF</span> NEW.idx = <span class="string">'none'</span> <span class="keyword">THEN</span>        </span><br><span class="line"><span class="keyword">SET</span> NEW.idx = <span class="keyword">UUID</span>();    </span><br><span class="line"><span class="keyword">END</span> <span class="keyword">IF</span>;</span><br><span class="line"><span class="keyword">END</span>;</span><br><span class="line">//</span><br></pre></td></tr></table></figure><p></p>
+<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="sql">DELIMITER //
+CREATE TRIGGER create_uuid_for_loginmain 
+BEFORE INSERT ON loginmain
+FOR EACH ROW
+BEGIN    
+IF NEW.idx = &#39;none&#39; THEN        
+SET NEW.idx = UUID();    
+END IF;
+END;
+//
+</code></pre>
 <ol start="2">
 <li>當變更 (update) 時自動更新 upddate。</li>
 </ol>
-<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">DELIMITER //</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TRIGGER</span> update_upddate_for_loginmain</span><br><span class="line"><span class="keyword">BEFORE</span> <span class="keyword">UPDATE</span> <span class="keyword">ON</span> loginmain</span><br><span class="line"><span class="keyword">FOR</span> <span class="keyword">EACH</span> <span class="keyword">ROW</span> </span><br><span class="line"><span class="keyword">BEGIN</span>    </span><br><span class="line"><span class="keyword">SET</span> NEW.upddate = <span class="keyword">now</span>();</span><br><span class="line"><span class="keyword">END</span>;</span><br><span class="line">//</span><br></pre></td></tr></table></figure><p></p>
+<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="sql">DELIMITER //
+CREATE TRIGGER update_upddate_for_loginmain
+BEFORE UPDATE ON loginmain
+FOR EACH ROW 
+BEGIN    
+SET NEW.upddate = now();
+END;
+//
+</code></pre>
 <p>   這裡要注意的是為什麼不 <code>AFTER UPDATE</code> 而是 <code>BEFORE UPDATE</code> 呢?<br>   原因在於 <code>AFTER UPDATE</code> 的 <code>NEW</code> 與 <code>OLD</code> 新舊值是<a href="http://www.techonthenet.com/mariadb/triggers/after_update.php" target="_blank" rel="noopener">不能</a>變動的，但是 <code>BEFORE UPDATE</code> 是<a href="http://www.techonthenet.com/mariadb/triggers/before_update.php" target="_blank" rel="noopener">可以</a>改變 <code>NEW</code> 值(因為還沒真正更新)<br>   這樣就可以在更新時更新 <code>upddate</code> 欄位了。</p>
-<h3 id="master-logindate-部份"><a href="#master-logindate-部份" class="headerlink" title="master.logindate 部份"></a><code>master.logindate</code> 部份</h3><p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`logindate`</span> (</span><br><span class="line"><span class="string">`idx`</span> <span class="built_in">char</span>(<span class="number">36</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">'none'</span>,</span><br><span class="line"><span class="string">`lm_idx`</span> <span class="built_in">char</span>(<span class="number">36</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,  </span><br><span class="line"><span class="string">`wkdnum`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line"><span class="string">`dfrom`</span> <span class="keyword">time</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">'00:00:00'</span>,</span><br><span class="line"><span class="string">`dto`</span> <span class="keyword">time</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">'23:59:59'</span>,</span><br><span class="line"><span class="string">`crtdate`</span> datetime <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="keyword">CURRENT_TIMESTAMP</span>,</span><br><span class="line"><span class="string">`upddate`</span> datetime <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,  </span><br><span class="line">PRIMARY <span class="keyword">KEY</span> (<span class="string">`idx`</span>)</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">DELIMITER //</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TRIGGER</span> create_uuid_for_logindate</span><br><span class="line"><span class="keyword">BEFORE</span> <span class="keyword">INSERT</span> <span class="keyword">ON</span> logindate</span><br><span class="line"><span class="keyword">FOR</span> <span class="keyword">EACH</span> <span class="keyword">ROW</span></span><br><span class="line"><span class="keyword">BEGIN</span></span><br><span class="line">    <span class="keyword">IF</span> NEW.idx = <span class="string">'none'</span> <span class="keyword">THEN</span></span><br><span class="line">        <span class="keyword">SET</span> NEW.idx = <span class="keyword">UUID</span>();</span><br><span class="line">    <span class="keyword">END</span> <span class="keyword">IF</span>;</span><br><span class="line"><span class="keyword">END</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TRIGGER</span> update_upddate_for_logindate</span><br><span class="line"><span class="keyword">BEFORE</span> <span class="keyword">UPDATE</span>  <span class="keyword">ON</span> logindate</span><br><span class="line"><span class="keyword">FOR</span> <span class="keyword">EACH</span> <span class="keyword">ROW</span> </span><br><span class="line"><span class="keyword">BEGIN</span></span><br><span class="line">    <span class="keyword">SET</span> NEW.upddate = <span class="keyword">now</span>();</span><br><span class="line"><span class="keyword">END</span>;</span><br><span class="line">//</span><br></pre></td></tr></table></figure><p></p>
+<h3 id="master-logindate-部份"><a href="#master-logindate-部份" class="headerlink" title="master.logindate 部份"></a><code>master.logindate</code> 部份</h3><p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="sql">CREATE TABLE `logindate` (
+`idx` char(36) NOT NULL DEFAULT &#39;none&#39;,
+`lm_idx` char(36) NOT NULL,  
+`wkdnum` int(11) NOT NULL,
+`dfrom` time NOT NULL DEFAULT &#39;00:00:00&#39;,
+`dto` time NOT NULL DEFAULT &#39;23:59:59&#39;,
+`crtdate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+`upddate` datetime DEFAULT NULL,  
+PRIMARY KEY (`idx`)
+);
+
+DELIMITER //
+CREATE TRIGGER create_uuid_for_logindate
+BEFORE INSERT ON logindate
+FOR EACH ROW
+BEGIN
+    IF NEW.idx = &#39;none&#39; THEN
+        SET NEW.idx = UUID();
+    END IF;
+END;
+
+CREATE TRIGGER update_upddate_for_logindate
+BEFORE UPDATE  ON logindate
+FOR EACH ROW 
+BEGIN
+    SET NEW.upddate = now();
+END;
+//
+</code></pre>
 <h2 id="login-trigger-部份"><a href="#login-trigger-部份" class="headerlink" title="login trigger 部份"></a>login trigger 部份</h2><p>經過尋找 MariaDB 的 manual，轉換如下。</p>
-<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">DELIMITER //</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">PROCEDURE</span> check_login()</span><br><span class="line"><span class="keyword">SQL</span> <span class="keyword">SECURITY</span> DEFINER</span><br><span class="line"><span class="keyword">BEGIN</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">SET</span> @idx = <span class="string">''</span>;</span><br><span class="line"><span class="keyword">SET</span> @idx2 = <span class="string">''</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> idx <span class="keyword">into</span> @idx <span class="keyword">from</span> master.loginmain </span><br><span class="line">     <span class="keyword">where</span> username = SUBSTRING_INDEX(SUBSTRING_INDEX(<span class="keyword">user</span>(), <span class="string">'@'</span>, <span class="number">1</span>), <span class="string">'@'</span>, <span class="number">-1</span>)  <span class="keyword">and</span>  </span><br><span class="line">		 srcip <span class="keyword">like</span> <span class="keyword">CONCAT</span>(<span class="string">'%'</span>, SUBSTRING_INDEX(SUBSTRING_INDEX(<span class="keyword">user</span>(), <span class="string">'@'</span>, <span class="number">2</span>), <span class="string">'@'</span>, <span class="number">-1</span>), <span class="string">'%'</span>) ;</span><br><span class="line">   </span><br><span class="line">if @idx = '' then</span><br><span class="line">	SIGNAL SQLSTATE '45000' <span class="keyword">SET</span> MYSQL_ERRNO=<span class="number">30001</span>, MESSAGE_TEXT=<span class="string">'無法在資料庫中找到您的登入帳號、來源IP、或是使用之程式不正確。'</span>;</span><br><span class="line">else</span><br><span class="line">    <span class="keyword">select</span> idx <span class="keyword">into</span> @idx2 <span class="keyword">from</span> master.logindate</span><br><span class="line">	<span class="keyword">where</span> lm_idx = @idx <span class="keyword">and</span> </span><br><span class="line">          wkdnum = <span class="keyword">dayofweek</span>(<span class="keyword">now</span>())<span class="number">-1</span> <span class="keyword">and</span></span><br><span class="line">          (<span class="keyword">cast</span>(<span class="keyword">now</span>() <span class="keyword">as</span> <span class="keyword">time</span>) <span class="keyword">between</span> dfrom <span class="keyword">and</span> dto);</span><br><span class="line">    if @idx2 = '' then</span><br><span class="line">		SIGNAL SQLSTATE '45000' <span class="keyword">SET</span> MYSQL_ERRNO=<span class="number">30002</span>, MESSAGE_TEXT=<span class="string">'您的帳號無法在此時段登入。'</span>;</span><br><span class="line">    <span class="keyword">end</span> <span class="keyword">if</span>;</span><br><span class="line"><span class="keyword">end</span> <span class="keyword">if</span>;</span><br><span class="line"><span class="keyword">END</span>;</span><br><span class="line">//</span><br></pre></td></tr></table></figure><p></p>
+<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="sql">DELIMITER //
+CREATE PROCEDURE check_login()
+SQL SECURITY DEFINER
+BEGIN
+
+SET @idx = &#39;&#39;;
+SET @idx2 = &#39;&#39;;
+
+select idx into @idx from master.loginmain 
+     where username = SUBSTRING_INDEX(SUBSTRING_INDEX(user(), &#39;@&#39;, 1), &#39;@&#39;, -1)  and  
+         srcip like CONCAT(&#39;%&#39;, SUBSTRING_INDEX(SUBSTRING_INDEX(user(), &#39;@&#39;, 2), &#39;@&#39;, -1), &#39;%&#39;) ;
+
+if @idx = &#39;&#39; then
+    SIGNAL SQLSTATE &#39;45000&#39; SET MYSQL_ERRNO=30001, MESSAGE_TEXT=&#39;無法在資料庫中找到您的登入帳號、來源IP、或是使用之程式不正確。&#39;;
+else
+    select idx into @idx2 from master.logindate
+    where lm_idx = @idx and 
+          wkdnum = dayofweek(now())-1 and
+          (cast(now() as time) between dfrom and dto);
+    if @idx2 = &#39;&#39; then
+        SIGNAL SQLSTATE &#39;45000&#39; SET MYSQL_ERRNO=30002, MESSAGE_TEXT=&#39;您的帳號無法在此時段登入。&#39;;
+    end if;
+end if;
+END;
+//
+</code></pre>
 <ul>
 <li><code>select idx into @idx from master.loginmain where username = SUBSTRING_INDEX(SUBSTRING_INDEX(user(), &#39;@&#39;, 1), &#39;@&#39;, -1) and srcip like CONCAT(&#39;%&#39;, SUBSTRING_INDEX(SUBSTRING_INDEX(user(), &#39;@&#39;, 2), &#39;@&#39;, -1), &#39;%&#39;) ;</code><br> 這段是把 username@host 拆開來分別比對。</li>
 <li>可以看到無法對應用程式名稱 (<code>apname</code>) 來比較，因為沒辦法拿到資料。不過原來的需求這項本來就是非必要的，加上微軟也提到<a href="https://msdn.microsoft.com/en-us/library/ms189770.aspx" target="_blank" rel="noopener">不要</a>把這個參數拿來做 security check，就不在這次轉換的需求中了。</li>
@@ -48,16 +133,113 @@
 <p>最後是修改 logon trigger 發動的設定。在<a href="http://www.fromdual.com/mysql-logon-and-logoff-trigger-for-auditing" target="_blank" rel="noopener">之前</a>找到的文章裡有說到可以在 <code>init_connect</code> <a href="https://mariadb.com/kb/en/mariadb/server-system-variables/#init_connect" target="_blank" rel="noopener">做</a> logon trigger，所以到 <code>my.ini</code> 加一行</p>
 <p><code>init_connect=&quot;CALL master.check_login();&quot;</code></p>
 <p>要給帳號有執行這個 store procedure 的權限 (以後新增帳號完都要執行這個)。</p>
-<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">grant</span> <span class="keyword">execute</span> <span class="keyword">on</span> <span class="keyword">procedure</span> master.check_login <span class="keyword">to</span> <span class="string">'test'</span>@<span class="string">'%'</span>;</span><br><span class="line"><span class="keyword">grant</span> <span class="keyword">execute</span> <span class="keyword">on</span> <span class="keyword">procedure</span> master.check_login <span class="keyword">to</span> <span class="string">'sujunmin'</span>@<span class="string">'%'</span>;</span><br></pre></td></tr></table></figure><p></p>
+<p></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="sql">grant execute on procedure master.check_login to &#39;test&#39;@&#39;%&#39;;
+grant execute on procedure master.check_login to &#39;sujunmin&#39;@&#39;%&#39;;
+</code></pre>
 <p>重開 MariaDB。</p>
 <p>測試一下。</p>
-<p></p><p class="code-caption" data-lang="msdos" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\Administrator&gt;date</span><br><span class="line">現在日期是: 2016/08/10</span><br><span class="line">輸入新日期: (yy-mm-dd)</span><br><span class="line"></span><br><span class="line">C:\Users\Administrator&gt;time</span><br><span class="line">現在時間是: 17:44:00.55</span><br><span class="line">輸入新時間:</span><br><span class="line"></span><br><span class="line">C:\Users\Administrator&gt;mysql -u sujunmin -p</span><br><span class="line">Enter password: ************</span><br><span class="line">Welcome to the MariaDB monitor.  Commands end with ; or \g.</span><br><span class="line">Your MariaDB connection id is 3</span><br><span class="line">Server version: 10.1.14-MariaDB mariadb.org binary distribution</span><br><span class="line"></span><br><span class="line">Copyright (c) 2000, 2016, Oracle, MariaDB Corporation Ab and others.</span><br><span class="line"></span><br><span class="line">Type &apos;help;&apos; or &apos;\h&apos; for help. Type &apos;\c&apos; to clear the current input statement.</span><br><span class="line"></span><br><span class="line">MariaDB [(none)]&gt; select true from dual;</span><br><span class="line">+------+</span><br><span class="line">| TRUE |</span><br><span class="line">+------+</span><br><span class="line">|    1 |</span><br><span class="line">+------+</span><br><span class="line">1 row in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">MariaDB [(none)]&gt; quit</span><br><span class="line">Bye</span><br><span class="line"></span><br><span class="line">C:\Users\Administrator&gt;mysql -u test -p</span><br><span class="line">Enter password: ************</span><br><span class="line">Welcome to the MariaDB monitor.  Commands end with ; or \g.</span><br><span class="line">Your MariaDB connection id is 5</span><br><span class="line">Server version: 10.1.14-MariaDB</span><br><span class="line"></span><br><span class="line">Copyright (c) 2000, 2016, Oracle, MariaDB Corporation Ab and others.</span><br><span class="line"></span><br><span class="line">Type &apos;help;&apos; or &apos;\h&apos; for help. Type &apos;\c&apos; to clear the current input statement.</span><br><span class="line"></span><br><span class="line">MariaDB [(none)]&gt; select true from dual;</span><br><span class="line">ERROR 2006 (HY000): MySQL server has gone away</span><br><span class="line">No connection. Trying to reconnect...</span><br><span class="line">Connection id:    6</span><br><span class="line">Current database: *** NONE ***</span><br><span class="line"></span><br><span class="line">ERROR 1184 (08S01): Aborted connection 6 to db: &apos;unconnected&apos; user: &apos;test&apos; host</span><br><span class="line"> &apos;localhost&apos; (init_connect command failed)</span><br><span class="line">MariaDB [(none)]&gt; quit</span><br><span class="line">Bye</span><br></pre></td></tr></table></figure><p></p>
+<p></p><p class="code-caption" data-lang="msdos" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="msdos">C:\Users\Administrator&gt;date
+現在日期是: 2016/08/10
+輸入新日期: (yy-mm-dd)
+
+C:\Users\Administrator&gt;time
+現在時間是: 17:44:00.55
+輸入新時間:
+
+C:\Users\Administrator&gt;mysql -u sujunmin -p
+Enter password: ************
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 3
+Server version: 10.1.14-MariaDB mariadb.org binary distribution
+
+Copyright (c) 2000, 2016, Oracle, MariaDB Corporation Ab and others.
+
+Type &#39;help;&#39; or &#39;\h&#39; for help. Type &#39;\c&#39; to clear the current input statement.
+
+MariaDB [(none)]&gt; select true from dual;
++------+
+| TRUE |
++------+
+|    1 |
++------+
+1 row in set (0.00 sec)
+
+MariaDB [(none)]&gt; quit
+Bye
+
+C:\Users\Administrator&gt;mysql -u test -p
+Enter password: ************
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 5
+Server version: 10.1.14-MariaDB
+
+Copyright (c) 2000, 2016, Oracle, MariaDB Corporation Ab and others.
+
+Type &#39;help;&#39; or &#39;\h&#39; for help. Type &#39;\c&#39; to clear the current input statement.
+
+MariaDB [(none)]&gt; select true from dual;
+ERROR 2006 (HY000): MySQL server has gone away
+No connection. Trying to reconnect...
+Connection id:    6
+Current database: *** NONE ***
+
+ERROR 1184 (08S01): Aborted connection 6 to db: &#39;unconnected&#39; user: &#39;test&#39; host
+ &#39;localhost&#39; (init_connect command failed)
+MariaDB [(none)]&gt; quit
+Bye
+</code></pre>
 <p>調整一下登入時間設定。<br><img src="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/acl_3.png"></p>
 <p>再測試一下。</p>
-<p></p><p class="code-caption" data-lang="msdos" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\Administrator&gt;mysql -u test -p</span><br><span class="line">Enter password: ************</span><br><span class="line">Welcome to the MariaDB monitor.  Commands end with ; or \g.</span><br><span class="line">Your MariaDB connection id is 7</span><br><span class="line">Server version: 10.1.14-MariaDB</span><br><span class="line"></span><br><span class="line">Copyright (c) 2000, 2016, Oracle, MariaDB Corporation Ab and others.</span><br><span class="line"></span><br><span class="line">Type &apos;help;&apos; or &apos;\h&apos; for help. Type &apos;\c&apos; to clear the current input statement.</span><br><span class="line"></span><br><span class="line">MariaDB [(none)]&gt; select true from dual;</span><br><span class="line">ERROR 2006 (HY000): MySQL server has gone away</span><br><span class="line">No connection. Trying to reconnect...</span><br><span class="line">Connection id:    8</span><br><span class="line">Current database: *** NONE ***</span><br><span class="line"></span><br><span class="line">ERROR 1184 (08S01): Aborted connection 8 to db: &apos;unconnected&apos; user: &apos;test&apos; host</span><br><span class="line"> &apos;localhost&apos; (init_connect command failed)</span><br><span class="line">MariaDB [(none)]&gt; quit</span><br><span class="line">Bye</span><br></pre></td></tr></table></figure><p></p>
+<p></p><p class="code-caption" data-lang="msdos" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="msdos">C:\Users\Administrator&gt;mysql -u test -p
+Enter password: ************
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 7
+Server version: 10.1.14-MariaDB
+
+Copyright (c) 2000, 2016, Oracle, MariaDB Corporation Ab and others.
+
+Type &#39;help;&#39; or &#39;\h&#39; for help. Type &#39;\c&#39; to clear the current input statement.
+
+MariaDB [(none)]&gt; select true from dual;
+ERROR 2006 (HY000): MySQL server has gone away
+No connection. Trying to reconnect...
+Connection id:    8
+Current database: *** NONE ***
+
+ERROR 1184 (08S01): Aborted connection 8 to db: &#39;unconnected&#39; user: &#39;test&#39; host
+ &#39;localhost&#39; (init_connect command failed)
+MariaDB [(none)]&gt; quit
+Bye
+</code></pre>
 <p>當然還是不行，因為 host 是錯的，調整一下。<br><img src="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/acl_4.png"></p>
 <p>再測試看看。</p>
-<p></p><p class="code-caption" data-lang="msdos" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\Administrator&gt;mysql -u test -p</span><br><span class="line">Enter password: ************</span><br><span class="line">Welcome to the MariaDB monitor.  Commands end with ; or \g.</span><br><span class="line">Your MariaDB connection id is 9</span><br><span class="line">Server version: 10.1.14-MariaDB mariadb.org binary distribution</span><br><span class="line"></span><br><span class="line">Copyright (c) 2000, 2016, Oracle, MariaDB Corporation Ab and others.</span><br><span class="line"></span><br><span class="line">Type &apos;help;&apos; or &apos;\h&apos; for help. Type &apos;\c&apos; to clear the current input statement.</span><br><span class="line"></span><br><span class="line">MariaDB [(none)]&gt; select true from dual;</span><br><span class="line">+------+</span><br><span class="line">| TRUE |</span><br><span class="line">+------+</span><br><span class="line">|    1 |</span><br><span class="line">+------+</span><br><span class="line">1 row in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">MariaDB [(none)]&gt; quit</span><br><span class="line">Bye</span><br><span class="line"></span><br><span class="line">C:\Users\Administrator&gt;</span><br></pre></td></tr></table></figure><p></p>
+<p></p><p class="code-caption" data-lang="msdos" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="msdos">C:\Users\Administrator&gt;mysql -u test -p
+Enter password: ************
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 9
+Server version: 10.1.14-MariaDB mariadb.org binary distribution
+
+Copyright (c) 2000, 2016, Oracle, MariaDB Corporation Ab and others.
+
+Type &#39;help;&#39; or &#39;\h&#39; for help. Type &#39;\c&#39; to clear the current input statement.
+
+MariaDB [(none)]&gt; select true from dual;
++------+
+| TRUE |
++------+
+|    1 |
++------+
+1 row in set (0.00 sec)
+
+MariaDB [(none)]&gt; quit
+Bye
+
+C:\Users\Administrator&gt;
+</code></pre>
 <p>可以登入了。</p>
 <h2 id="後記"><a href="#後記" class="headerlink" title="後記"></a>後記</h2><h3 id="2016-11-1"><a href="#2016-11-1" class="headerlink" title="2016/11/1"></a>2016/11/1</h3><p>正式上線的時候發現到有兩個問題。(其實都是自己耍蠢不看文件)</p>
 <ol>

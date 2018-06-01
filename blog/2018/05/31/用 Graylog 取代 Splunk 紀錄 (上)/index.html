@@ -14,26 +14,93 @@
 <p>官網的<a href="http://docs.graylog.org/en/2.4/pages/installation/os/ubuntu.html" target="_blank" rel="noopener">手動安裝方法</a>寫得很詳細，照做就很容易完成了。</p>
 <h2 id="最後架構"><a href="#最後架構" class="headerlink" title="最後架構"></a>最後架構</h2><p><img src="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/graylog_2.png" alt=""></p>
 <p>因為只有 Windows 傳過來的會亂碼，所以在 Graylog 前面多放一個 logstash 轉檔以後再丟到 Graylog 即可，網路設備的不會這樣，就直接送進 Graylog。</p>
-<h3 id="Graylog-Server"><a href="#Graylog-Server" class="headerlink" title="Graylog Server"></a>Graylog Server</h3><h4 id="Ubuntu-16-04"><a href="#Ubuntu-16-04" class="headerlink" title="Ubuntu 16.04"></a>Ubuntu 16.04</h4><p></p><p class="code-caption" data-lang="bash" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get update &amp;&amp; sudo apt-get upgrade</span><br><span class="line">$ sudo apt-get install apt-transport-https openjdk-8-jre-headless uuid-runtime pwgen</span><br></pre></td></tr></table></figure><p></p>
+<h3 id="Graylog-Server"><a href="#Graylog-Server" class="headerlink" title="Graylog Server"></a>Graylog Server</h3><h4 id="Ubuntu-16-04"><a href="#Ubuntu-16-04" class="headerlink" title="Ubuntu 16.04"></a>Ubuntu 16.04</h4><p></p><p class="code-caption" data-lang="bash" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="bash">$ sudo apt-get update &amp;&amp; sudo apt-get upgrade
+$ sudo apt-get install apt-transport-https openjdk-8-jre-headless uuid-runtime pwgen
+</code></pre>
 <p>測試一下 Java</p>
-<p></p><p class="code-caption" data-lang="bash" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sujunmin@graylog:~$ java -version</span><br><span class="line">java version <span class="string">"1.8.0_171"</span></span><br><span class="line">Java(TM) SE Runtime Environment (build 1.8.0_171-b01)</span><br><span class="line">Java HotSpot(TM) 64-Bit Server VM (build 25.171-b01, mixed mode)</span><br></pre></td></tr></table></figure><p></p>
+<p></p><p class="code-caption" data-lang="bash" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="bash">sujunmin@graylog:~$ java -version
+java version &quot;1.8.0_171&quot;
+Java(TM) SE Runtime Environment (build 1.8.0_171-b01)
+Java HotSpot(TM) 64-Bit Server VM (build 25.171-b01, mixed mode)
+</code></pre>
 <h4 id="MongoDB"><a href="#MongoDB" class="headerlink" title="MongoDB"></a>MongoDB</h4><p>安裝最新版 MongoDB</p>
-<p></p><p class="code-caption" data-lang="bash" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5</span><br><span class="line">$ <span class="built_in">echo</span> <span class="string">"deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.6 multiverse"</span> | sudo tee /etc/apt/sources.list.d/mongodb-org-3.6.list</span><br><span class="line">$ sudo apt-get update</span><br><span class="line">$ sudo apt-get install -y mongodb-org</span><br><span class="line">$ sudo systemctl <span class="built_in">enable</span> mongod.service</span><br><span class="line">$ sudo systemctl restart mongod.service</span><br></pre></td></tr></table></figure><p></p>
+<p></p><p class="code-caption" data-lang="bash" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="bash">$ sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5
+$ echo &quot;deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.6 multiverse&quot; | sudo tee /etc/apt/sources.list.d/mongodb-org-3.6.list
+$ sudo apt-get update
+$ sudo apt-get install -y mongodb-org
+$ sudo systemctl enable mongod.service
+$ sudo systemctl restart mongod.service
+</code></pre>
 <h4 id="Elasticsearch"><a href="#Elasticsearch" class="headerlink" title="Elasticsearch"></a>Elasticsearch</h4><p>Elasticsearch 要用 5.x 版的 (是說我已經有這個了，然後前面又有 logstash，差一個 Kanban 就變成 <a href="https://www.elastic.co/webinars/introduction-elk-stack" target="_blank" rel="noopener">ELK</a> 了，還要用 Graylog 嗎 XD)</p>
-<p></p><p class="code-caption" data-lang="bash" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -</span><br><span class="line">$ <span class="built_in">echo</span> <span class="string">"deb https://artifacts.elastic.co/packages/5.x/apt stable main"</span> | sudo tee -a /etc/apt/sources.list.d/elastic-5.x.list</span><br><span class="line">$ sudo apt-get update &amp;&amp; sudo apt-get install elasticsearch</span><br></pre></td></tr></table></figure><p></p>
+<p></p><p class="code-caption" data-lang="bash" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="bash">$ wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+$ echo &quot;deb https://artifacts.elastic.co/packages/5.x/apt stable main&quot; | sudo tee -a /etc/apt/sources.list.d/elastic-5.x.list
+$ sudo apt-get update &amp;&amp; sudo apt-get install elasticsearch
+</code></pre>
 <p>安裝完以後記得設定檔 <code>/etc/elasticsearch/elasticsearch.yml</code> 裡頭的 <code>cluster.name</code> 要設為 <code>graylog</code>。</p>
-<p></p><p class="code-caption" data-lang="vim" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cluster.name: graylog</span><br></pre></td></tr></table></figure><p></p>
+<p></p><p class="code-caption" data-lang="vim" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="vim">cluster.name: graylog
+</code></pre>
 <p>然後設定服務</p>
-<p></p><p class="code-caption" data-lang="bash" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo systemctl <span class="built_in">enable</span> elasticsearch.service</span><br><span class="line">$ sudo systemctl restart elasticsearch.service</span><br></pre></td></tr></table></figure><p></p>
+<p></p><p class="code-caption" data-lang="bash" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="bash">$ sudo systemctl enable elasticsearch.service
+$ sudo systemctl restart elasticsearch.service
+</code></pre>
 <p>測試一下</p>
-<p></p><p class="code-caption" data-lang="bash" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">sujunmin@graylog:~$ curl -XGET <span class="string">'localhost:9200/?pretty'</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">"name"</span> : <span class="string">"-kYzFA9"</span>,</span><br><span class="line">  <span class="string">"cluster_name"</span> : <span class="string">"graylog"</span>,</span><br><span class="line">  <span class="string">"cluster_uuid"</span> : <span class="string">"T3JQKehzSqmLThlVkEKPKg"</span>,</span><br><span class="line">  <span class="string">"version"</span> : &#123;</span><br><span class="line">    <span class="string">"number"</span> : <span class="string">"5.5.1"</span>,</span><br><span class="line">    <span class="string">"build_hash"</span> : <span class="string">"19c13d0"</span>,</span><br><span class="line">    <span class="string">"build_date"</span> : <span class="string">"2018-05-18T20:44:24.823Z"</span>,</span><br><span class="line">    <span class="string">"build_snapshot"</span> : <span class="literal">false</span>,</span><br><span class="line">    <span class="string">"lucene_version"</span> : <span class="string">"6.6.0"</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="string">"tagline"</span> : <span class="string">"You Know, for Search"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p></p>
+<p></p><p class="code-caption" data-lang="bash" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="bash">sujunmin@graylog:~$ curl -XGET &#39;localhost:9200/?pretty&#39;
+{
+  &quot;name&quot; : &quot;-kYzFA9&quot;,
+  &quot;cluster_name&quot; : &quot;graylog&quot;,
+  &quot;cluster_uuid&quot; : &quot;T3JQKehzSqmLThlVkEKPKg&quot;,
+  &quot;version&quot; : {
+    &quot;number&quot; : &quot;5.5.1&quot;,
+    &quot;build_hash&quot; : &quot;19c13d0&quot;,
+    &quot;build_date&quot; : &quot;2018-05-18T20:44:24.823Z&quot;,
+    &quot;build_snapshot&quot; : false,
+    &quot;lucene_version&quot; : &quot;6.6.0&quot;
+  },
+  &quot;tagline&quot; : &quot;You Know, for Search&quot;
+}
+</code></pre>
 <h4 id="Nginx"><a href="#Nginx" class="headerlink" title="Nginx"></a>Nginx</h4><p>作為前端 Reverse Proxy 到 Graylog Web 的媒介</p>
-<p></p><p class="code-caption" data-lang="bash" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt -y install nginx</span><br></pre></td></tr></table></figure><p></p>
+<p></p><p class="code-caption" data-lang="bash" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="bash">sudo apt -y install nginx
+</code></pre>
 <p>修改設定檔</p>
-<p></p><p class="code-caption" data-lang="bash" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo vi /etc/nginx/sites-available/default</span><br></pre></td></tr></table></figure><p></p>
-<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">server</span><br><span class="line">&#123;</span><br><span class="line">    listen 80 default_server;</span><br><span class="line">    listen [::]:80 default_server ipv6only=on;</span><br><span class="line">    server_name &lt;實際 IP&gt;;</span><br><span class="line"></span><br><span class="line">    location / &#123;</span><br><span class="line">      proxy_set_header Host $http_host;</span><br><span class="line">      proxy_set_header X-Forwarded-Host $host;</span><br><span class="line">      proxy_set_header X-Forwarded-Server $host;</span><br><span class="line">      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">      proxy_set_header X-Graylog-Server-URL http://$server_name/api;</span><br><span class="line">      proxy_pass       http://127.0.0.1:9000;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">&lt;<span class="keyword">p</span> class=<span class="string">"code-caption"</span> data-lang=<span class="string">""</span> data-line_number=<span class="string">"frontend"</span> data-trim_indent=<span class="string">"backend"</span> data-label_position=<span class="string">"outer"</span> data-labels_left=<span class="string">"Code"</span> data-labels_right=<span class="string">":"</span> data-labels_copy=<span class="string">"Copy Code"</span>&gt;&lt;span class=<span class="string">"code-caption-label"</span>&gt;&lt;/span&gt;&lt;<span class="keyword">a</span> class=<span class="string">"code-caption-copy"</span>&gt;Copy Code&lt;/<span class="keyword">a</span>&gt;&lt;/<span class="keyword">p</span>&gt;</span><br><span class="line">```  </span><br><span class="line"></span><br><span class="line">設定服務與啟動</span><br><span class="line"></span><br><span class="line">```bash</span><br><span class="line">$ sudo systemctl enable graylog-server.service</span><br><span class="line">$ sudo systemctl start graylog-server.service</span><br></pre></td></tr></table></figure>
+<p></p><p class="code-caption" data-lang="bash" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="bash">sudo vi /etc/nginx/sites-available/default
+</code></pre>
+<pre><code class="vim">server
+{
+    listen 80 default_server;
+    listen [::]:80 default_server ipv6only=on;
+    server_name &lt;實際 IP&gt;;
+
+    location / {
+      proxy_set_header Host $http_host;
+      proxy_set_header X-Forwarded-Host $host;
+      proxy_set_header X-Forwarded-Server $host;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header X-Graylog-Server-URL http://$server_name/api;
+      proxy_pass       http://127.0.0.1:9000;
+    }
+}
+&lt;p class=&quot;code-caption&quot; data-lang=&quot;&quot; data-line_number=&quot;frontend&quot; data-trim_indent=&quot;backend&quot; data-label_position=&quot;outer&quot; data-labels_left=&quot;Code&quot; data-labels_right=&quot;:&quot; data-labels_copy=&quot;Copy Code&quot;&gt;&lt;span class=&quot;code-caption-label&quot;&gt;&lt;/span&gt;&lt;a class=&quot;code-caption-copy&quot;&gt;Copy Code&lt;/a&gt;&lt;/p&gt;
+</code></pre>
+<p>設定服務與啟動</p>
+<pre><code class="bash">$ sudo systemctl enable graylog-server.service
+$ sudo systemctl start graylog-server.service
+</code></pre>
 <h4 id="Graylog"><a href="#Graylog" class="headerlink" title="Graylog"></a>Graylog</h4><p>安裝最新版 Graylog</p>
-<p></p><p class="code-caption" data-lang="bash" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ wget https://packages.graylog2.org/repo/packages/graylog-2.4-repository_latest.deb</span><br><span class="line">$ sudo dpkg -i graylog-2.4-repository_latest.deb</span><br><span class="line">$ sudo apt-get update &amp;&amp; sudo apt-get install graylog-server</span><br></pre></td></tr></table></figure><p></p>
+<p></p><p class="code-caption" data-lang="bash" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="bash">$ wget https://packages.graylog2.org/repo/packages/graylog-2.4-repository_latest.deb
+$ sudo dpkg -i graylog-2.4-repository_latest.deb
+$ sudo apt-get update &amp;&amp; sudo apt-get install graylog-server
+</code></pre>
 <p>以下的設定是一定要設的</p>
 <ol>
 <li><code>root_username</code>，預設是 <code>admin</code>，可以改喜歡的</li>
@@ -53,23 +120,58 @@
 <li><code>web_listen_uri</code> 跟 <code>rest_listen_uri</code> 一樣</li>
 </ol>
 <p>設定服務與啟動</p>
-<p></p><p class="code-caption" data-lang="bash" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo systemctl <span class="built_in">enable</span> graylog-server.service</span><br><span class="line">$ sudo systemctl start graylog-server.service</span><br></pre></td></tr></table></figure><p></p>
+<p></p><p class="code-caption" data-lang="bash" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="bash">$ sudo systemctl enable graylog-server.service
+$ sudo systemctl start graylog-server.service
+</code></pre>
 <p>登入看看，記得把原來的預設收 514 的 syslog input 的 Port 改成 12345。</p>
 <h3 id="logstash"><a href="#logstash" class="headerlink" title="logstash"></a>logstash</h3><p>安裝 logstash</p>
-<p></p><p class="code-caption" data-lang="bash" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install logstash</span><br></pre></td></tr></table></figure><p></p>
+<p></p><p class="code-caption" data-lang="bash" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="bash">sudo apt-get install logstash
+</code></pre>
 <p>安裝 <code>logstash-output-syslog</code> (轉換過的 syslog 吐給 Graylog)</p>
-<p></p><p class="code-caption" data-lang="bash" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo /usr/share/logstash/bin/logstash-plugin install logstash-output-syslog</span><br></pre></td></tr></table></figure><p></p>
+<p></p><p class="code-caption" data-lang="bash" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="bash">sudo /usr/share/logstash/bin/logstash-plugin install logstash-output-syslog
+</code></pre>
 <p>設定 pipeline.conf</p>
-<p></p><p class="code-caption" data-lang="bash" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo vi /etc/logstash/conf.d/pipeline.conf</span><br></pre></td></tr></table></figure><p></p>
+<p></p><p class="code-caption" data-lang="bash" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="bash">sudo vi /etc/logstash/conf.d/pipeline.conf
+</code></pre>
 <p>Input 從 514 的 syslog 編碼為 CP950 (Windows) 轉到 12345，編碼是 UTF-8</p>
-<p></p><p class="code-caption" data-lang="vim" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">input</span> &#123;</span><br><span class="line">    syslog &#123;</span><br><span class="line">      port =&gt; <span class="number">514</span></span><br><span class="line">      codec =&gt; plain &#123;</span><br><span class="line">        charset =&gt; <span class="string">"CP950"</span></span><br><span class="line">      &#125;  </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">output &#123;</span><br><span class="line">    syslog &#123;</span><br><span class="line">        host =&gt; <span class="string">"127.0.0.1"</span></span><br><span class="line">        port =&gt; <span class="number">12345</span></span><br><span class="line">        codec =&gt; plain &#123;</span><br><span class="line">          charset =&gt; <span class="string">"UTF-8"</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p></p>
+<p></p><p class="code-caption" data-lang="vim" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="vim">input {
+    syslog {
+      port =&gt; 514
+      codec =&gt; plain {
+        charset =&gt; &quot;CP950&quot;
+      }  
+    }
+}
+
+output {
+    syslog {
+        host =&gt; &quot;127.0.0.1&quot;
+        port =&gt; 12345
+        codec =&gt; plain {
+          charset =&gt; &quot;UTF-8&quot;
+        }
+    }
+}
+</code></pre>
 <p>Input 設在 514 用預設的 logstash 使用者沒法聽，所以要改啟動參數</p>
-<p></p><p class="code-caption" data-lang="bash" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo vi /etc/logstash/startup.options</span><br></pre></td></tr></table></figure><p></p>
+<p></p><p class="code-caption" data-lang="bash" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="bash">sudo vi /etc/logstash/startup.options
+</code></pre>
 <p>找到 <code>LS_USER</code> 與 <code>LS_GROUP</code> 都設成 <code>root</code></p>
 <p>重新安裝設定檔</p>
-<p></p><p class="code-caption" data-lang="bash" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo /usr/share/logstash/bin/system-install</span><br></pre></td></tr></table></figure><p></p>
+<p></p><p class="code-caption" data-lang="bash" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="bash">sudo /usr/share/logstash/bin/system-install
+</code></pre>
 <p>設定服務與啟動</p>
-<p></p><p class="code-caption" data-lang="bash" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl <span class="built_in">enable</span> logstash.service</span><br><span class="line">sudo systemctl start logstash.service</span><br></pre></td></tr></table></figure><p></p>
+<p></p><p class="code-caption" data-lang="bash" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
+<pre><code class="bash">sudo systemctl enable logstash.service
+sudo systemctl start logstash.service
+</code></pre>
 <h2 id="下一步"><a href="#下一步" class="headerlink" title="下一步"></a>下一步</h2><p>安裝測試完成以後，就是原來 Splunk 的報表能夠轉移。</p>
 <p>剛剛有說到所有跟 Graylog 溝通都是透過 Graylog RESTFul API 來做處理，下一篇文章就是要來說明如何透過 Graylog RESTFul API 來做簡單的報表。</p>
 </div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">

@@ -10,19 +10,65 @@
 <p>網路上大部分的<a href="https://www.google.com.tw/search?q=mssql+login+trigger&amp;oq=mssql+login+trigger&amp;aqs=chrome.0.57j59l3j62l2.7585j0&amp;sourceid=chrome&amp;ie=UTF-8" target="_blank" rel="noopener">解法</a>都是使用Login Trigger來做處理，因此我也做了一個Login Trigger到資料庫上，以下是我的作法。</p>
 <p>目標：能夠控管資料庫上的帳號(必要)，根據來源IP(必要)、使用的程式(非必要)、作業時間(AP帳號(全時暢通)或是管理用帳號(上班日可使用)，必要)來控管。</p>
 <ol>
-<li><span style="line-height: 1.2;">資料庫設定</span><br><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">USE</span> <span class="keyword">master</span></span><br><span class="line"><span class="keyword">GO</span></span><br><span class="line"><span class="keyword">GRANT</span> <span class="keyword">SELECT</span> <span class="keyword">ON</span> LoginMain <span class="keyword">TO</span> <span class="keyword">public</span></span><br><span class="line"><span class="keyword">GO</span></span><br><span class="line"><span class="keyword">GRANT</span> <span class="keyword">SELECT</span> <span class="keyword">ON</span> LoginDate <span class="keyword">TO</span> <span class="keyword">public</span></span><br><span class="line"><span class="keyword">GO</span></span><br></pre></td></tr></table></figure>
+<li><span style="line-height: 1.2;">資料庫設定</span><br><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><pre><code class="sql">USE master
+GO
+GRANT SELECT ON LoginMain TO public
+GO
+GRANT SELECT ON LoginDate TO public
+GO
+</code></pre>
 </li>
 </ol>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">USE</span> <span class="keyword">master</span></span><br><span class="line"><span class="keyword">GO</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">DATABASE</span> <span class="keyword">master</span> <span class="keyword">SET</span> ANSI_PADDING <span class="keyword">ON</span></span><br><span class="line"><span class="keyword">GO</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">DATABASE</span> <span class="keyword">master</span> <span class="keyword">SET</span> CONCAT_NULL_YIELDS_NULL <span class="keyword">ON</span></span><br><span class="line"><span class="keyword">GO</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">DATABASE</span> <span class="keyword">master</span> <span class="keyword">SET</span> ANSI_WARNINGS <span class="keyword">ON</span></span><br><span class="line"><span class="keyword">GO</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">DATABASE</span> <span class="keyword">master</span> <span class="keyword">SET</span> ANSI_NULL_DEFAULT <span class="keyword">ON</span></span><br><span class="line"><span class="keyword">GO</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">DATABASE</span> <span class="keyword">master</span> <span class="keyword">SET</span> ANSI_NULLS <span class="keyword">ON</span></span><br><span class="line"><span class="keyword">GO</span></span><br><span class="line">&lt;p <span class="keyword">class</span>=<span class="string">"code-caption"</span> <span class="keyword">data</span>-lang=<span class="string">""</span> <span class="keyword">data</span>-line_number=<span class="string">"frontend"</span> <span class="keyword">data</span>-trim_indent=<span class="string">"backend"</span> <span class="keyword">data</span>-label_position=<span class="string">"outer"</span> <span class="keyword">data</span>-labels_left=<span class="string">"Code"</span> <span class="keyword">data</span>-labels_right=<span class="string">":"</span> <span class="keyword">data</span>-labels_copy=<span class="string">"Copy Code"</span>&gt;&lt;span <span class="keyword">class</span>=<span class="string">"code-caption-label"</span>&gt;&lt;/span&gt;&lt;a <span class="keyword">class</span>=<span class="string">"code-caption-copy"</span>&gt;Copy Code&lt;/a&gt;&lt;/p&gt;</span><br><span class="line"><span class="string">``</span><span class="string">`  </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">1.  &lt;span style="line-height: 1.2;"&gt;加入[Login Trigger](https://googledrive.com/host/0B6HWfJSgyadTSWdfdnp3NloxcXc/Trig_Connection_Limit.sql)&lt;/span&gt;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">*   &lt;span style="line-height: 1.2;"&gt;執行該Script新增。&lt;/span&gt;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">*   &lt;span style="line-height: 1.2;"&gt;這個Trigger透過Logon Event得到的&lt;/span&gt;[XML](http://technet.microsoft.com/en-us/library/hh213611.aspx)&lt;span style="line-height: 1.2;"&gt;來做判斷。&lt;/span&gt;</span></span><br><span class="line"><span class="string">`</span><span class="string">``</span><span class="keyword">sql</span></span><br><span class="line"><span class="keyword">SET</span> @<span class="keyword">data</span> = <span class="keyword">EVENTDATA</span>()</span><br><span class="line"><span class="keyword">SET</span> @srcip = @data.value(<span class="string">'(/EVENT_INSTANCE/ClientHost)[1]'</span>, <span class="string">'varchar(50)'</span>)</span><br><span class="line"><span class="keyword">SET</span> @username = @data.value(<span class="string">'(/EVENT_INSTANCE/LoginName)[1]'</span>, <span class="string">'varchar(50)'</span>)</span><br><span class="line"><span class="keyword">SET</span> @LoginDate = @data.value(<span class="string">'(/EVENT_INSTANCE/PostTime)[1]'</span>, <span class="string">'datetime'</span>)</span><br></pre></td></tr></table></figure>
+<pre><code class="sql">USE master
+GO
+ALTER DATABASE master SET ANSI_PADDING ON
+GO
+ALTER DATABASE master SET CONCAT_NULL_YIELDS_NULL ON
+GO
+ALTER DATABASE master SET ANSI_WARNINGS ON
+GO
+ALTER DATABASE master SET ANSI_NULL_DEFAULT ON
+GO
+ALTER DATABASE master SET ANSI_NULLS ON
+GO
+&lt;p class=&quot;code-caption&quot; data-lang=&quot;&quot; data-line_number=&quot;frontend&quot; data-trim_indent=&quot;backend&quot; data-label_position=&quot;outer&quot; data-labels_left=&quot;Code&quot; data-labels_right=&quot;:&quot; data-labels_copy=&quot;Copy Code&quot;&gt;&lt;span class=&quot;code-caption-label&quot;&gt;&lt;/span&gt;&lt;a class=&quot;code-caption-copy&quot;&gt;Copy Code&lt;/a&gt;&lt;/p&gt;
+</code></pre>
+<ol>
+<li><span style="line-height: 1.2;">加入<a href="https://googledrive.com/host/0B6HWfJSgyadTSWdfdnp3NloxcXc/Trig_Connection_Limit.sql" target="_blank" rel="noopener">Login Trigger</a></span></li>
+</ol>
 <ul>
+<li><p><span style="line-height: 1.2;">執行該Script新增。</span></p>
+</li>
+<li><p><span style="line-height: 1.2;">這個Trigger透過Logon Event得到的</span><a href="http://technet.microsoft.com/en-us/library/hh213611.aspx" target="_blank" rel="noopener">XML</a><span style="line-height: 1.2;">來做判斷。</span></p>
+<pre><code class="sql">SET @data = EVENTDATA()
+SET @srcip = @data.value(&#39;(/EVENT_INSTANCE/ClientHost)[1]&#39;, &#39;varchar(50)&#39;)
+SET @username = @data.value(&#39;(/EVENT_INSTANCE/LoginName)[1]&#39;, &#39;varchar(50)&#39;)
+SET @LoginDate = @data.value(&#39;(/EVENT_INSTANCE/PostTime)[1]&#39;, &#39;datetime&#39;)
+</code></pre>
+</li>
 <li><p><span style="line-height: 1.2;">第一個IF免除掉不被分析的帳號(如系統帳號、Domain帳號等)。</span><br></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">IF (@username NOT LIKE '%\%')</span><br></pre></td></tr></table></figure>
+<pre><code class="sql">IF (@username NOT LIKE &#39;%\%&#39;)
+</code></pre>
 </li>
 <li><p><span style="line-height: 1.2;">判斷式中對於帳號、程式名、IP等有限制。</span><br></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">BEGIN</span></span><br><span class="line"> <span class="keyword">SELECT</span> @lm_idx = idx <span class="keyword">FROM</span> LoginMain <span class="keyword">WHERE</span> username=@username <span class="keyword">AND</span> ((<span class="keyword">CHARINDEX</span>(@srcip,srcip) &amp;lt;&amp;gt; 0) OR srcip = '') AND APP_NAME() like '%'+apname+'%'</span><br><span class="line"> IF @lm_idx is null</span><br><span class="line">  <span class="keyword">BEGIN</span></span><br><span class="line">   RAISERROR (<span class="string">'無法在資料庫中找到您的登入帳號、來源IP、或是使用之程式不正確。'</span>,<span class="number">16</span>,<span class="number">1</span>)</span><br><span class="line">   <span class="keyword">ROLLBACK</span></span><br><span class="line">  <span class="keyword">END</span></span><br></pre></td></tr></table></figure>
+<pre><code class="sql">BEGIN
+SELECT @lm_idx = idx FROM LoginMain WHERE username=@username AND ((CHARINDEX(@srcip,srcip) &amp;lt;&amp;gt; 0) OR srcip = &#39;&#39;) AND APP_NAME() like &#39;%&#39;+apname+&#39;%&#39;
+IF @lm_idx is null
+BEGIN
+RAISERROR (&#39;無法在資料庫中找到您的登入帳號、來源IP、或是使用之程式不正確。&#39;,16,1)
+ROLLBACK
+END
+</code></pre>
 </li>
 <li><p><span style="line-height: 1.2;">接下來判斷時間是否正常。</span><br></p><p class="code-caption" data-lang="sql" data-line_number="frontend" data-trim_indent="backend" data-label_position="outer" data-labels_left="Code" data-labels_right=":" data-labels_copy="Copy Code"><span class="code-caption-label"></span><a class="code-caption-copy">Copy Code</a></p><p></p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">BEGIN</span>	  </span><br><span class="line"> <span class="keyword">SELECT</span> @ld_idx = idx <span class="keyword">FROM</span> LoginDate <span class="keyword">WHERE</span> lm_idx = @lm_idx <span class="keyword">AND</span> wkdnum = @wkdnum <span class="keyword">AND</span> dfrom &amp;lt;= lgtime="" and="" dto=""&amp;gt;= @lgtime</span><br><span class="line">IF @ld_idx is null</span><br><span class="line"> <span class="keyword">BEGIN</span></span><br><span class="line">  RAISERROR (<span class="string">'您的帳號無法在此時段登入。'</span>,<span class="number">16</span>,<span class="number">1</span>)</span><br><span class="line">  <span class="keyword">ROLLBACK</span></span><br><span class="line"><span class="keyword">END</span></span><br></pre></td></tr></table></figure>
+<pre><code class="sql">BEGIN      
+SELECT @ld_idx = idx FROM LoginDate WHERE lm_idx = @lm_idx AND wkdnum = @wkdnum AND dfrom &amp;lt;= lgtime=&quot;&quot; and=&quot;&quot; dto=&quot;&quot;&amp;gt;= @lgtime
+IF @ld_idx is null
+BEGIN
+RAISERROR (&#39;您的帳號無法在此時段登入。&#39;,16,1)
+ROLLBACK
+END
+</code></pre>
 </li>
 <li><p><span style="line-height: 1.2;">如果登入的條件未達到，就會有如同以下的訊息。</span><img src="http://e.share.photo.xuite.net/retsamsu/1e232b0/5078060/260527236_x.jpg" alt=""></p>
 </li>
