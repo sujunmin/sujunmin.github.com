@@ -8,6 +8,8 @@ date: 2018-05-31 15:43:12
 
 ## 需求說明
 原來負責系統的 Log 架構是這樣的
+
+
 ![](https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/graylog_1.png)
 
 因為 Splunk License 的關係，有時候會因為收的量太多而罷工了。
@@ -38,23 +40,23 @@ date: 2018-05-31 15:43:12
 ### Graylog Server
 #### Ubuntu 16.04
 
-```
+```bash
 $ sudo apt-get update && sudo apt-get upgrade
 $ sudo apt-get install apt-transport-https openjdk-8-jre-headless uuid-runtime pwgen
 ```
 
 測試一下 Java
-```
+```bash
 sujunmin@graylog:~$ java -version
 java version "1.8.0_171"
-Java(TM) SE Runtime Environment (build 1.8.0_144-b01)
-Java HotSpot(TM) 64-Bit Server VM (build 25.144-b01, mixed mode)
+Java(TM) SE Runtime Environment (build 1.8.0_171-b01)
+Java HotSpot(TM) 64-Bit Server VM (build 25.171-b01, mixed mode)
 ```
 
 #### MongoDB
 安裝最新版 MongoDB
 
-```
+```bash
 $ sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5
 $ echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.6 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.6.list
 $ sudo apt-get update
@@ -66,7 +68,7 @@ $ sudo systemctl restart mongod.service
 #### Elasticsearch
 Elasticsearch 要用 5.x 版的 (是說我已經有這個了，然後前面又有 logstash，差一個 Kanban 就變成 [ELK](https://www.elastic.co/webinars/introduction-elk-stack) 了，還要用 Graylog 嗎 XD)
 
-```
+```bash
 $ wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
 $ echo "deb https://artifacts.elastic.co/packages/5.x/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-5.x.list
 $ sudo apt-get update && sudo apt-get install elasticsearch
@@ -74,19 +76,19 @@ $ sudo apt-get update && sudo apt-get install elasticsearch
 
 安裝完以後記得設定檔 `/etc/elasticsearch/elasticsearch.yml` 裡頭的 `cluster.name` 要設為 `graylog`。
 
-```shell
+```vim
 cluster.name: graylog
 ```
 
 然後設定服務
 
-```
+```bash
 $ sudo systemctl enable elasticsearch.service
 $ sudo systemctl restart elasticsearch.service
 ```
 
 測試一下
-```
+```bash
 sujunmin@graylog:~$ curl -XGET 'localhost:9200/?pretty'
 {
   "name" : "-kYzFA9",
@@ -106,17 +108,17 @@ sujunmin@graylog:~$ curl -XGET 'localhost:9200/?pretty'
 #### Nginx
 作為前端 Reverse Proxy 到 Graylog Web 的媒介
 
-```
+```bash
 sudo apt -y install nginx
 ```
 
 修改設定檔
 
-```
+```bash
 sudo vi /etc/nginx/sites-available/default
 ```
 
-```
+```vim
 server
 {
     listen 80 default_server;
@@ -136,7 +138,7 @@ server
 
 設定服務與啟動
 
-```
+```bash
 $ sudo systemctl enable graylog-server.service
 $ sudo systemctl start graylog-server.service
 ```
@@ -144,7 +146,7 @@ $ sudo systemctl start graylog-server.service
 #### Graylog
 安裝最新版 Graylog
 
-```
+```bash
 $ wget https://packages.graylog2.org/repo/packages/graylog-2.4-repository_latest.deb
 $ sudo dpkg -i graylog-2.4-repository_latest.deb
 $ sudo apt-get update && sudo apt-get install graylog-server
@@ -168,7 +170,7 @@ $ sudo apt-get update && sudo apt-get install graylog-server
 8. `web_listen_uri` 跟 `rest_listen_uri` 一樣
 
 設定服務與啟動
-```
+```bash
 $ sudo systemctl enable graylog-server.service
 $ sudo systemctl start graylog-server.service
 ```
@@ -178,23 +180,23 @@ $ sudo systemctl start graylog-server.service
 ### logstash
 安裝 logstash
 
-```
+```bash
 sudo apt-get install logstash
 ```
 
 安裝 `logstash-output-syslog` (轉換過的 syslog 吐給 Graylog)
 
-```
+```bash
 sudo /usr/share/logstash/bin/logstash-plugin install logstash-output-syslog
 ```
 
 設定 pipeline.conf
-```
+```bash
 sudo vi /etc/logstash/conf.d/pipeline.conf
 ```
 
 Input 從 514 的 syslog 編碼為 CP950 (Windows) 轉到 12345，編碼是 UTF-8
-```
+```vim
 input {
     syslog {
       port => 514
@@ -217,7 +219,7 @@ output {
 
 Input 設在 514 用預設的 logstash 使用者沒法聽，所以要改啟動參數
 
-```
+```bash
 sudo vi /etc/logstash/startup.options
 ```
 
@@ -225,12 +227,12 @@ sudo vi /etc/logstash/startup.options
 
 重新安裝設定檔
 
-```
+```bash
 sudo /usr/share/logstash/bin/system-install
 ```
 
 設定服務與啟動
-```
+```bash
 sudo systemctl enable logstash.service
 sudo systemctl start logstash.service
 ```
