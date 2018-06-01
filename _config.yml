@@ -39,7 +39,7 @@ relative_link: false
 future: true
 prism_plugin:
   mode: 'preprocess'    # realtime/preprocess
-  theme: 'atom-dark'
+  theme: 'default'
   line_number: true    # default false
 highlight:
   enable: false
