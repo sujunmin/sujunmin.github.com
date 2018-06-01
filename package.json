@@ -17,6 +17,7 @@
     "hexo-renderer-marked": "^0.2.4",
     "hexo-renderer-jade": "^0.4.1",
     "hexo-renderer-sass": "^0.3.2",
+    "hexo-filter-highlight": "^0.0.0",
     "hexo-server": "^0.1.2"
   }
 }
