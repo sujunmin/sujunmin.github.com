@@ -37,12 +37,17 @@ render_drafts: false
 post_asset_folder: false
 relative_link: false
 future: true
-prism_plugin:
-  mode: 'preprocess'    # realtime/preprocess
-  theme: 'default'
-  line_number: true    # default false
 highlight:
   enable: false
+hljs:
+  enable: true #true to enable the plugin
+  line_number: frontend # add line_number in frontend or backend
+  trim_indent: backend # trim the indent of code block to prettify output. backend or front-end (recommend)
+  copy_code: true # show copy code in caption.
+  label:
+    left: Code
+    right: ':'
+    copy: Copy Code
 
 # Category & Tag
 default_category: uncategorized
