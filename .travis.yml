@@ -5,8 +5,8 @@ node_js:
 # S: Build Lifecycle
 install:
   - npm install
-  - npm i -S hexo-prism-plugin
-
+  - npm install hexo-filter-highlight --save
+  
 #before_script:
  # - npm install -g gulp
 
