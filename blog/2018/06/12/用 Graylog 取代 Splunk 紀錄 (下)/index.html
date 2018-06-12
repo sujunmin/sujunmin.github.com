@@ -1,0 +1,90 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>用 Graylog 取代 Splunk 紀錄 (下) | 隨意記事</title><link rel="stylesheet" type="text/css" href="/blog//css/normalize.css"><link rel="stylesheet" type="text/css" href="/blog//css/highlight.css"><link rel="stylesheet" type="text/css" href="/blog//css/very-simple.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/blog/favicon.ico"><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script>(adsbygoogle = window.adsbygoogle || []).push({
+ google_ad_client: "ca-pub-0187888667607442",
+ enable_page_level_ads: true
+ });
+</script></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>用 Graylog 取代 Splunk 紀錄 (下)</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2018-06-12</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/MIS/">MIS</a>/<a class="post-tag-link" href="/blog/tags/Networks/">Networks</a></div></div></div><article><div class="container post"><h2 id="需求說明"><a href="#需求說明" class="headerlink" title="需求說明"></a>需求說明</h2><p>有了前一篇的架設，這邊來說明要怎麼從 Splunk 把報表轉到 Graylog。</p>
+<h2 id="先前準備"><a href="#先前準備" class="headerlink" title="先前準備"></a>先前準備</h2><p>因為在 Graylog 的 Web 界面是沒辦法直接拉報表，必須透過 Graylog Restful API 來做介接取得資料後再自己 Render 出來，所以以下的基本知識需要先了解。</p>
+<ol>
+<li><a href="https://ithelp.ithome.com.tw/users/20091343/ironman/762" target="_blank" rel="noopener">REST/RESTFul API 介紹</a>，怎麼操作 API</li>
+<li><a href="https://blog.csdn.net/caisini_vc/article/details/53377756" target="_blank" rel="noopener">Lucene Query Syntax</a>，最重要的核心，如何去找到你要的東西</li>
+<li>報表系統使用的平台，必須要能夠吃 Graylog 產生出來的 JSON</li>
+</ol>
+<p>因為在 <a href="https://github.com/sujunmin/SQLServerTraceFileParser" target="_blank" rel="noopener">SQL Server</a>、<a href="https://github.com/sujunmin/MariaDBDailyCheckScripts" target="_blank" rel="noopener">MariaDB</a> 的經驗，這次還是選擇 Windows 上面的 Powershell 來實做報表。</p>
+<h3 id="Graylog-RESTFul-API"><a href="#Graylog-RESTFul-API" class="headerlink" title="Graylog RESTFul API"></a>Graylog RESTFul API</h3><p><a href="http://docs.graylog.org/en/2.4/pages/configuration/rest_api.html" target="_blank" rel="noopener">官方文件</a>就是只叫用戶到 System/Node 底下的 API Browser 去看，說實在的，就只是這樣而已，因此大部分的時間都在在這個用 Swagger 做出來的 API Browser 上。</p>
+<p>登入帳號密碼以後可以看到列表，點開每一個項目會有說明，下面的圖應該就是寫報表的主體。</p>
+<p><img src="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/graylog_3.png" alt=""></p>
+<p>點開一個方法就會有每個方法的介紹。</p>
+<p><img src="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/graylog_4.png" alt=""></p>
+<p>其中幾個重要的點。</p>
+<ol>
+<li>Implement Note: 注意說明跟參數格式</li>
+<li>Response Class: 回傳資料格式</li>
+<li>Parameters: 參數，注意必須項目</li>
+<li>Try It Out: 我覺得最棒的項目了，直接試一次，會有以下的結果</li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/graylog_5.png" alt=""></p>
+<ol>
+<li>Request URL: 就是後續用一樣的連結就可以得到一樣的東西，可以加到報表程式裡</li>
+<li>Response Body: 回應資料，精華所在，測試的時候可以先把他放在檔案裡供程式測試，等到上線測試再走 Request URL。</li>
+</ol>
+<h3 id="回到搜尋"><a href="#回到搜尋" class="headerlink" title="回到搜尋"></a>回到搜尋</h3><p>大家在看到之前的 Search API 的時候，實在是太多了，到底要用哪一個?</p>
+<p>其實這個是見仁見智的，要看需求是什麼，但是我覺得 Graylog 開了很多一樣結果的不一樣 API，應該就是要怎麼樣都能搜尋吧 XD</p>
+<ol>
+<li>如果很明確的時間就 <code>/Search/Absolute</code></li>
+<li>如果不明確的時間 (昨天，兩天前)就 <code>Search/Keyword</code></li>
+<li>如果你已經在 Graylog GUI 存了一個覺得不賴的報表，想再叫出來用，就 <code>Search/Saved</code></li>
+<li>…</li>
+</ol>
+<p>每個項目還有對於原來的值 (<code>absloute</code>)，簡單統計(<code>histogram</code>，<code>stats</code>)都能得到想要的，都要試試看才會知道。</p>
+<h3 id="Splunk-報表轉到-Graylog"><a href="#Splunk-報表轉到-Graylog" class="headerlink" title="Splunk 報表轉到 Graylog"></a>Splunk 報表轉到 Graylog</h3><p>這邊就拿一個最常用跟最基本來分享給大家。</p>
+<h4 id="原來的-Splunk-報表"><a href="#原來的-Splunk-報表" class="headerlink" title="原來的 Splunk 報表"></a>原來的 Splunk 報表</h4><p>有一個功能是每天凌晨零點寄送某個帳號每一臺機器的登入登出統計，在 Splunk 是這樣做的</p>
+<p><img src="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/graylog_6.jpg" alt=""></p>
+<h4 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h4><p>在查詢一下他的語法以後，我們可以透過<code>/Search/Absolute</code>來拿資料 (程式碼請參考<a href="https://gist.github.com/sujunmin/d606bfdfd17e7207eaef48dd0cc66d54" target="_blank" rel="noopener">這個</a>)</p>
+<ol>
+<li>透過 <code>/Search/Absolute</code> 拿昨天的資料</li>
+<li>如果 <code>total_results</code> 沒東西就結束</li>
+<li>反之存一份 JSON 當附件</li>
+<li>拿出所有的 <code>messages.message.full_message</code></li>
+<li>拿到 IP</li>
+<li>放到一個 Dictionary 裡面統計</li>
+<li>輸出</li>
+</ol>
+<p>以下來說明一下實際上怎麼做</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="variable">$UserToken</span> = <span class="string">"token"</span></span><br><span class="line"><span class="variable">$base64AuthInfo</span> = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes((<span class="string">"&#123;0&#125;:token"</span> -f <span class="variable">$UserToken</span>)))</span><br><span class="line">...</span><br><span class="line"><span class="variable">$rawdata</span> = (<span class="built_in">Invoke-WebRequest</span> -Uri <span class="variable">$uri</span> -Method Get -Headers @&#123;<span class="string">"Content-Type"</span>=<span class="string">"application/json"</span>;<span class="string">"Authorization"</span> = (<span class="string">"Basic &#123;0&#125;"</span> -f <span class="variable">$base64AuthInfo</span>)&#125;).Content</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>這個部份是認證，因為有限制系統使用者存取，所以要擺認證資料進去。</p>
+<p>可以跟官方文件的資料一樣，送帳號密碼進去也行，但是寫在 Script 裡總是怪怪的。</p>
+<p>我們可透過新增 Session Token 的方法來傳送驗證。</p>
+<p>可以透過 curl 或是 API Browser 直接來新增 (<code>Users:/users/{username}/tokens/{name}</code>)，username 是帳號名稱，name 就是隨便取的好記名字 (例如 report)。</p>
+<p><img src="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/graylog_7.png" alt=""></p>
+<p>會得到一個 token，就可以拿進來用了。</p>
+<p>另外這邊使用到 <code>Invoke-WebRequest</code>，為什麼不用 <code>Invoke-RestMethod</code> 呢? 因為 <code>Invoke-RestMethod</code> 只會取<a href="https://stackoverflow.com/questions/42889221/invoke-restmethod-in-powershell-only-returning-inner-entry-elements-and-not-feed" target="_blank" rel="noopener">第一層</a>的緣故，所以透過 <code>Invoke-WebRequest</code> 拿資料。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="variable">$resultcount</span> = (<span class="variable">$rawdata</span> | <span class="built_in">ConvertFrom-Json</span>).total_results</span><br><span class="line">...</span><br><span class="line"><span class="variable">$test</span> = <span class="variable">$rawdata</span> | <span class="built_in">ConvertFrom-Json</span> | select -expand messages | select -expand message | select full_message</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>這邊就是取實際資料出來的樣子，如果是從檔案(測試資料)出來的，記得再 Convert JSON 先。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="variable">$resultcount</span> = (<span class="variable">$rawdata</span> | <span class="built_in">ConvertTo-Json</span> | <span class="built_in">ConvertFrom-Json</span>).total_results</span><br><span class="line">...</span><br><span class="line"><span class="variable">$test</span> = <span class="variable">$rawdata</span> | <span class="built_in">ConvertTo-Json</span> |  <span class="built_in">ConvertFrom-Json</span> | select -expand messages | select -expand message | select full_message</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>接下來分析 IP，從<code>Original Address=</code> 拿出來。用個 Dictionary 統計 (沒有的新增，有的加 1)<br><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$test</span> | <span class="built_in">Foreach-Object</span> &#123;</span><br><span class="line">      <span class="variable">$test3</span> = [regex]::Matches(<span class="variable">$_</span>.full_message, <span class="string">"Original Address=([^\s]+)"</span>)</span><br><span class="line">      <span class="variable">$test4</span> = <span class="variable">$test3</span>[<span class="number">0</span>].value.split(<span class="string">"="</span>)</span><br><span class="line">      <span class="variable">$d</span>[<span class="variable">$test4</span>[<span class="number">1</span>]] = <span class="variable">$d</span>[<span class="variable">$test4</span>[<span class="number">1</span>]] + <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>顯示結果與印出來。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$outputdata</span> = <span class="string">"Hi all, &lt;br&gt; <span class="variable">$_</span> 在 "</span> + (<span class="string">'&#123;0:yyyy-MM-dd&#125;'</span> -f <span class="variable">$reportdate</span>) + <span class="string">" 事件數量紀錄如下&lt;br/&gt;"</span> </span><br><span class="line">   <span class="variable">$d</span> | <span class="built_in">Format-Table</span>  @&#123;L=<span class="string">'Host(s)'</span>;E=&#123;<span class="variable">$_</span>.key&#125;&#125;, @&#123;L=<span class="string">'Event Count(s)'</span>;E=&#123;<span class="variable">$_</span>.value&#125;&#125; -auto | <span class="built_in">out-file</span> <span class="string">".\ooo.txt"</span></span><br><span class="line">   <span class="built_in">Get-Content</span> <span class="string">".\ooo.txt"</span> | <span class="built_in">Foreach-Object</span> &#123;</span><br><span class="line">      <span class="variable">$outputdata</span> = <span class="variable">$outputdata</span> + <span class="variable">$_</span></span><br><span class="line">      <span class="variable">$outputdata</span> = <span class="variable">$outputdata</span> + <span class="string">"&lt;br/&gt;"</span></span><br><span class="line"></span><br><span class="line">   &#125;</span><br><span class="line">  </span><br><span class="line">   <span class="variable">$outputdata</span> = <span class="variable">$outputdata</span> + <span class="string">"&lt;br/&gt;詳細請參考附件資料。"</span></span><br><span class="line">   </span><br><span class="line">   <span class="variable">$d</span>.Clear()</span><br><span class="line"></span><br><span class="line">   <span class="built_in">Send-MailMessage</span> -To <span class="variable">$MailTo</span> -From <span class="variable">$MailFrom</span> -Subject ((<span class="string">'&#123;0:yyyy-MM-dd&#125;'</span> -f <span class="variable">$reportdate</span>) + <span class="string">" <span class="variable">$_</span> 事件紀錄統計"</span>) -Body <span class="string">"<span class="variable">$outputdata</span>"</span> -BodyAsHtml -SmtpServer <span class="variable">$MailServer</span> -Encoding ([System.Text.Encoding]::UTF8) -Attachments <span class="string">".\<span class="variable">$_</span>.log"</span></span><br></pre></td></tr></table></figure>
+<p>然後設排程跑這個 Script，結果應該是這樣。</p>
+<p><img src="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/graylog_8.jpg" alt=""></p>
+<p>這個只是個簡單的報表，當然可以再加點 HTML/CSS，不過先知道要做什麼，拿到資料，後面做報表就不是很大的問題了。</p>
+</div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'sujunmin';
+var disqus_identifier = '2018/06/12/用 Graylog 取代 Splunk 紀錄 (下)/';
+var disqus_title = '用 Graylog 取代 Splunk 紀錄 (下)';
+var disqus_url = 'https://sujunmin.github.io/blog/2018/06/12/用 Graylog 取代 Splunk 紀錄 (下)/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><footer id="footer"><div class="container"><div class="bar"><div class="social"><a href="http://twitter.com/sujunmin_" target="_blank"><i class="fa fa-twitter"></i></a><a href="https://github.com/sujunmin" target="_blank"><i class="fa fa-github"></i></a><a href="https://plus.google.com/+JunMingSu" target="_blank"><i class="fa fa-google-plus"></i></a><a href="/atom.xml" target="_blank"><i class="fa fa-rss"></i></a></div><div class="footer">© 2018 <a href="/" rel="nofollow">Su, Jun-Ming</a>. Powered by <a rel="nofollow" target="_blank" href="https://hexo.io">Hexo</a>. Theme <a target="_blank" href="https://github.com/lotabout/very-simple">very-simple</a>.</div></div></div></footer><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+    $(".fancybox").fancybox();
+});
+</script></body><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-78894509-1');ga('send','pageview');</script></html>
