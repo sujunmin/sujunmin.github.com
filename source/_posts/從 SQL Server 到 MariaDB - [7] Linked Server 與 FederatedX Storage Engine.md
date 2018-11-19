@@ -156,3 +156,20 @@ execute stmt;
 
 1. 設大一點的 `wait_timeout`，但我覺得比較不切實際，因為如果重開機了 session 不在還是得失敗一次才能完成。
 2. 每個小時 select federated table 一次，這個我覺得可以把問題縮短到一個小時就能發現，比較實際。
+
+### 2018/11/19
+在建立完排程機制後，還是會發現錯誤，類似像這樣，規律的 "Got an error reading communication packets"。
+<img src=https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/ls_4.png />
+
+原來因為發生只在每個小時維持 Federated Table 連線的 Job，最近發現到連正常的 Job 也會拋錯，因此想來好好解決了。
+
+兩個 Site 之前的網路重新調整後，有比較少一點，但是還是會發生。
+
+調整資料庫 *timeout, allowed packets 也沒用。
+
+有天找到[這個](https://bugs.mysql.com/bug.php?id=67861)，發現到有人透過 ``flush table`` 方式來避免這個錯誤，來試試看以後，竟然就不會有錯了，解了多年來的問題。
+
+後來發個 [issue](https://jira.mariadb.org/browse/MDEV-17651)，被 merge 到其他 issue 上，雖然覺得不是一樣的問題。
+
+
+      
