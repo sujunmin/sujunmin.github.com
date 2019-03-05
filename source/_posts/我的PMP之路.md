@@ -63,4 +63,4 @@ CCR4: 2019/03/01-2022/03/01。
 *   專案工作經驗 (Giving Back: Work as a Practitioner)，2016/03/02-2019/03/02，得到8PDU。
 *   觀看長宏e-learning(教練時數轉換)5小時(2016/03/05)，得到5PDU (Course or Training: Strategic)，[證書](https://drive.google.com/uc?export=download&id=1l2XDkexPTX7ajPXP0yA-FgMMfqfjEORF)。
 *   觀看長宏e-learning(教練時數轉換)5小時(2016/03/05)，得到5PDU (Course or Training: Strategic)，[證書](https://drive.google.com/uc?export=download&id=1VJaYBahrHX-5kM8qV8NCx6uorgi1vh1-)。
-*   觀看 [Master of Project Academy](https://masterofproject.com/) Podcast: [Cost Management](https://www.youtube.com/watch?v=h24pXe7v83A) 2小時，得到2PDU (Online or Digital Media: Technical)。
+*   觀看 [Master of Project Academy](https://masterofproject.com/) Podcast: [Cost Management](https://www.youtube.com/watch?v=h24pXe7v83A) 2小時 (2016/03/05)，得到2PDU (Online or Digital Media: Technical)。
