@@ -5,14 +5,14 @@ tags:
 date: 2010-04-05 12:28:57
 ---
 
-這篇是要來記錄我的PMP證照之路，希望能夠走到PMP退休([PMP Retired Status](http://www.pmi.org/PDF/pdc_pmphandbook.pdf))的境界。
+這篇是要來記錄我的PMP證照之路，希望能夠走到PMP退休([PMP Retired Status](https://www.pmi.org/-/media/pmi/documents/public/pdf/certifications/ccr-certification-requirements-handbook.pdf))的境界。
 
 2010/03/02 取得PMP，[成績單](https://drive.google.com/uc?export=download&id=0B6HWfJSgyadTUDFlRWJhOGRVeW8)，[證照](https://drive.google.com/uc?export=download&id=0B6HWfJSgyadTV2dlblVFWWQwVDQ)。
 
 *   姓名: SU, JUN-MING。
 *   PMI ID: 1725131。
 *   PMP證書編號: 1320032。
-*   [PMI會員資料與PMP證書開箱](http://blog.xuite.net/retsamsu/diary/32681555)。
+*   [PMI會員資料與PMP證書開箱](https://sujunmin.github.io/blog/2010/04/05/PMI%E6%9C%83%E5%93%A1%E8%B3%87%E6%96%99%E8%88%87PMP%E8%AD%89%E6%9B%B8%E9%96%8B%E7%AE%B1%E6%96%87/)。
 
 CCR1: 2010/03/02-2013/03/01，[PDU更新記錄](https://drive.google.com/uc?export=download&id=0B6HWfJSgyadTTW1QSFpkZm9rYVE)，於2010/04/07完成換證，2010/04/28收到[新證](https://drive.google.com/uc?export=download&id=0B6HWfJSgyadTdVBuMjVSbVVDaWM)。
 
