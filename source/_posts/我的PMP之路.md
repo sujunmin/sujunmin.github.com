@@ -57,10 +57,12 @@ CCR2: 2013/03/01-2016/03/01，[PDU更新記錄](https://drive.google.com/uc?expo
 
 CCR4: 2019/03/01-2022/03/01。
 
-*   PDU狀態(現有/需要):30/60。
+*   PDU狀態(現有/需要):40/60。
 *   觀看長宏e-learning(其他/合併)5小時(2019/03/04)，得到5PDU (Course or Training: Technical)，[證書](https://drive.google.com/uc?export=download&id=1Wciu7OTS6EhYK04A2-HY8VudYWjpqQAq)。
 *   觀看長宏e-learning(教練時數轉換)5小時(2019/03/04)，得到5PDU (Course or Training: Strategic)，[證書](https://drive.google.com/uc?export=download&id=1GGEZeppbgZPE5JsKr4cZlXk0UTqb1AO_)。
 *   專案工作經驗 (Giving Back: Work as a Practitioner)，2016/03/02-2019/03/02，得到8PDU。
 *   觀看長宏e-learning(教練時數轉換)5小時(2016/03/05)，得到5PDU (Course or Training: Strategic)，[證書](https://drive.google.com/uc?export=download&id=1l2XDkexPTX7ajPXP0yA-FgMMfqfjEORF)。
 *   觀看長宏e-learning(教練時數轉換)5小時(2016/03/05)，得到5PDU (Course or Training: Strategic)，[證書](https://drive.google.com/uc?export=download&id=1VJaYBahrHX-5kM8qV8NCx6uorgi1vh1-)。
 *   觀看 [Master of Project Academy](https://masterofproject.com/) Podcast: [Cost Management](https://www.youtube.com/watch?v=h24pXe7v83A) 2小時 (2016/03/05)，得到2PDU (Online or Digital Media: Technical)。
+*   觀看長宏e-learning(教練時數轉換)5小時(2016/03/06)，得到5PDU (Course or Training: Technical)，[證書](https://drive.google.com/uc?export=download&id=1mcLrP-5dsHt3Asjb1mGchJ8vsig5k4B-)。
+*   觀看長宏e-learning(教練時數轉換)5小時(2016/03/06)，得到5PDU (Course or Training: Leadership)，[證書](https://drive.google.com/uc?export=download&id=1G4MPGuAxmnSfot58D25GqWXHtJx_YE_k)。
