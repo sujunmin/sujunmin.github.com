@@ -27,7 +27,7 @@ and Rudd McGary)，得到5PDU(Cat 2SDL)。
 *   2010/04/03完成長宏優惠券送出目標，獲得e-learning時數10小時(2010/03/24-2010/04/03)，得到10PDU(Cat 3)，[證書](https://drive.google.com/uc?export=download&id=0B6HWfJSgyadTdmFYeXF3U1JCams)。
 *   2010/04/07完成長宏[實務分享](http://blog.xuite.net/retsamsu/diary/32681555)，得e-learning時數10小時(2010/04/03-2010/04/07)，得到10PDU(Cat 3)，[證書](https://drive.google.com/uc?export=download&id=0B6HWfJSgyadTeVZsZkYzOUs5OHc)，完成CCR1所需的PDU，餘5PDU捨棄。
 
-CCR2: 2013/03/01-2016/03/01，[PDU更新記錄](https://drive.google.com/uc?export=download&id=0B6HWfJSgyadTdGE3TWFvSWVzYTQ)，於2013/03/10完成換證，2013/03/27收到[新證](https://drive.google.com/uc?export=download&id=https://drive.google.com/open?id=0B6HWfJSgyadTbUJOdGFHeFJ2Smc)。
+CCR2: 2013/03/01-2016/03/01，[PDU更新記錄](https://drive.google.com/uc?export=download&id=0B6HWfJSgyadTdGE3TWFvSWVzYTQ)，於2013/03/10完成換證，2013/03/27收到[新證](https://drive.google.com/uc?export=download&id=0B6HWfJSgyadTbUJOdGFHeFJ2Smc)。
 
 *   PDU狀態(現有/需要):60/60，0PDU保留到CCR3。
 *   觀看長宏e-learning(其他/合併)5小時(2013/03/02~2013/03/03)，得到5PDU (Cat A)，[證書](https://drive.google.com/uc?export=download&id=0B6HWfJSgyadTaDB2eUFxeGk1MFE)。
@@ -55,9 +55,9 @@ CCR2: 2013/03/01-2016/03/01，[PDU更新記錄](https://drive.google.com/uc?expo
 *   <span style="line-height: 1.2;"><span style="line-height: 18px;"><span style="line-height: 18px;"><span style="line-height: 18px;"><span><span style="line-height: 18px;"><span style="line-height: 18px;"><span><span><span style="line-height: 18px;"><span><span><span style="line-height: 18px;"><span><span><span style="line-height: 18px;"><span><span><span style="line-height: 18px;"><span><span><span style="line-height: 18px;">觀看長宏e-learning(教練時數轉換</span><span style="line-height: 18px;">)5小時</span><span style="line-height: 18px;">(2016/03/06)，</span><span style="line-height: 18px;">得到5PDU (<span>Course or Training:&nbsp;<span>&nbsp;<span style="line-height: 18px;">Leadership</span></span>)，<span>[證書](https://drive.google.com/uc?export=download&id=0B6HWfJSgyadTR3R3REd0M3kwME0)。</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>
 *   <span style="line-height: 1.2;"><span style="line-height: 18px;"><span style="line-height: 18px;"><span style="line-height: 18px;"><span><span style="line-height: 18px;"><span style="line-height: 18px;"><span><span><span style="line-height: 18px;"><span><span><span style="line-height: 18px;"><span><span><span style="line-height: 18px;"><span><span><span style="line-height: 18px;"><span><span><span style="line-height: 18px;"><span><span><span style="line-height: 18px;">觀看長宏e-learning(教練時數轉換</span><span style="line-height: 18px;">)5小時</span><span style="line-height: 18px;">(2016/03/06)，</span><span style="line-height: 18px;">得到5PDU (<span>Course or Training:&nbsp;<span>&nbsp;<span style="line-height: 18px;">Technical</span></span>)，<span>[證書](https://drive.google.com/uc?export=download&id=0B6HWfJSgyadTM2tXUkhPa0ZQRlE)，完成CCR3所需的PDU。</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>
 
-CCR4: 2019/03/01-2022/03/01。
+CCR4: 2019/03/01-2022/03/01，[PDU更新記錄](https://drive.google.com/uc?export=download&id=1m2SoDUh1tEtyT_-6QnMPWYfuiWRjcPiA)，於2019/03/08完成換證，[新證](https://drive.google.com/uc?export=download&id=1Doc3nrnPIMtoyMl06T2aLgTQleemfm94)。
 
-*   PDU狀態(現有/需要):40/60。
+*   PDU狀態(現有/需要):60/60，0PDU保留到CCR5。
 *   觀看長宏e-learning(其他/合併)5小時(2019/03/04)，得到5PDU (Course or Training: Technical)，[證書](https://drive.google.com/uc?export=download&id=1Wciu7OTS6EhYK04A2-HY8VudYWjpqQAq)。
 *   觀看長宏e-learning(教練時數轉換)5小時(2019/03/04)，得到5PDU (Course or Training: Strategic)，[證書](https://drive.google.com/uc?export=download&id=1GGEZeppbgZPE5JsKr4cZlXk0UTqb1AO_)。
 *   專案工作經驗 (Giving Back: Work as a Practitioner)，2016/03/02-2019/03/02，得到8PDU。
@@ -66,3 +66,9 @@ CCR4: 2019/03/01-2022/03/01。
 *   觀看 [Master of Project Academy](https://masterofproject.com/) Podcast: [Cost Management](https://www.youtube.com/watch?v=h24pXe7v83A) 2小時 (2016/03/05)，得到2PDU (Online or Digital Media: Technical)。
 *   觀看長宏e-learning(教練時數轉換)5小時(2016/03/06)，得到5PDU (Course or Training: Technical)，[證書](https://drive.google.com/uc?export=download&id=1mcLrP-5dsHt3Asjb1mGchJ8vsig5k4B-)。
 *   觀看長宏e-learning(教練時數轉換)5小時(2016/03/06)，得到5PDU (Course or Training: Leadership)，[證書](https://drive.google.com/uc?export=download&id=1G4MPGuAxmnSfot58D25GqWXHtJx_YE_k)。
+*   觀看長宏e-learning(教練時數轉換)5小時(2016/03/07)，得到5PDU (Course or Training: Leadership)，[證書](https://drive.google.com/uc?export=download&id=1fNYc53tu0QKhpoxo6fv8n7XA_o2DFSe_)。
+*   觀看長宏e-learning(教練時數轉換)5小時(2016/03/07)，得到5PDU (Course or Training: Leadership)，[證書](https://drive.google.com/uc?export=download&id=1KbAYHx_paAHPVX5-CnbbunXoptIuo8BL)。
+*   觀看長宏e-learning(其他/合併)5小時(2019/03/08)，得到5PDU (Course or Training: Technical)，[證書](https://drive.google.com/uc?export=download&id=1exL5cL6zslq7FL13JwSMps0Lb2xPnKHB)。
+*   觀看長宏e-learning(其他/合併)5小時(2019/03/08)，得到5PDU (Course or Training: Technical)，[證書](https://drive.google.com/uc?export=download&id=12ZJ1vydYl-oIIIYELI86mCjIUS41ZdvZ)，完成CCR4所需的PDU。
+
+CCR4: 2022/03/01-2025/03/01。
