@@ -1,0 +1,193 @@
+# Butterfly 主題設定（覆寫 themes/butterfly/_config.yml）
+# 完整選項請見 themes/butterfly/_config.yml
+
+# --------------------------------------
+# 導覽選單
+# --------------------------------------
+menu:
+  首頁: / || fas fa-home
+  彙整: /archives/ || fas fa-archive
+  標籤: /tags/ || fas fa-tags
+  分類: /categories/ || fas fa-folder-open
+
+# --------------------------------------
+# 程式碼區塊
+# --------------------------------------
+code_blocks:
+  theme: light
+  macStyle: true
+  height_limit: 400
+  word_wrap: false
+  copy: true
+  language: true
+  shrink: false
+  fullpage: false
+
+# --------------------------------------
+# 社群連結（已移除失效的 Google+）
+# --------------------------------------
+social:
+  fab fa-github: https://github.com/sujunmin || Github
+  fab fa-x-twitter: https://twitter.com/sujunmin_ || Twitter
+  fas fa-rss: /atom.xml || RSS
+
+# --------------------------------------
+# 圖片 / 頭像
+# --------------------------------------
+favicon: /favicon.ico
+
+avatar:
+  img: /img/butterfly-icon.png
+  effect: false
+
+# --------------------------------------
+# 文章資訊列
+# --------------------------------------
+post_meta:
+  page:
+    date_type: created
+    date_format: date
+    categories: true
+    tags: true
+    label: true
+  post:
+    position: left
+    date_type: both
+    date_format: date
+    categories: true
+    tags: true
+    label: true
+
+# --------------------------------------
+# 頁尾（部落格自 2009 年開始）
+# --------------------------------------
+footer:
+  owner:
+    enable: true
+    since: 2009
+  copyright:
+    enable: true
+    version: true
+  custom_text:
+
+# --------------------------------------
+# 側邊欄
+# --------------------------------------
+aside:
+  enable: true
+  mobile: true
+  position: right
+  display:
+    archive: true
+    tag: true
+    category: true
+  card_author:
+    enable: true
+    description: Linux、資料庫、MIS 實戰紀錄
+    button:
+      enable: true
+      icon: fab fa-github
+      text: GitHub
+      link: https://github.com/sujunmin
+  card_announcement:
+    enable: false
+  card_recent_post:
+    enable: true
+    limit: 5
+    sort: '-date'
+  card_categories:
+    enable: true
+    limit: 8
+    expand: none
+    sort: '-length'
+  card_tag_cloud:
+    enable: true
+    color: true
+    limit: 40
+    orderby: random
+    order: 1
+  card_archives:
+    enable: true
+    type: monthly
+    format: MMMM YYYY
+    order: -1
+    limit: 8
+  card_webinfo:
+    enable: true
+    post_count: true
+    last_push_date: true
+
+# --------------------------------------
+# 深色模式（跟隨系統）
+# --------------------------------------
+darkmode:
+  enable: true
+  button: true
+  autoChangeMode: 1
+  start:
+  end:
+
+# --------------------------------------
+# 字數統計 / 閱讀時間
+# --------------------------------------
+wordcount:
+  enable: true
+  post_wordcount: true
+  min2read: true
+  total_wordcount: true
+
+# 不蒜子瀏覽計數
+busuanzi:
+  site_uv: true
+  site_pv: true
+  page_pv: true
+
+# --------------------------------------
+# 站內搜尋
+# --------------------------------------
+search:
+  use: local_search
+  placeholder:
+  algolia_search:
+    hitsPerPage: 6
+  local_search:
+    preload: false
+    top_n_per_article: 1
+    unescape: false
+    CDN:
+
+# --------------------------------------
+# 留言（沿用原本的 Disqus shortname，舊留言會保留）
+# --------------------------------------
+comments:
+  use: Disqus
+  text: true
+  lazyload: false
+  count: false
+  card_post_count: false
+
+disqus:
+  shortname: sujunmin
+
+# --------------------------------------
+# 目錄 / 分享 / 相關文章
+# --------------------------------------
+toc:
+  post: true
+  page: false
+  style_simple: false
+  scroll_percent: true
+
+post_copyright:
+  enable: false
+
+share:
+  use:
+
+related_post:
+  enable: true
+  limit: 6
+  date_type: created
+
+# 回到頂部按鈕顯示閱讀進度
+rightside_scroll_percent: true
