@@ -1,0 +1,423 @@
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>使用 ipkall + Skype 註冊 Google Voice | 隨意記事</title><meta name="author" content="Su, Jun-Ming"><meta name="copyright" content="Su, Jun-Ming"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="最近在我的信箱裡面，發現到之前申請Google Voice的邀請函，之前雖然是說只有在美國地區試用，不過還是申請了邀請函來玩玩。 Google Voice的特性與創世紀的整合，這邊有很多了，就不再多說什麼。 因為裡面寫只有美國地區可以註冊，就要用一些方法來試用。  拜讀這個以後，知道要怎麼成功註冊與使用Google Voice的流程，但是裡面說的是使用VirtualPhoneLine來玩玩，我還是">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用 ipkall + Skype 註冊 Google Voice">
+<meta property="og:url" content="https://sujunmin.github.io/blog/2009/08/23/%E4%BD%BF%E7%94%A8-ipkall-Skype-%E8%A8%BB%E5%86%8A-Google-Voice/index.html">
+<meta property="og:site_name" content="隨意記事">
+<meta property="og:description" content="最近在我的信箱裡面，發現到之前申請Google Voice的邀請函，之前雖然是說只有在美國地區試用，不過還是申請了邀請函來玩玩。 Google Voice的特性與創世紀的整合，這邊有很多了，就不再多說什麼。 因為裡面寫只有美國地區可以註冊，就要用一些方法來試用。  拜讀這個以後，知道要怎麼成功註冊與使用Google Voice的流程，但是裡面說的是使用VirtualPhoneLine來玩玩，我還是">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://sujunmin.github.io/blog/img/butterfly-icon.png">
+<meta property="article:published_time" content="2009-08-23T16:33:24.000Z">
+<meta property="article:modified_time" content="2026-09-26T03:17:55.352Z">
+<meta property="article:author" content="Su, Jun-Ming">
+<meta property="article:tag" content="Networks">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://sujunmin.github.io/blog/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "使用 ipkall + Skype 註冊 Google Voice",
+  "url": "https://sujunmin.github.io/blog/2009/08/23/%E4%BD%BF%E7%94%A8-ipkall-Skype-%E8%A8%BB%E5%86%8A-Google-Voice/",
+  "image": "https://sujunmin.github.io/blog/img/butterfly-icon.png",
+  "datePublished": "2009-08-23T16:33:24.000Z",
+  "dateModified": "2026-09-26T03:17:55.352Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Su, Jun-Ming",
+      "url": "https://sujunmin.github.io/blog"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/blog/favicon.ico"><link rel="canonical" href="https://sujunmin.github.io/blog/2009/08/23/%E4%BD%BF%E7%94%A8-ipkall-Skype-%E8%A8%BB%E5%86%8A-Google-Voice/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/blog/css/index.css?v=5.7.1.260810"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.3.1/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        try {
+          const data = { value }
+
+          if (ttl != null) {
+            data.expiry = Date.now() + ttl * 86400000
+          }
+
+          localStorage.setItem(key, JSON.stringify(data))
+        } catch (e) {
+          console.error(e)
+        }
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return
+
+        try {
+          const data = JSON.parse(itemStr)
+
+          if (data.expiry && Date.now() > data.expiry) {
+            localStorage.removeItem(key)
+            return
+          }
+
+          return data.value
+        } catch {
+          localStorage.removeItem(key)
+        }
+      }
+    }
+
+    const scriptCache = new Map()
+    const cssCache = new Map()
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => {
+        if (scriptCache.has(url)) {
+          return scriptCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+
+          script.src = url
+          script.async = true
+
+          for (const key in attr) {
+            script.setAttribute(key, attr[key])
+          }
+
+          script.onload = resolve
+          script.onerror = reject
+
+          document.head.appendChild(script)
+        })
+
+        scriptCache.set(url, promise)
+
+        return promise
+      },
+      getCSS: (url, id) => {
+        if (cssCache.has(url)) {
+          return cssCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const link = document.createElement('link')
+
+          link.rel = 'stylesheet'
+          link.href = url
+
+          if (id) {
+            link.id = id
+          }
+
+          link.onload = resolve
+          link.onerror = reject
+
+          document.head.appendChild(link)
+        })
+
+        cssCache.set(url, promise)
+
+        return promise
+      },
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]')
+      const activateDarkMode = () => {
+        document.documentElement.dataset.theme = 'dark'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.dataset.theme = 'light'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const start = 6
+              const end = 18
+              const isNight =
+                start < end
+                    ? hour < start || hour >= end
+                    : hour >= start || hour < end
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', e => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/blog/',
+  algolia: undefined,
+  localSearch: {"path":"/blog/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"找不到符合您查詢的內容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":400,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '複製成功',
+    error: '複製失敗',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '載入更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '使用 ipkall + Skype 註冊 Google Voice',
+  isHighlightShrink: false,
+  isToc: false,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/blog/atom.xml" title="隨意記事" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/blog/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/blog/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/blog/archives/"><div class="headline">文章</div><div class="length-num">134</div></a><a href="/blog/tags/"><div class="headline">標籤</div><div class="length-num">23</div></a><a href="/blog/categories/"><div class="headline">分類</div><div class="length-num">0</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/blog/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 彙整</span></a></div><div class="menus_item"><a class="site-page" href="/blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/blog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/blog/"><span class="site-name">隨意記事</span></a><a class="nav-page-title" href="/blog/"><span class="site-name">使用 ipkall + Skype 註冊 Google Voice</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首頁</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜尋</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/blog/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 彙整</span></a></div><div class="menus_item"><a class="site-page" href="/blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/blog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">使用 ipkall + Skype 註冊 Google Voice</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">發表於</span><time class="post-meta-date-created" datetime="2009-08-23T16:33:24.000Z" title="發表於 2009-08-24 00:33:24">2009-08-24</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新於</span><time class="post-meta-date-updated" datetime="2026-09-26T03:17:55.352Z" title="更新於 2026-09-26 11:17:55">2026-09-26</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">總字數:</span><span class="word-count">1540</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀時間:</span><span>7 分鐘</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">瀏覽量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>最近在我的信箱裡面，發現到之前申請<a target="_blank" rel="noopener" href="https://www.google.com/voice/">Google Voice</a>的邀請函，之前雖然是說只有在美國地區試用，不過還是申請了邀請函來玩玩。</p>
+<p><a target="_blank" rel="noopener" href="https://www.google.com/voice/">Google Voice</a>的特性與創世紀的整合，<a target="_blank" rel="noopener" href="http://lmgtfy.com/?q=google+voice">這邊</a>有很多了，就不再多說什麼。</p>
+<p>因為裡面寫只有美國地區可以註冊，就要用一些方法來試用。</p>
+<p><a target="_blank" rel="noopener" href="http://photo.xuite.net/_r9009/retsamsu/3423409/11.jpg"><img src="http://e.share.photo.xuite.net/retsamsu/1e23200/3423409/131816015_m.jpg"></a></p>
+<p>拜讀<a target="_blank" rel="noopener" href="http://blog.mowd.idv.tw/index.php?pl=795">這個</a>以後，知道要怎麼成功註冊與使用<a target="_blank" rel="noopener" href="https://www.google.com/voice/">Google Voice</a>的流程，但是裡面說的是使用<a target="_blank" rel="noopener" href="http://www.virtualphoneline.com/">VirtualPhoneLine</a>來玩玩，我還是想用裡面說的<a target="_blank" rel="noopener" href="http://www.ipkall.com/">ipkall</a>，感覺可以用比較久(註冊之後可以永久免費使用)，因此再拜讀<a target="_blank" rel="noopener" href="http://google.org.cn/posts/active-google-voice-with-gizmo5.html">這個</a>，使用<a target="_blank" rel="noopener" href="http://gizmo5.com/">Gizmo5</a>+<a target="_blank" rel="noopener" href="http://www.ipkall.com/">ipkall</a>來註冊<a target="_blank" rel="noopener" href="https://www.google.com/voice/">Google Voice</a>，因此就來試試看，分享一下心得。</p>
+<p>不過後來發現<a target="_blank" rel="noopener" href="http://gizmo5.com/">Gizmo5</a>一直都沒法註冊，確認電話過來都沒聲音，打確認碼也沒用，因此改用<a target="_blank" rel="noopener" href="http://www.ipkall.com/">ipkall</a> + <a target="_blank" rel="noopener" href="http://skype.pchome.com.tw/">Skype</a> 註冊。</p>
+<p>以下的就當參考就好了，我不是用Gizmo5來註冊的，如果有人可以的話也請告知一聲。</p>
+<p><span style="text-decoration: line-through;">首先申請<a target="_blank" rel="noopener" href="http://gizmo5.com/">Gizmo5</a>，來拿裡面的SIP Phone Number等資料，到<a target="_blank" rel="noopener" href="http://gizmo5.com/">Gizmo5</a>網站，填申請表。</span></p>
+<p><a target="_blank" rel="noopener" href="http://photo.xuite.net/_r9009/retsamsu/3423409/7.jpg"><img src="http://e.share.photo.xuite.net/retsamsu/1e232d6/3423409/131813157_m.jpg"></a><br><span style="text-decoration: line-through;">填完以後，會寄一封確認信到信箱裡，裡面要注意的是Internet Telephone Number，因為等一下要填。</span></p>
+<p><a target="_blank" rel="noopener" href="http://photo.xuite.net/_r9009/retsamsu/3423409/8.jpg"><img src="http://e.share.photo.xuite.net/retsamsu/1e23202/3423409/131813201_m.jpg"></a></p>
+<p>接下來去<a target="_blank" rel="noopener" href="http://www.ipkall.com/">ipkall</a>的網站註冊，填一下資料註冊。</p>
+<p><a target="_blank" rel="noopener" href="http://photo.xuite.net/_r9009/retsamsu/3423409/9.jpg"><img src="http://e.share.photo.xuite.net/retsamsu/1e2320d/3423409/131813212_m.jpg"></a>*   Choose your account type: 選擇SIP</p>
+<ul>
+<li>Choose Area Code for your IPKall Number：隨便選</li>
+<li>SIP Phone number:填你的Skype帳號<span style="text-decoration: line-through;">就填剛剛<a target="_blank" rel="noopener" href="http://gizmo5.com/">Gizmo5</a>裡面那個Internet Telephone Number</span>e</li>
+<li>SIP Proxy:opensky.gizmo5.com(上面圖示是Gizmo5的方法Proxy)<em>&nbsp;</em><span style="text-decoration: line-through;">根據<a target="_blank" rel="noopener" href="http://support.gizmo5.com/index.php?_m=knowledgebase&amp;_a=viewarticle&amp;kbarticleid=83">這個</a>，知道是<span class="mediumtext">proxy01.sipphone.com:5060，就填進去</span></span></li>
+<li><span class="mediumtext">Email Address，Password，剩下的：就按照實際的填吧</span></li>
+</ul>
+<p><span class="mediumtext">填完以後就送出，會跑出確認畫面</span>(下面圖示是Gizmo5的方法Proxy，應為opensky.gizmo5.com)<span class="mediumtext">。</span></p>
+<p><span class="mediumtext"><a target="_blank" rel="noopener" href="http://photo.xuite.net/_r9009/retsamsu/3423409/9.jpg"></a><a target="_blank" rel="noopener" href="http://photo.xuite.net/_r9009/retsamsu/3423409/10.jpg"><img src="http://e.share.photo.xuite.net/retsamsu/1e23220/3423409/131813231_m.jpg"></a></p>
+<p>然後你的註冊信箱也會有封確認信，叫你等一下，因為他們要審核。</span></p>
+<p><span class="mediumtext"><a target="_blank" rel="noopener" href="http://photo.xuite.net/_r9009/retsamsu/3423409/11.jpg"><img src="http://e.share.photo.xuite.net/retsamsu/1e23228/3423409/131813239_m.jpg"></a></span></p>
+<p><span class="mediumtext">經過了大概1天多，收到ipkall的確認信</span><span class="mediumtext"></span>(下面圖示是Gizmo5的方法Proxy，應為opensky.gizmo5.com)<span class="mediumtext"></span><span class="mediumtext">，就可以來正式註冊</span><a target="_blank" rel="noopener" href="https://www.google.com/voice/">Google Voice</a><span class="mediumtext">啦。</span></p>
+<p><span class="mediumtext"><a target="_blank" rel="noopener" href="http://photo.xuite.net/_r9009/retsamsu/3423409/12.jpg"><img src="http://e.share.photo.xuite.net/retsamsu/1e23213/3423409/131938146_m.jpg"></a><br></span></p>
+<p><span class="mediumtext">註冊的理念其實很簡單，就是透過一個IP電話供應商(在美國的)把電話轉給可能的其他設備，如下：</span></p>
+<p><span class="mediumtext"><a target="_blank" rel="noopener" href="http://photo.xuite.net/_r9009/retsamsu/3423409/14.jpg"><img src="http://e.share.photo.xuite.net/retsamsu/1e232f4/3423409/131940419_m.jpg"></a><br></span></p>
+<p><span class="mediumtext">很多條路可以走，我也試了很多次，還是只有ipkall+Skype成功。<br></span></p>
+<p><span class="mediumtext">首先點一下</span><a target="_blank" rel="noopener" href="https://www.google.com/voice/">Google Voice</a><span class="mediumtext"></span><span class="mediumtext">的確認信件，結果…</span></p>
+<p><span class="mediumtext"><a target="_blank" rel="noopener" href="http://photo.xuite.net/_r9009/retsamsu/3423409/13.jpg"><img src="http://e.share.photo.xuite.net/retsamsu/1e232f8/3423409/131938375_m.jpg"></a></span></p>
+<p><span class="mediumtext">他會偵測你在哪個地方，如果不是在美國就不給用了。</span></p>
+<p><span class="mediumtext">網路上有一些方法可以用，如<a target="_blank" rel="noopener" href="http://hi.baidu.com/wodingdong/blog/item/a87e2854a22658163b2935a7.html">這個</a>，但是我還是覺得改改<a target="_blank" rel="noopener" href="http://lmgtfy.com/?q=american+open+proxy">Proxy</a>就好了，於是找了幾個美國的<a target="_blank" rel="noopener" href="http://www.xroxy.com/proxy-country-US.htm">Open Proxy</a>來試試看。</span></p>
+<p><span class="mediumtext">我用成功的是：63.251.57.112:3128這一組，找不到的可以參考看看。</span></p>
+<p><span class="mediumtext">套了一下Proxy，就可以繼續註冊了。</span></p>
+<p><span class="mediumtext"><a target="_blank" rel="noopener" href="http://photo.xuite.net/_r9009/retsamsu/3423409/15.jpg"></a><a target="_blank" rel="noopener" href="http://photo.xuite.net/_r9009/retsamsu/3423409/15.jpg"><img src="http://e.share.photo.xuite.net/retsamsu/1e232f1/3423409/131940672_m.jpg"></a><br></span><span class="mediumtext">首先要你選號(要把訊息轉到某個號碼上)，用區碼來選擇。</span></p>
+<p><span class="mediumtext"><a target="_blank" rel="noopener" href="http://photo.xuite.net/_r9009/retsamsu/3423409/16.jpg"><img src="http://e.share.photo.xuite.net/retsamsu/1e2323f/3423409/131941006_m.jpg"></a><br></span></p>
+<p><span class="mediumtext">選了個好號碼以後，接著下一步，要你輸入PIN碼，這個是讓你的其他設備(譬如手機)要用這隻號碼時，所要輸入的密碼。</span></p>
+<p><span class="mediumtext">當然<a target="_blank" rel="noopener" href="https://www.google.com/voice/">Google Voice</a>的Terms跟Privacy Policy也要勾一下才能用。</span></p>
+<p><span class="mediumtext"><a target="_blank" rel="noopener" href="http://photo.xuite.net/_r9009/retsamsu/3423409/17.jpg"><img src="http://e.share.photo.xuite.net/retsamsu/1e23241/3423409/131941008_m.jpg"></a><br></span></p>
+<p><span class="mediumtext">接下來設定要轉接的號碼，就把在ipkall申請的號碼填進去，地點好像沒差。</span></p>
+<p><span class="mediumtext"><a target="_blank" rel="noopener" href="http://photo.xuite.net/_r9009/retsamsu/3423409/18.jpg"><img src="http://e.share.photo.xuite.net/retsamsu/1e23243/3423409/131941010_m.jpg"></a><br></span></p>
+<p><span class="mediumtext">設定完以後，會發一通電話到你的號碼上(設到Skype)，Skype會收到一個電話，依照裡面的指示(英文)打入確認碼。</span></p>
+<p><span class="mediumtext"><a target="_blank" rel="noopener" href="http://photo.xuite.net/_r9009/retsamsu/3423409/19.jpg"><img src="http://e.share.photo.xuite.net/retsamsu/1e23247/3423409/131941014_m.jpg"></a><br></span></p>
+<p><span class="mediumtext">要慢慢打，有時候好像不太行，後來會要你錄製自己的歡迎聲音與名字，直接掛掉就好，這時候應該已經確認完畢了(這邊會試很多次，也很久)。</span></p>
+<p><span class="mediumtext">Skype要記得接到電話的時候，要開啟撥號鍵盤(不要像我一開始傻傻的一直在下面輸入)，撥號鍵盤會發送<span style="text-decoration: line-through;">dmpf(是這樣拼嘛?忘記了)</span>dtmf(By PTT milo大大，謝謝!)的頻率聲，才會有效果。</span></p>
+<p><span class="mediumtext">註冊完畢，就可以開始用啦~</span><img src="http://s.blog.xuite.net/_image/emotion/hastart/m138.gif"></p>
+<p><span class="mediumtext"><a target="_blank" rel="noopener" href="http://photo.xuite.net/_r9009/retsamsu/3423409/20.jpg"><img src="http://e.share.photo.xuite.net/retsamsu/1e2326f/3423409/131941054_m.jpg"></a><br></span></p>
+<p><span class="mediumtext">下一次就來寫個<a target="_blank" rel="noopener" href="https://www.google.com/voice/">Google Voice</a>的使用心得文吧~<br></span></p>
+<hr>
+<ul>
+<li>留言者: Ellise</li>
+<li>Email:*   網址:*   日期: 2011-04-02 23:07:49</li>
+</ul>
+<p>Hi,</p>
+<p>Thanks for your previous reply.</p>
+<p>another question:</p>
+<p>in your post about IPKALL Signup, you mentioned:</p>
+<p>&gt;&gt;SIP Phone number:填你的Skype帳號</p>
+<p>What kind Skype numbers do I need? I only have Skype Accout, no Skype numbers. Do you mean the paid SkypeIn numbers(fixed US phone numberS)?</p>
+<hr>
+<ul>
+<li>留言者: 小蘇</li>
+<li>Email:*   網址:*   日期: 2011-04-03 23:31:03</li>
+</ul>
+<p>Dears:</p>
+<p>It means your Skype account, not numbers.</p>
+<hr>
+<ul>
+<li>留言者: ellise</li>
+<li>Email:*   網址:*   日期: 2011-04-02 10:37:59</li>
+</ul>
+<p>Hello, is this method better than using Hotspot Shield? can you share step-by-step how to change Proxy? I also have a WIFI router. Thanks so much!</p>
+<hr>
+<ul>
+<li>留言者: 小蘇</li>
+<li>Email:*   網址:*   日期: 2011-04-02 17:09:30</li>
+</ul>
+<p>I have no idea about that, sorry.</p>
+<hr>
+<ul>
+<li>留言者: william</li>
+<li>Email:*   網址:*   日期: 2009-11-14 08:48:07</li>
+</ul>
+<p>請問您以IPKall + Skype 來使用Google Voice帳號打電話，會有三分鐘的談話時間限制嗎？我也是以一樣途徑，但每次Google Voice 打出去時，Skype 會在快三分鐘時 警告時間已屆，請問您如何避開這限制？</p>
+<hr>
+<ul>
+<li>留言者: 哈哈哈</li>
+<li>Email:*   網址:*   日期: 2009-11-14 20:21:01</li>
+</ul>
+<p>這篇只是來測測Google Voice的功能，要避開3分鐘可能要買點數吧~</p>
+<hr>
+<ul>
+<li>留言者: Painfree</li>
+<li>Email: <a href="mailto:&#x6b;&#x61;&#x70;&#108;&#x65;&#114;&#x40;&#x68;&#x6f;&#x74;&#x6d;&#x61;&#105;&#108;&#x2e;&#x63;&#111;&#109;">kapler@hotmail.com</a></li>
+<li>網址:*   日期: 2009-10-31 16:04:14</li>
+</ul>
+<p>請問Skype and Gtalk 的 SIP Proxy是什麼? 要到哪裡去找? Thanks a lot.</p>
+<hr>
+<ul>
+<li>留言者: 哈哈哈</li>
+<li>Email:*   網址:*   日期: 2009-10-31 19:23:57</li>
+</ul>
+<p>Skype就是上面寫的opensky.gizmo5.com，GTalk是gtalk2voip.com</p>
+<hr>
+<ul>
+<li>留言者: 哈哈哈</li>
+<li>Email: <a href="mailto:&#x72;&#x65;&#116;&#115;&#97;&#x6d;&#115;&#117;&#64;&#120;&#117;&#105;&#x74;&#101;&#46;&#x6e;&#x65;&#x74;">retsamsu@xuite.net</a></li>
+<li>網址:*   日期: 2009-10-27 12:34:23</li>
+</ul>
+<p>只需要中間設定ipkall裡的SIP Phone number，SIP Proxy即可，不用申請，我上線寫的是要透過Gizmo5的方法，您可以不用沒關係~</p>
+<hr>
+<ul>
+<li>留言者: Wu Conrad</li>
+<li>Email: <a href="mailto:&#x77;&#117;&#x2e;&#x63;&#111;&#110;&#x72;&#97;&#100;&#x40;&#103;&#109;&#97;&#x69;&#x6c;&#x2e;&#x63;&#x6f;&#x6d;">wu.conrad@gmail.com</a></li>
+<li>網址:*   日期: 2009-10-25 05:29:55</li>
+</ul>
+<p>我看完還是不理解怎樣將IPKall轉到Skype去。</p>
+<p>你顯示的方法都係Gizmo的吧？</p>
+</article><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/blog/tags/Networks/">Networks</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/blog/2009/08/24/%E5%8F%B3%E8%85%B3%E6%8B%87%E6%8C%87%E7%94%B2%E6%BA%9D%E7%82%8E-%E5%87%8D%E7%94%B2-%E6%89%8B%E8%A1%93-Day-39-Final/" title="右腳拇指甲溝炎(凍甲)手術(Day 39) Final"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">右腳拇指甲溝炎(凍甲)手術(Day 39) Final</div></div><div class="info-2"><div class="info-item-1">很快的一個多月過去了，因為這個的關係，覺得健康實在是很重要，因此來寫寫我的腳復原情況吧。 首先還是要祝他們早日康復，再一起出去玩吧。 自從第一次回診以後，下次回診(兩個星期之前)還是細心的照顧我的腳。 沒有吃藥了，但是還是繼續擦藥保養。 在第二次回診之前，那個時候我自己的案子已經在重要的測試階段，對同事實在是不能凹了，去了基隆港一天，穿著脫鞋露出包著大包的腳趾跑來跑去，請測試人員簽名，很多港務局的人問我怎麼了，直說很辛苦，我想這個也是那天幾乎都拿到簽名的原因吧~ 不過洗澡開始不包塑膠袋了，但還是小心沖，儘量不泡到水。 回診後隔天還去看展，那天就開始穿鞋子了。 接下來下個星期去溪頭兩天(其實那天還是要回診呢，不過就沒去了)，對我的腳嚴酷的負荷，一堆節目，一堆爬山健行的行程，不過感覺倒是還好。 然後就是連包都不包了(還剩很多在家裡的抽屜裡)，想說讓他慢慢好，其實一切都正常了(上班、出差、出去玩等等)。 不過大量的泡水(公司工會研習營那邊有泡湯行程那些)還是不敢作，雖然應該是好了啦，不過還是要在多留意一下。 現在原來不好的那邊(右腳大拇指的右邊)其實都好了，反而是為了預防而開的另一邊(...</div></div></div></a><a class="pagination-related" href="/blog/2009/08/12/%E8%B2%93%E5%AE%B640%E9%80%B1%E5%B9%B4%E6%85%B6-%E6%BA%AA%E9%A0%AD%E9%9D%92%E5%B9%B4%E6%B4%BB%E5%8B%95%E4%B8%AD%E5%BF%83-Day-2/" title="貓家40週年慶 溪頭青年活動中心 Day 2"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">貓家40週年慶 溪頭青年活動中心 Day 2</div></div><div class="info-2"><div class="info-item-1">距離了很久的時間，才把這次的活動寫完，希望以後還有這樣的機會出去玩。 清晨，發現到時間已經是八點多了，原來的鬧鐘沒響，因為手機沒電又當機，急急忙忙的跑出去吃早餐，然後就退房，拿了一堆礦泉水跟其他的東西，就在溪頭青年中心裡面拍拍照晃晃了。        &nbsp;      碰到bonnie的同期，與一個早期的學長，對於買到便宜的公路車真的是耿耿於懷，後來是因為要開始接下來的活動了，要不然人真的越來越多~    ![](http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/29730647/3.jpg) ![](http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/29730647/4.jpg)  ![](http://e.blog.xuite.net/e/2/3/2/11844378/blog_1638788/txt/29730647/5.jpg)      接下來就是貓家40週年慶慶祝大會了，主辦單位也很貼心，對於我們這些眷屬也派了專人帶我們去晃晃，不過...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相關推薦</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/blog/2009/08/26/Google-Voice-%E4%BD%BF%E7%94%A8%E5%BF%83%E5%BE%97/" title="Google Voice 使用心得"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2009-08-26</div><div class="info-item-2">Google Voice 使用心得</div></div><div class="info-2"><div class="info-item-1">前些時候完成了使用 ipkall + Skype 註冊 Google Voice，後來就試用一下，想要分享一些心得，給大家參考參考。 登入Google Voice，會看到一個非常清爽的畫面，很GMail的感覺。  中間就跟GMail一樣，每個動作(打電話，簡訊，語音留言等)，都是一個Message，簡單清爽的感覺。 下面有看到送你$0.1試用，還不賴。 先不要急著打電話，看看設定的部份，有什麼可以設定(看Google要不要取代電信業者的能耐)。  除了一般設定(時區，語言)以外，可以看到來電的一些選項，語音留言的提示等。  還有呼叫的來電顯示，一些相關設定(其實我覺得一般的電信業者能設定的也差不多這些了，像emome那些也差不多就這些)。 這邊就是你之前選定的電話，與轉接電話設定，我有設過台灣的電話，不過還是不行。  這邊能設定群組與轉接對象，跟Google其他服務的聯絡人整合，如果你有維護的話，這邊就很好使用了。 這邊是說可以你的在網頁上設定Widget功能，快速聯絡到你。 你的帳單記錄(第一筆是我打電話測試的紀錄，花了$0.09，一下子就花光了，下面會有使用過程)。 剛剛在首...</div></div></div></a><a class="pagination-related" href="/blog/2010/07/05/%E5%8F%AA%E8%A6%81%E8%83%BD%E6%89%93%E5%AD%97%EF%BC%8C%E5%B0%B1%E8%83%BD%E5%81%9A%E5%BD%B1%E7%89%87-xtranormal/" title="只要能打字，就能做影片 - xtranormal"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2010-07-05</div><div class="info-item-2">只要能打字，就能做影片 - xtranormal</div></div><div class="info-2"><div class="info-item-1">最近iPhone 4剛出，這個世界就有許多讚揚它與貶低它的文章與說明出現。有個很好笑的iPhone4 vs HTC Evo 4G系列，看起來都是同一個模組做的，只有對話不一樣。看到最後有Text-To-Movie與xtranormal的Logo，想說這個網站真神奇，可以這樣產生出影片，就來試試看。沒想到欲罷不能，花了一點時間瞭解系統與做出下面的範例(我與我女朋友的故事)。      &nbsp;  要做這個只需要你有腳本，跟一些些錢就好了。首先連結到xtranormal，可以看到他有支援很多版本，並且與FaceBook認證合併，不用再申請其他帳號了。 (以下圖片為該網站與該所屬公司所有)  最新製作的影片還一直在跳動，很多人在玩這個。登入以後有很多功能，可以先使用製作電影的功能。  點進去以後，可以看到是用哪種展示包製作電影，有許多的場景跟人物可以選，並且選擇是一個人在影片裡還是兩個人。 選完以後，就可以到編輯頁面去了(一開始還沒買點數的時候應該是沒有xp的，畫面裡已經買點數了)。  以下就針對各項來簡介一下。 1. 寫腳本：針對你要表達的內容寫進去，整個影片有20000字的空間...</div></div></div></a><a class="pagination-related" href="/blog/2016/06/07/%E6%90%AC%E5%AE%B6%E7%B4%80%E9%8C%84/" title="搬家紀錄"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2016-06-07</div><div class="info-item-2">搬家紀錄</div></div><div class="info-2"><div class="info-item-1">又開始寫 blog 了，之前一直想搬家都沒法成功，這次花了點時間終於完成了，特別紀錄一下給需要的人參考。 原來的規劃是這樣的。  在 github 上面開 web page 使用 hexo 來作 blog 系統 (台灣人做的當然要支持) 把之前在 xuite 的文章移轉到新 blog  但是發現到從 xuite 匯出的 Movable Type 格式不是正式的規格，所以 hexo 的 plugin 或是第三方轉檔程式都不吃這個，後來就想說要不要算開第2站方式進行，但是也懶了，就刪除掉了。 之前也有想說把原來的 blog 移轉到 Blogger 所以找到一個不錯的工具 BlogTrans，寫的很棒，只是找不太到官方網站了，其中它有轉到 Blogger ATOM XML 的功能，一直以為就轉到 Blogger 這樣，最近發現到 hexo 有吃 Blogger RSS 的功能，就開始真正的搬家活動了。 流程如下。  在 xuite 把檔案轉出來 開 BlogTrans 轉檔至 Blogger ATOM XML，如果有留言可以選擇合併到本文裡 把生出來的檔案放在一個網頁空間裡，我是放在 ...</div></div></div></a><a class="pagination-related" href="/blog/2018/06/12/%E7%94%A8%20Graylog%20%E5%8F%96%E4%BB%A3%20Splunk%20%E7%B4%80%E9%8C%84%20(%E4%B8%8B)/" title="用 Graylog 取代 Splunk 紀錄 (下)"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2018-06-12</div><div class="info-item-2">用 Graylog 取代 Splunk 紀錄 (下)</div></div><div class="info-2"><div class="info-item-1">需求說明有了前一篇的架設，這邊來說明要怎麼從 Splunk 把報表轉到 Graylog。 先前準備因為在 Graylog 的 Web 界面是沒辦法直接拉報表，必須透過 Graylog Restful API 來做介接取得資料後再自己 Render 出來，所以以下的基本知識需要先了解。  REST&#x2F;RESTFul API 介紹，怎麼操作 API Lucene Query Syntax，最重要的核心，如何去找到你要的東西 報表系統使用的平台，必須要能夠吃 Graylog 產生出來的 JSON  因為在 SQL Server、MariaDB 的經驗，這次還是選擇 Windows 上面的 Powershell 來實做報表。 Graylog RESTFul API官方文件就是只叫用戶到 System&#x2F;Node 底下的 API Browser 去看，說實在的，就只是這樣而已，因此大部分的時間都在在這個用 Swagger 做出來的 API Browser 上。 登入帳號密碼以後可以看到列表，點開每一個項目會有說明，下面的圖應該就是寫報表的主體。  點開一個方法就會有每個方法...</div></div></div></a><a class="pagination-related" href="/blog/2018/05/31/%E7%94%A8%20Graylog%20%E5%8F%96%E4%BB%A3%20Splunk%20%E7%B4%80%E9%8C%84%20(%E4%B8%8A)/" title="用 Graylog 取代 Splunk 紀錄 (上)"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2018-05-31</div><div class="info-item-2">用 Graylog 取代 Splunk 紀錄 (上)</div></div><div class="info-2"><div class="info-item-1">需求說明原來負責系統的 Log 架構是這樣的  因為 Splunk License 的關係，有時候會因為收的量太多而罷工了。 這次就是想要利用 Graylog 來取代原有的 Splunk，以避免有 Log 沒分析到的問題。 試用經過(請注意以下因為一些因素，只換 Splunk 的方式非真正最佳解法，僅提供有類似架構的朋友參考)因為一開始對 Graylog 不熟，所以當然要有一些測試。從官網上的 OVA 開始，發現可以有 Log 進來，玩了一下界面，還蠻不錯的。 不過有一個麻煩的事情(這個在之前系統有購買 Arcsight 的 Solution 也有碰到過)，就是資料是亂碼的問題。 原因出在從 KIWI Syslog Server 拋出來的 Syslog 是 Windows 編碼，到 Linux 上就會變亂碼了。 找了一些方法，沒找到可以從 Graylog 直接 Conversion 的方法，只能前面加個 logstash 轉了。 原來想裝在官網的 OVA 裡，不過官網的 OVA 一來是 Ubuntu 14.04，系統裡的 Ubuntu 16.04 外，裝好起來效能竟然差到沒法 P...</div></div></div></a><a class="pagination-related" href="/blog/2017/03/03/%E8%AE%93%E4%B8%8D%E6%94%AF%E6%8F%B4%20Web%20API%20%E7%9A%84%E7%A8%8B%E5%BC%8F%E6%94%AF%E6%8F%B4%E4%B8%A6%E4%BD%BF%E7%94%A8%20LINE%20Notify%20%E6%9C%8D%E5%8B%99/" title="讓不支援 Web API 的程式支援並使用 LINE Notify 服務"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2017-03-03</div><div class="info-item-2">讓不支援 Web API 的程式支援並使用 LINE Notify 服務</div></div><div class="info-2"><div class="info-item-1">需求說明在開發某個應用的時候，使用 LINE Notify 作為通知功能，卻發現到該架構沒有使用 Web API 的函式 (Webrequest, HttpWebRequest, RestGet, …)，透過執行外部程式的方式來達成目的。 LINE Notify這個服務蠻方便的，如果要作簡易的通知機器人又不想要作複雜的機器人開發，只要註冊一下就可以使用了，Google 一下有很多人都有使用經驗，是個不錯的服務。 讓不支援 Web API 的程式支援如果你的架構能支援使用外部程式，或是可以使用其他類 (如 C++ export function) 函式庫的話，以下的說明可以讓該架構可以使用 Web API。 我的架構中是沒有支援使用外部程式，但可以用 C++ 的外部函式庫，在 Windows 上面。 首先，我使用 Windows 都有的 shell32.dll。 12345678910#import &quot;shell32.dll&quot;         int ShellExecuteW( int       hWnd,                          ...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 評論</span></div></div><div class="comment-wrap"><div><div id="disqus_thread"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/blog/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/blog/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Su, Jun-Ming</div><div class="author-info-description">Linux、資料庫、MIS 實戰紀錄</div><div class="site-data"><a href="/blog/archives/"><div class="headline">文章</div><div class="length-num">134</div></a><a href="/blog/tags/"><div class="headline">標籤</div><div class="length-num">23</div></a><a href="/blog/categories/"><div class="headline">分類</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/sujunmin"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/sujunmin" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="https://twitter.com/sujunmin_" target="_blank" title="Twitter"><i class="fab fa-x-twitter"></i></a><a class="social-icon" href="/blog/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/blog/2018/06/12/%E7%94%A8%20Graylog%20%E5%8F%96%E4%BB%A3%20Splunk%20%E7%B4%80%E9%8C%84%20(%E4%B8%8B)/" title="用 Graylog 取代 Splunk 紀錄 (下)">用 Graylog 取代 Splunk 紀錄 (下)</a><time datetime="2018-06-12T07:50:55.000Z" title="發表於 2018-06-12 15:50:55">2018-06-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/blog/2018/05/31/%E7%94%A8%20Graylog%20%E5%8F%96%E4%BB%A3%20Splunk%20%E7%B4%80%E9%8C%84%20(%E4%B8%8A)/" title="用 Graylog 取代 Splunk 紀錄 (上)">用 Graylog 取代 Splunk 紀錄 (上)</a><time datetime="2018-05-31T07:43:12.000Z" title="發表於 2018-05-31 15:43:12">2018-05-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/blog/2017/08/31/Ubuntu%2016.04%20%E5%AE%89%E8%A3%9D%E8%88%87%E4%BD%BF%E7%94%A8%20Flashcache%20%E6%B5%81%E7%A8%8B%E7%B4%80%E9%8C%84/" title="Ubuntu 16.04 安裝與使用 Flashcache 流程紀錄">Ubuntu 16.04 安裝與使用 Flashcache 流程紀錄</a><time datetime="2017-08-31T04:31:57.000Z" title="發表於 2017-08-31 12:31:57">2017-08-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/blog/2017/07/27/IE%2011%20%E5%9B%A0%E7%82%BA%20KB2729094%20%E4%B8%8D%E8%83%BD%E5%AE%89%E8%A3%9D%E7%9A%84%E5%95%8F%E9%A1%8C/" title="IE 11 因為 KB2729094 不能安裝的問題">IE 11 因為 KB2729094 不能安裝的問題</a><time datetime="2017-07-27T10:31:45.000Z" title="發表於 2017-07-27 18:31:45">2017-07-27</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/blog/2017/07/02/%E5%9C%A8%20Pinebook%20%E4%B8%8A%E5%AE%89%E8%A3%9D%20Visual%20Studio%20Code/" title="在 Pinebook 上安裝 Visual Studio Code">在 Pinebook 上安裝 Visual Studio Code</a><time datetime="2017-07-02T15:53:43.000Z" title="發表於 2017-07-02 23:53:43">2017-07-02</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2009 - 2026 By Su, Jun-Ming</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主題 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.7.1.260810</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日夜模式切換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><a id="to_comment" href="#post-comment" title="前往評論"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到頂端"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/blog/js/utils.js?v=5.7.1.260810"></script><script src="/blog/js/main.js?v=5.7.1.260810"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+
+  const disqusReset = conf => {
+    window.DISQUS && window.DISQUS.reset({
+      reload: true,
+      config: conf
+    })
+  }
+
+  const loadDisqus = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyDisqus = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    window.disqus_identifier = isShuoshuo ? path : '/blog/2009/08/23/%E4%BD%BF%E7%94%A8-ipkall-Skype-%E8%A8%BB%E5%86%8A-Google-Voice/'
+    window.disqus_url = isShuoshuo ? location.origin + path : 'https://sujunmin.github.io/blog/2009/08/23/%E4%BD%BF%E7%94%A8-ipkall-Skype-%E8%A8%BB%E5%86%8A-Google-Voice/'
+
+    const disqus_config = function () {
+      this.page.url = disqus_url
+      this.page.identifier = disqus_identifier
+      this.page.title = '使用 ipkall + Skype 註冊 Google Voice'
+    }
+
+    if (window.DISQUS) disqusReset(disqus_config)
+    else {
+      const script = document.createElement('script')
+      script.src = 'https://sujunmin.disqus.com/embed.js'
+      script.setAttribute('data-timestamp', +new Date())
+      document.head.appendChild(script)
+    }
+
+    btf.addGlobalFn('themeChange', () => disqusReset(disqus_config), 'disqus')
+  }
+
+  const getCount = async() => {
+    try {
+      const eleGroup = document.querySelector('#post-meta .disqus-comment-count')
+      if (!eleGroup) return
+      const cleanedLinks = eleGroup.href.replace(/#post-comment$/, '')
+
+      const res = await fetch(`https://disqus.com/api/3.0/threads/set.json?forum=sujunmin&api_key=&thread:link=${cleanedLinks}`,{
+        method: 'GET'
+      })
+      const result = await res.json()
+
+      const count = result.response.length ? result.response[0].posts : 0
+      eleGroup.textContent = count
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Disqus' === 'Disqus'
+      ? window.shuoshuoComment = { loadComment: loadDisqus }
+      : window.loadOtherComment = loadDisqus
+    return
+  }
+
+  if ('Disqus' === 'Disqus' || !false) {
+    if (false) btf.loadComment(document.getElementById('disqus_thread'), loadDisqus)
+    else {
+      loadDisqus()
+      
+    }
+  } else {
+    window.loadOtherComment = loadDisqus
+  }
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜尋</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  資料載入中</span></div><div class="local-search-input"><input placeholder="搜尋文章" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/blog/js/search/local-search.js?v=5.7.1.260810"></script></div></div></body></html>

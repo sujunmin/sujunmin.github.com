@@ -1,0 +1,341 @@
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Windows 7 忘記密碼不用透過密碼忘記磁碟 | 隨意記事</title><meta name="author" content="Su, Jun-Ming"><meta name="copyright" content="Su, Jun-Ming"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="今天幫同事解決 Windows 7 忘記密碼的問題，原來是想要用這個來解決，但是開機會 Kernel Panic @@，網路上找到的一些程式都要 $$，忽然發現到一篇寫得不賴，拿來用也成功，特別紀錄一下如何使用的。雖然覺得之前看過一樣的方法，今天算是第一次使用XD這個方法是把 sethc.exe (Windows 相黏鍵) 功能替換成 cmd.exe (Shell)，進而使用指令修改密碼。  重開">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Windows 7 忘記密碼不用透過密碼忘記磁碟">
+<meta property="og:url" content="https://sujunmin.github.io/blog/2016/01/26/Windows%207%20%E5%BF%98%E8%A8%98%E5%AF%86%E7%A2%BC%E4%B8%8D%E7%94%A8%E9%80%8F%E9%81%8E%E5%AF%86%E7%A2%BC%E5%BF%98%E8%A8%98%E7%A3%81%E7%A2%9F/index.html">
+<meta property="og:site_name" content="隨意記事">
+<meta property="og:description" content="今天幫同事解決 Windows 7 忘記密碼的問題，原來是想要用這個來解決，但是開機會 Kernel Panic @@，網路上找到的一些程式都要 $$，忽然發現到一篇寫得不賴，拿來用也成功，特別紀錄一下如何使用的。雖然覺得之前看過一樣的方法，今天算是第一次使用XD這個方法是把 sethc.exe (Windows 相黏鍵) 功能替換成 cmd.exe (Shell)，進而使用指令修改密碼。  重開">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://sujunmin.github.io/blog/img/butterfly-icon.png">
+<meta property="article:published_time" content="2016-01-26T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-09-26T03:17:55.350Z">
+<meta property="article:author" content="Su, Jun-Ming">
+<meta property="article:tag" content="MIS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://sujunmin.github.io/blog/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Windows 7 忘記密碼不用透過密碼忘記磁碟",
+  "url": "https://sujunmin.github.io/blog/2016/01/26/Windows%207%20%E5%BF%98%E8%A8%98%E5%AF%86%E7%A2%BC%E4%B8%8D%E7%94%A8%E9%80%8F%E9%81%8E%E5%AF%86%E7%A2%BC%E5%BF%98%E8%A8%98%E7%A3%81%E7%A2%9F/",
+  "image": "https://sujunmin.github.io/blog/img/butterfly-icon.png",
+  "datePublished": "2016-01-26T16:00:00.000Z",
+  "dateModified": "2026-09-26T03:17:55.350Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Su, Jun-Ming",
+      "url": "https://sujunmin.github.io/blog"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/blog/favicon.ico"><link rel="canonical" href="https://sujunmin.github.io/blog/2016/01/26/Windows%207%20%E5%BF%98%E8%A8%98%E5%AF%86%E7%A2%BC%E4%B8%8D%E7%94%A8%E9%80%8F%E9%81%8E%E5%AF%86%E7%A2%BC%E5%BF%98%E8%A8%98%E7%A3%81%E7%A2%9F/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/blog/css/index.css?v=5.7.1.260810"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.3.1/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        try {
+          const data = { value }
+
+          if (ttl != null) {
+            data.expiry = Date.now() + ttl * 86400000
+          }
+
+          localStorage.setItem(key, JSON.stringify(data))
+        } catch (e) {
+          console.error(e)
+        }
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return
+
+        try {
+          const data = JSON.parse(itemStr)
+
+          if (data.expiry && Date.now() > data.expiry) {
+            localStorage.removeItem(key)
+            return
+          }
+
+          return data.value
+        } catch {
+          localStorage.removeItem(key)
+        }
+      }
+    }
+
+    const scriptCache = new Map()
+    const cssCache = new Map()
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => {
+        if (scriptCache.has(url)) {
+          return scriptCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+
+          script.src = url
+          script.async = true
+
+          for (const key in attr) {
+            script.setAttribute(key, attr[key])
+          }
+
+          script.onload = resolve
+          script.onerror = reject
+
+          document.head.appendChild(script)
+        })
+
+        scriptCache.set(url, promise)
+
+        return promise
+      },
+      getCSS: (url, id) => {
+        if (cssCache.has(url)) {
+          return cssCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const link = document.createElement('link')
+
+          link.rel = 'stylesheet'
+          link.href = url
+
+          if (id) {
+            link.id = id
+          }
+
+          link.onload = resolve
+          link.onerror = reject
+
+          document.head.appendChild(link)
+        })
+
+        cssCache.set(url, promise)
+
+        return promise
+      },
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]')
+      const activateDarkMode = () => {
+        document.documentElement.dataset.theme = 'dark'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.dataset.theme = 'light'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const start = 6
+              const end = 18
+              const isNight =
+                start < end
+                    ? hour < start || hour >= end
+                    : hour >= start || hour < end
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', e => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/blog/',
+  algolia: undefined,
+  localSearch: {"path":"/blog/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"找不到符合您查詢的內容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":400,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '複製成功',
+    error: '複製失敗',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '載入更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Windows 7 忘記密碼不用透過密碼忘記磁碟',
+  isHighlightShrink: false,
+  isToc: false,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/blog/atom.xml" title="隨意記事" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/blog/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/blog/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/blog/archives/"><div class="headline">文章</div><div class="length-num">134</div></a><a href="/blog/tags/"><div class="headline">標籤</div><div class="length-num">23</div></a><a href="/blog/categories/"><div class="headline">分類</div><div class="length-num">0</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/blog/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 彙整</span></a></div><div class="menus_item"><a class="site-page" href="/blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/blog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/blog/"><span class="site-name">隨意記事</span></a><a class="nav-page-title" href="/blog/"><span class="site-name">Windows 7 忘記密碼不用透過密碼忘記磁碟</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首頁</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜尋</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/blog/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 彙整</span></a></div><div class="menus_item"><a class="site-page" href="/blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/blog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Windows 7 忘記密碼不用透過密碼忘記磁碟</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">發表於</span><time class="post-meta-date-created" datetime="2016-01-26T16:00:00.000Z" title="發表於 2016-01-27 00:00:00">2016-01-27</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新於</span><time class="post-meta-date-updated" datetime="2026-09-26T03:17:55.350Z" title="更新於 2026-09-26 11:17:55">2026-09-26</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">總字數:</span><span class="word-count">513</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀時間:</span><span>2 分鐘</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">瀏覽量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>今天幫同事解決 Windows 7 忘記密碼的問題，原來是想要用<a target="_blank" rel="noopener" href="http://pogostick.net/~pnh/ntpasswd/">這個</a>來解決，但是開機會 Kernel Panic @@，網路上找到的一些程式都要 $$，忽然發現到<a target="_blank" rel="noopener" href="http://www.oxhow.com/reset-windows-7-password-without-password-reset-disk/">一篇</a>寫得不賴，拿來用也成功，特別紀錄一下如何使用的。雖然覺得之前看過一樣的方法，今天算是第一次使用XD<br>這個方法是把 sethc.exe (<a target="_blank" rel="noopener" href="http://windows.microsoft.com/zh-tw/windows/make-keyboard-easier-to-use#1TC=windows-7">Windows 相黏鍵</a>) 功能替換成 cmd.exe (Shell)，進而使用指令修改密碼。</p>
+<ul>
+<li>重開機到 Windows 修復</li>
+<li>讓她修復一下</li>
+<li>修復完成後，點選更多問題選項</li>
+<li>點選最下面的 Offline Policy 說明</li>
+<li>會跑出 notepad，我們拿它來替換 sethc.exe</li>
+<li>開啟檔案到 Windows\system32 底下，選全部檔案</li>
+<li>找到 sethc.exe，修改為sethc_bak.exe</li>
+<li>在同個目錄找 cmd.exe，複製一份副本</li>
+<li>把 cmd.exe 的副本修改為 sethc.exe</li>
+<li>修改完畢，重開機到登入畫面</li>
+<li>按 5 次 shift 會跑出 cmd 畫面</li>
+<li>這個 cmd 有時間性的 (因為原來相黏鍵的說明也有時間性)，所以要趕快輸入</li>
+<li>執行 net users  看帳號名稱</li>
+<li>執行 net users &lt;帳號名稱&gt; * 改密碼</li>
+<li>登入以後再把之前修改的 sethc_bak.exe  修改回來 (如不能修改可複製一份再改回原檔名 sethc.exe )</li>
+<li>收工</li>
+</ul>
+<p>[20170405] 更新</p>
+<p>今天改了本機密碼以後，就三不五時帳號被鎖定，可能是有其他需要密碼的程式(例如系統排程)因為一直輸入舊的密碼導致一直被鎖定，本機是 Windows 10，跟 Windows 7 的作法比較不一樣，紀錄如下</p>
+<ul>
+<li><p>登入畫面點選重開機，記得按著 Shift</p>
+</li>
+<li><p>會跑出[選擇選項]，點選[疑難排解]\[進階選項]\[命令提示字元] (連修復都不需要了)</p>
+</li>
+<li><p>開始如同之前的複製修改</p>
+<p><code>c:\windows\system32&gt;copy sethc.exe sethc_bak.exe</code></p>
+<p><code>c:\windows\system32&gt;copy cmd.exe sethc.exe</code></p>
+</li>
+<li><p>重新啟動電腦</p>
+</li>
+<li><p>接下來都跟之前一樣</p>
+</li>
+</ul>
+</article><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/blog/tags/MIS/">MIS</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/blog/2016/02/13/Oracle%2012c%20%E7%9A%84%20Database%20%E9%A0%90%E8%A8%AD%E6%98%AF%E9%96%8B%20Unified%20Auditing%20%E7%9A%84!/" title="Oracle 12c 的 Database 預設是開 Unified Auditing 的!"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Oracle 12c 的 Database 預設是開 Unified Auditing 的!</div></div><div class="info-2"><div class="info-item-1">之前才說剛急救一下 Oracle sysaux 滿的問題， 沒隔幾天又發生了(昨天晚上)。昨天仍透過 exec dbms_stats.purge_stats() 移除部分資料，甚至只留下一天也會發生。急救完以後，想說好好來看看問題到底在哪邊，發現到一個很有趣的問題，有人(A)認為是文件寫錯，連 Oracle 的人(B)也開文說明問題在哪邊，以下紀錄一下處理過程。  Unified Auditing 是 Oracle 12c 的一個新功能  我的規劃是不用他(除了太新之外，因為它會記到 DB 裡，又要考慮會爆的問題，加上專案使用的 Log Solution “有機會” 收舊方式丟到 OS  裡的 Logs)，用 Traditional Auditing (Audit_Trail &#x3D; XXX 那種)  問廠商最近的流量如何，都沒有太大的變化，應該就是系統設定的問題  透過這個查詢(C)現在 SYSAUX 中各個 Object 的使用狀態 select bytes&#x2F;1024&#x2F;1024 mb, segment_name from dba_segments w...</div></div></div></a><a class="pagination-related" href="/blog/2016/01/19/%E7%B4%80%E9%8C%84%E4%B8%80%E4%B8%8B%E8%A7%A3%E6%B1%BA%20SSL%20Medium%20Strength%20Cipher%20Suites%20Supported%20%E5%95%8F%E9%A1%8C/" title="紀錄一下解決 SSL Medium Strength Cipher Suites Supported 問題"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">紀錄一下解決 SSL Medium Strength Cipher Suites Supported 問題</div></div><div class="info-2"><div class="info-item-1">最近幫忙解決 VMWare ESXi 老是出現的 SSL Medium Strength Cipher Suites Supported 弱點，問了前因後果與找了一下方法，不外乎如連結的方式，不過好像很難成功的樣子，這邊紀錄一下實際上怎麼做的，給需要的人參考。  SSH 連到該台 ESXi 修改  &#x2F;etc&#x2F;vmware&#x2F;rhttpproxy&#x2F;config.xml  一節須修改成你想要的，譬如說 High Cipher Method 就是 +HIGH:!MEDIUM:!LOW  裡頭可用到的參數  裡頭只能調整 Cipher Suites，不能調整 Protocol 前頭的 TLSv1.2 要加(指所有 Protocol 會用到的 Cipher 都先加進去) 用:隔開，+的意思是一定要在候選 List 裡，且優先權最高，!的意思是一定不會在候選 List裡，沒寫的是在候選 List 裡，但會在 + 的後面 設定原則為沒寫的一定會在候選 List 裡，除非明示 所以  SSL Medium Strength Cipher Suites Sup...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相關推薦</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/blog/2016/03/13/%E4%B8%80%E4%BA%9B%E5%B0%8F%20Scripts%20(PowerShell)/" title="一些小 Scripts (PowerShell)"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2016-03-14</div><div class="info-item-2">一些小 Scripts (PowerShell)</div></div><div class="info-2"><div class="info-item-1">上星期五幫同事生出一些 Scripts，因為急著下班就沒分享了，今天分享給大家。  在一個目錄裡的檔案 Syslogyyyy-mm-dd-hh.txt 檔案分時間壓縮成一個檔案，並放在同名的資料夾裡面。假設 Syslogyyyy-mm-dd-hh.txt 在 $src_dir，要放到 $dst_dir 裡，壓縮程式是 $7zexe  123456789$ErrorActionPreference = &quot;Stop&quot; #20160712 修改，當有發生錯誤馬上停止$src_dir = &quot;C:\Users\sujunmin\Desktop\x&quot;$dst_dir = &quot;C:\Users\sujunmin\Desktop\y&quot;$7zexe = &quot;C:\Program Files\7-Zip\7z.exe&quot;dir $src_dir | %&#123; $id = $_.Name.SubString(6,10); if(-not (Test-Path &quot;$dst_dir\$id&quot;)) &#123...</div></div></div></a><a class="pagination-related" href="/blog/2017/08/31/Ubuntu%2016.04%20%E5%AE%89%E8%A3%9D%E8%88%87%E4%BD%BF%E7%94%A8%20Flashcache%20%E6%B5%81%E7%A8%8B%E7%B4%80%E9%8C%84/" title="Ubuntu 16.04 安裝與使用 Flashcache 流程紀錄"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2017-08-31</div><div class="info-item-2">Ubuntu 16.04 安裝與使用 Flashcache 流程紀錄</div></div><div class="info-2"><div class="info-item-1">因為系統效能的關係，嘗試一下在 Ubuntu 16.04 下用 SSD 當硬碟的快取碟，看效能有沒有比較好，這篇已經寫的十分清楚，但是有一些我做起來不太一樣的，以下紀錄安裝與使用方式。 安裝原文中使用原碼編譯安裝，但其實 Ubuntu 16.04 裡頭已經有這個 Package 了。 sudo apt install flashcache-dkms flashcache-utils 載入 flashcache sudo modprobe flashcache 看有沒有成功 sudo lsmod |grep flashcache 開機自動載入 echo &#39;flashcache&#39; | sudo tee --append /etc/modules 使用如同原文方式，首先要確認 Partitions，原來的磁碟跟要作為快取的 SSD 磁碟。 假設原來的狀態如下 原來的磁碟 /dev/sdb1，UUID 為 [UUID_sdb1] (可從ls -la /dev/disk/by-uuid/查看對應) mount 在 /test 上 要做快取的 SSD 磁碟 /dev/sdc1...</div></div></div></a><a class="pagination-related" href="/blog/2018/06/12/%E7%94%A8%20Graylog%20%E5%8F%96%E4%BB%A3%20Splunk%20%E7%B4%80%E9%8C%84%20(%E4%B8%8B)/" title="用 Graylog 取代 Splunk 紀錄 (下)"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2018-06-12</div><div class="info-item-2">用 Graylog 取代 Splunk 紀錄 (下)</div></div><div class="info-2"><div class="info-item-1">需求說明有了前一篇的架設，這邊來說明要怎麼從 Splunk 把報表轉到 Graylog。 先前準備因為在 Graylog 的 Web 界面是沒辦法直接拉報表，必須透過 Graylog Restful API 來做介接取得資料後再自己 Render 出來，所以以下的基本知識需要先了解。  REST&#x2F;RESTFul API 介紹，怎麼操作 API Lucene Query Syntax，最重要的核心，如何去找到你要的東西 報表系統使用的平台，必須要能夠吃 Graylog 產生出來的 JSON  因為在 SQL Server、MariaDB 的經驗，這次還是選擇 Windows 上面的 Powershell 來實做報表。 Graylog RESTFul API官方文件就是只叫用戶到 System&#x2F;Node 底下的 API Browser 去看，說實在的，就只是這樣而已，因此大部分的時間都在在這個用 Swagger 做出來的 API Browser 上。 登入帳號密碼以後可以看到列表，點開每一個項目會有說明，下面的圖應該就是寫報表的主體。  點開一個方法就會有每個方法...</div></div></div></a><a class="pagination-related" href="/blog/2018/05/31/%E7%94%A8%20Graylog%20%E5%8F%96%E4%BB%A3%20Splunk%20%E7%B4%80%E9%8C%84%20(%E4%B8%8A)/" title="用 Graylog 取代 Splunk 紀錄 (上)"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2018-05-31</div><div class="info-item-2">用 Graylog 取代 Splunk 紀錄 (上)</div></div><div class="info-2"><div class="info-item-1">需求說明原來負責系統的 Log 架構是這樣的  因為 Splunk License 的關係，有時候會因為收的量太多而罷工了。 這次就是想要利用 Graylog 來取代原有的 Splunk，以避免有 Log 沒分析到的問題。 試用經過(請注意以下因為一些因素，只換 Splunk 的方式非真正最佳解法，僅提供有類似架構的朋友參考)因為一開始對 Graylog 不熟，所以當然要有一些測試。從官網上的 OVA 開始，發現可以有 Log 進來，玩了一下界面，還蠻不錯的。 不過有一個麻煩的事情(這個在之前系統有購買 Arcsight 的 Solution 也有碰到過)，就是資料是亂碼的問題。 原因出在從 KIWI Syslog Server 拋出來的 Syslog 是 Windows 編碼，到 Linux 上就會變亂碼了。 找了一些方法，沒找到可以從 Graylog 直接 Conversion 的方法，只能前面加個 logstash 轉了。 原來想裝在官網的 OVA 裡，不過官網的 OVA 一來是 Ubuntu 14.04，系統裡的 Ubuntu 16.04 外，裝好起來效能竟然差到沒法 P...</div></div></div></a><a class="pagination-related" href="/blog/2017/07/27/IE%2011%20%E5%9B%A0%E7%82%BA%20KB2729094%20%E4%B8%8D%E8%83%BD%E5%AE%89%E8%A3%9D%E7%9A%84%E5%95%8F%E9%A1%8C/" title="IE 11 因為 KB2729094 不能安裝的問題"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2017-07-27</div><div class="info-item-2">IE 11 因為 KB2729094 不能安裝的問題</div></div><div class="info-2"><div class="info-item-1">最近碰到一台電腦的更新卡在 IE 11 無法更新，查了很多資料看 Log 都是安裝程式判定 KB2729094 沒有安裝的問題，但是明明就有安裝的狀態下該怎麼解決。 找了很多資料，只有這篇寫的我可以拿來解決，分享給大家。  步驟大概如下：  從這裡下載 IE11 獨立安裝包  IE11-Windows6.1-x86-en-us.exe /x:C:\temp\IE10_x86 IE11-Windows6.1-x64-en-us.exe /x:C:\temp\IE10_x64  他說會有如他說的資料夾架構，但我解開只有 IE11_x64 或 IE11_x86 裡頭的內容，所以編一個跟他一樣的架構  把 KB2729094 下載下來放在 PreReq 裡(只差這一個)  下載 IE11INSTALLER-WIN7-SCRIPT.ZIP，放在該放的地方  cscript.exe //nologo IE11Installer-Win7.vbs  等完成收工   </div></div></div></a><a class="pagination-related" href="/blog/2016/04/06/Office%20365%20%E7%A7%BB%E9%99%A4%E9%83%A8%E5%88%86%E5%8A%9F%E8%83%BD%E7%9A%84%E6%96%B9%E6%B3%95/" title="Office 365 移除部分功能的方法"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2016-04-07</div><div class="info-item-2">Office 365 移除部分功能的方法</div></div><div class="info-2"><div class="info-item-1">當使用 Office 365 的時候，不能像以前安裝 Office 一樣可以選擇想要的功能，一股腦的全裝進去，有時候看到不需要的功能在那邊蠻礙眼而且會誤點，這裡查到一個方法可以選擇想要的功能。  到這邊下載需要的 Office Deployment Tool。 下載下來可以點兩下解壓縮到想要的地方。 下載的連結裡有提到如何在安裝前就設定好，因為我已經安裝了，所以選擇安裝後要移除的方法 (Remove programs from computers that already have Office 365 ProPlus installed)。 解壓縮檔案裏頭有個 configuration.xml，裏頭可以設定要移除的功能。 OfficeClientEdition 如果安裝的是 64 位元 Office，這裡要改成 64。 現在的版本是 2016，如不想升級先看看自己的 Office 版本號，再加到 Version 裡，如 Version&#x3D;”15.1.2.3”。 Language ID&#x3D;zh-tw。 加入 &lt;ExcludeApp ID&#x3D;”XXX...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 評論</span></div></div><div class="comment-wrap"><div><div id="disqus_thread"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/blog/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/blog/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Su, Jun-Ming</div><div class="author-info-description">Linux、資料庫、MIS 實戰紀錄</div><div class="site-data"><a href="/blog/archives/"><div class="headline">文章</div><div class="length-num">134</div></a><a href="/blog/tags/"><div class="headline">標籤</div><div class="length-num">23</div></a><a href="/blog/categories/"><div class="headline">分類</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/sujunmin"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/sujunmin" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="https://twitter.com/sujunmin_" target="_blank" title="Twitter"><i class="fab fa-x-twitter"></i></a><a class="social-icon" href="/blog/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/blog/2018/06/12/%E7%94%A8%20Graylog%20%E5%8F%96%E4%BB%A3%20Splunk%20%E7%B4%80%E9%8C%84%20(%E4%B8%8B)/" title="用 Graylog 取代 Splunk 紀錄 (下)">用 Graylog 取代 Splunk 紀錄 (下)</a><time datetime="2018-06-12T07:50:55.000Z" title="發表於 2018-06-12 15:50:55">2018-06-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/blog/2018/05/31/%E7%94%A8%20Graylog%20%E5%8F%96%E4%BB%A3%20Splunk%20%E7%B4%80%E9%8C%84%20(%E4%B8%8A)/" title="用 Graylog 取代 Splunk 紀錄 (上)">用 Graylog 取代 Splunk 紀錄 (上)</a><time datetime="2018-05-31T07:43:12.000Z" title="發表於 2018-05-31 15:43:12">2018-05-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/blog/2017/08/31/Ubuntu%2016.04%20%E5%AE%89%E8%A3%9D%E8%88%87%E4%BD%BF%E7%94%A8%20Flashcache%20%E6%B5%81%E7%A8%8B%E7%B4%80%E9%8C%84/" title="Ubuntu 16.04 安裝與使用 Flashcache 流程紀錄">Ubuntu 16.04 安裝與使用 Flashcache 流程紀錄</a><time datetime="2017-08-31T04:31:57.000Z" title="發表於 2017-08-31 12:31:57">2017-08-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/blog/2017/07/27/IE%2011%20%E5%9B%A0%E7%82%BA%20KB2729094%20%E4%B8%8D%E8%83%BD%E5%AE%89%E8%A3%9D%E7%9A%84%E5%95%8F%E9%A1%8C/" title="IE 11 因為 KB2729094 不能安裝的問題">IE 11 因為 KB2729094 不能安裝的問題</a><time datetime="2017-07-27T10:31:45.000Z" title="發表於 2017-07-27 18:31:45">2017-07-27</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/blog/2017/07/02/%E5%9C%A8%20Pinebook%20%E4%B8%8A%E5%AE%89%E8%A3%9D%20Visual%20Studio%20Code/" title="在 Pinebook 上安裝 Visual Studio Code">在 Pinebook 上安裝 Visual Studio Code</a><time datetime="2017-07-02T15:53:43.000Z" title="發表於 2017-07-02 23:53:43">2017-07-02</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2009 - 2026 By Su, Jun-Ming</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主題 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.7.1.260810</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日夜模式切換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><a id="to_comment" href="#post-comment" title="前往評論"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到頂端"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/blog/js/utils.js?v=5.7.1.260810"></script><script src="/blog/js/main.js?v=5.7.1.260810"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+
+  const disqusReset = conf => {
+    window.DISQUS && window.DISQUS.reset({
+      reload: true,
+      config: conf
+    })
+  }
+
+  const loadDisqus = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyDisqus = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    window.disqus_identifier = isShuoshuo ? path : '/blog/2016/01/26/Windows%207%20%E5%BF%98%E8%A8%98%E5%AF%86%E7%A2%BC%E4%B8%8D%E7%94%A8%E9%80%8F%E9%81%8E%E5%AF%86%E7%A2%BC%E5%BF%98%E8%A8%98%E7%A3%81%E7%A2%9F/'
+    window.disqus_url = isShuoshuo ? location.origin + path : 'https://sujunmin.github.io/blog/2016/01/26/Windows%207%20%E5%BF%98%E8%A8%98%E5%AF%86%E7%A2%BC%E4%B8%8D%E7%94%A8%E9%80%8F%E9%81%8E%E5%AF%86%E7%A2%BC%E5%BF%98%E8%A8%98%E7%A3%81%E7%A2%9F/'
+
+    const disqus_config = function () {
+      this.page.url = disqus_url
+      this.page.identifier = disqus_identifier
+      this.page.title = 'Windows 7 忘記密碼不用透過密碼忘記磁碟'
+    }
+
+    if (window.DISQUS) disqusReset(disqus_config)
+    else {
+      const script = document.createElement('script')
+      script.src = 'https://sujunmin.disqus.com/embed.js'
+      script.setAttribute('data-timestamp', +new Date())
+      document.head.appendChild(script)
+    }
+
+    btf.addGlobalFn('themeChange', () => disqusReset(disqus_config), 'disqus')
+  }
+
+  const getCount = async() => {
+    try {
+      const eleGroup = document.querySelector('#post-meta .disqus-comment-count')
+      if (!eleGroup) return
+      const cleanedLinks = eleGroup.href.replace(/#post-comment$/, '')
+
+      const res = await fetch(`https://disqus.com/api/3.0/threads/set.json?forum=sujunmin&api_key=&thread:link=${cleanedLinks}`,{
+        method: 'GET'
+      })
+      const result = await res.json()
+
+      const count = result.response.length ? result.response[0].posts : 0
+      eleGroup.textContent = count
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Disqus' === 'Disqus'
+      ? window.shuoshuoComment = { loadComment: loadDisqus }
+      : window.loadOtherComment = loadDisqus
+    return
+  }
+
+  if ('Disqus' === 'Disqus' || !false) {
+    if (false) btf.loadComment(document.getElementById('disqus_thread'), loadDisqus)
+    else {
+      loadDisqus()
+      
+    }
+  } else {
+    window.loadOtherComment = loadDisqus
+  }
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜尋</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  資料載入中</span></div><div class="local-search-input"><input placeholder="搜尋文章" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/blog/js/search/local-search.js?v=5.7.1.260810"></script></div></div></body></html>

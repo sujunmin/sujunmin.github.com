@@ -1,8 +1,235 @@
-<!DOCTYPE html><html><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>IIS強迫跑SSL模式與SQL 2005 Reporting Services over SSL | 隨意記事</title><link rel="stylesheet" type="text/css" href="/blog//css/normalize.css"><link rel="stylesheet" type="text/css" href="/blog//css/highlight.css"><link rel="stylesheet" type="text/css" href="/blog//css/very-simple.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/blog/favicon.ico"><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script>(adsbygoogle = window.adsbygoogle || []).push({
- google_ad_client: "ca-pub-0187888667607442",
- enable_page_level_ads: true
- });
-</script></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>IIS強迫跑SSL模式與SQL 2005 Reporting Services over SSL</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2009-12-18</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/Net/">.Net</a></div></div></div><article><div class="container post"><p>公司裡負責的系統有<a href="http://www.nessus.org/plugins/index.php?view=single&amp;id=26194" target="_blank" rel="noopener">Web Server Uses Plain Text Authentication Forms</a>缺失，今天想說把它解決掉。原來覺得可能很簡單的，不過變成要改一些Code，特此記錄下來供以後與網友參考。</p>
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>IIS強迫跑SSL模式與SQL 2005 Reporting Services over SSL | 隨意記事</title><meta name="author" content="Su, Jun-Ming"><meta name="copyright" content="Su, Jun-Ming"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="公司裡負責的系統有Web Server Uses Plain Text Authentication Forms缺失，今天想說把它解決掉。原來覺得可能很簡單的，不過變成要改一些Code，特此記錄下來供以後與網友參考。 原來的環境是這樣，某個AP Server上面跑IIS(http and https)，被nessus偵測出來某個AP的default.aspx，帳號密碼登入是用明碼傳送，可能會有資安">
+<meta property="og:type" content="article">
+<meta property="og:title" content="IIS強迫跑SSL模式與SQL 2005 Reporting Services over SSL">
+<meta property="og:url" content="https://sujunmin.github.io/blog/2009/12/18/IIS%E5%BC%B7%E8%BF%AB%E8%B7%91SSL%E6%A8%A1%E5%BC%8F%E8%88%87SQL-2005-Reporting-Services-over-SSL/index.html">
+<meta property="og:site_name" content="隨意記事">
+<meta property="og:description" content="公司裡負責的系統有Web Server Uses Plain Text Authentication Forms缺失，今天想說把它解決掉。原來覺得可能很簡單的，不過變成要改一些Code，特此記錄下來供以後與網友參考。 原來的環境是這樣，某個AP Server上面跑IIS(http and https)，被nessus偵測出來某個AP的default.aspx，帳號密碼登入是用明碼傳送，可能會有資安">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://sujunmin.github.io/blog/img/butterfly-icon.png">
+<meta property="article:published_time" content="2009-12-18T03:51:43.000Z">
+<meta property="article:modified_time" content="2026-09-26T03:17:55.350Z">
+<meta property="article:author" content="Su, Jun-Ming">
+<meta property="article:tag" content=".Net">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://sujunmin.github.io/blog/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "IIS強迫跑SSL模式與SQL 2005 Reporting Services over SSL",
+  "url": "https://sujunmin.github.io/blog/2009/12/18/IIS%E5%BC%B7%E8%BF%AB%E8%B7%91SSL%E6%A8%A1%E5%BC%8F%E8%88%87SQL-2005-Reporting-Services-over-SSL/",
+  "image": "https://sujunmin.github.io/blog/img/butterfly-icon.png",
+  "datePublished": "2009-12-18T03:51:43.000Z",
+  "dateModified": "2026-09-26T03:17:55.350Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Su, Jun-Ming",
+      "url": "https://sujunmin.github.io/blog"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/blog/favicon.ico"><link rel="canonical" href="https://sujunmin.github.io/blog/2009/12/18/IIS%E5%BC%B7%E8%BF%AB%E8%B7%91SSL%E6%A8%A1%E5%BC%8F%E8%88%87SQL-2005-Reporting-Services-over-SSL/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/blog/css/index.css?v=5.7.1.260810"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.3.1/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        try {
+          const data = { value }
+
+          if (ttl != null) {
+            data.expiry = Date.now() + ttl * 86400000
+          }
+
+          localStorage.setItem(key, JSON.stringify(data))
+        } catch (e) {
+          console.error(e)
+        }
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return
+
+        try {
+          const data = JSON.parse(itemStr)
+
+          if (data.expiry && Date.now() > data.expiry) {
+            localStorage.removeItem(key)
+            return
+          }
+
+          return data.value
+        } catch {
+          localStorage.removeItem(key)
+        }
+      }
+    }
+
+    const scriptCache = new Map()
+    const cssCache = new Map()
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => {
+        if (scriptCache.has(url)) {
+          return scriptCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+
+          script.src = url
+          script.async = true
+
+          for (const key in attr) {
+            script.setAttribute(key, attr[key])
+          }
+
+          script.onload = resolve
+          script.onerror = reject
+
+          document.head.appendChild(script)
+        })
+
+        scriptCache.set(url, promise)
+
+        return promise
+      },
+      getCSS: (url, id) => {
+        if (cssCache.has(url)) {
+          return cssCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const link = document.createElement('link')
+
+          link.rel = 'stylesheet'
+          link.href = url
+
+          if (id) {
+            link.id = id
+          }
+
+          link.onload = resolve
+          link.onerror = reject
+
+          document.head.appendChild(link)
+        })
+
+        cssCache.set(url, promise)
+
+        return promise
+      },
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]')
+      const activateDarkMode = () => {
+        document.documentElement.dataset.theme = 'dark'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.dataset.theme = 'light'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const start = 6
+              const end = 18
+              const isNight =
+                start < end
+                    ? hour < start || hour >= end
+                    : hour >= start || hour < end
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', e => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/blog/',
+  algolia: undefined,
+  localSearch: {"path":"/blog/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"找不到符合您查詢的內容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":400,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '複製成功',
+    error: '複製失敗',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '載入更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'IIS強迫跑SSL模式與SQL 2005 Reporting Services over SSL',
+  isHighlightShrink: false,
+  isToc: false,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/blog/atom.xml" title="隨意記事" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/blog/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/blog/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/blog/archives/"><div class="headline">文章</div><div class="length-num">134</div></a><a href="/blog/tags/"><div class="headline">標籤</div><div class="length-num">23</div></a><a href="/blog/categories/"><div class="headline">分類</div><div class="length-num">0</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/blog/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 彙整</span></a></div><div class="menus_item"><a class="site-page" href="/blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/blog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/blog/"><span class="site-name">隨意記事</span></a><a class="nav-page-title" href="/blog/"><span class="site-name">IIS強迫跑SSL模式與SQL 2005 Reporting Services over SSL</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首頁</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜尋</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/blog/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 彙整</span></a></div><div class="menus_item"><a class="site-page" href="/blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/blog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">IIS強迫跑SSL模式與SQL 2005 Reporting Services over SSL</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">發表於</span><time class="post-meta-date-created" datetime="2009-12-18T03:51:43.000Z" title="發表於 2009-12-18 11:51:43">2009-12-18</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新於</span><time class="post-meta-date-updated" datetime="2026-09-26T03:17:55.350Z" title="更新於 2026-09-26 11:17:55">2026-09-26</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">總字數:</span><span class="word-count">1204</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀時間:</span><span>5 分鐘</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">瀏覽量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>公司裡負責的系統有<a target="_blank" rel="noopener" href="http://www.nessus.org/plugins/index.php?view=single&amp;id=26194">Web Server Uses Plain Text Authentication Forms</a>缺失，今天想說把它解決掉。原來覺得可能很簡單的，不過變成要改一些Code，特此記錄下來供以後與網友參考。</p>
 <p>原來的環境是這樣，某個AP Server上面跑IIS(http and https)，被nessus偵測出來某個AP的default.aspx，帳號密碼登入是用明碼傳送，可能會有資安風險。</p>
 <p><strong><span style="color: #ffffff; bgcolor: #fdbe00;"><span style="background-color: #ffff00;">Web Server Uses Plain Text Authentication Forms</span></span></strong></p>
 <p><strong>Synopsis :</strong></p>
@@ -13,22 +240,24 @@
 <p><strong>Solution :</strong></p>
 <p>Make sure that every sensitive form transmits content over HTTPS.</p>
 <p><strong>Risk factor :</strong></p>
-<p>Medium / CVSS Base Score : 5.0<br>(CVSS2#AV:N/AC:L/Au:N/C:P/I:N/A:N)</p>
-<p><strong>Plugin output :</strong><br>Page : /css/<br>Destination page : Default.aspx<br>Input name : Login1$Password</p>
-<p>Nessus ID : <a href="http://www.nessus.org/plugins/index.php?view=single&amp;id=26194" target="_blank" rel="noopener">26194</a></p>
-<p>因此就要去修正(不修正也不行阿)，在網路上找了一下，就決定先把IIS的80 Port(http)先拿掉，都走443 Port (https)。找到這位<a href="http://blogs.microsoft.co.il/blogs/dorr/archive/2009/01/13/how-to-force-redirection-from-http-to-https-on-iis-6-0.aspx" target="_blank" rel="noopener">大大</a>寫的，就來實作一下，步驟如下：</p>
+<p>Medium &#x2F; CVSS Base Score : 5.0<br>(CVSS2#AV:N&#x2F;AC:L&#x2F;Au:N&#x2F;C:P&#x2F;I:N&#x2F;A:N)</p>
+<p><strong>Plugin output :</strong><br>Page : &#x2F;css&#x2F;<br>Destination page : Default.aspx<br>Input name : Login1$Password</p>
+<p>Nessus ID : <a target="_blank" rel="noopener" href="http://www.nessus.org/plugins/index.php?view=single&amp;id=26194">26194</a></p>
+<p>因此就要去修正(不修正也不行阿)，在網路上找了一下，就決定先把IIS的80 Port(http)先拿掉，都走443 Port (https)。找到這位<a target="_blank" rel="noopener" href="http://blogs.microsoft.co.il/blogs/dorr/archive/2009/01/13/how-to-force-redirection-from-http-to-https-on-iis-6-0.aspx">大大</a>寫的，就來實作一下，步驟如下：</p>
 <ol>
-<li>先把原來的網站(通常是預設的網站那個)修改他的內容，把TCP連接埠改成81(或其他外面連不進來的Port，因為IIS一定要設定TCP連接埠，所以就設定成一個連不進來的Port)，SSL連接埠部分填443。按確定以後重啟原來的網站(預設的網站)，現在Port 80應該是不會通了，443那個應該會通(若不通應該是SSL設定問題，這邊不多贅述)。<a href="http://photo.xuite.net/_r9009/retsamsu/3423409/68.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e23247/3423409/141018774_m.jpg" alt></a></li>
-<li>接著下來開一個新的網站，讓他聽80 Port，再轉到443 Port上面。網站說明的地方打你想要的字串就可以。TCP連接埠用Port 80就好。主目錄部分隨便找一個就行(因為等一下我們會來設redirect)，允許讀取就好(如果原來的網站有什麼，這邊就設什麼)，完成網站設定的動作。<br><img src="http://e.share.photo.xuite.net/retsamsu/1e23250/3423409/141019039_m.jpg" alt><br><a href="http://photo.xuite.net/_r9009/retsamsu/3423409/70.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e23252/3423409/141019041_m.jpg" alt></a><br><a href="http://photo.xuite.net/_r9009/retsamsu/3423409/71.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e23253/3423409/141019042_m.jpg" alt></a><br><a href="http://photo.xuite.net/_r9009/retsamsu/3423409/72.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e23255/3423409/141019044_m.jpg" alt></a><br><a href="http://photo.xuite.net/_r9009/retsamsu/3423409/73.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e23258/3423409/141019047_m.jpg" alt></a><br><a href="http://photo.xuite.net/_r9009/retsamsu/3423409/74.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e2325a/3423409/141019049_m.jpg" alt></a></li>
-<li><p>接下來對剛剛新設的網站做設定，到主目錄的地方，選擇某個URL位置的重新導向，在導向到的地方要轉的網址(https://…)，根據需求勾選下面的選項：</p>
+<li><p>先把原來的網站(通常是預設的網站那個)修改他的內容，把TCP連接埠改成81(或其他外面連不進來的Port，因為IIS一定要設定TCP連接埠，所以就設定成一個連不進來的Port)，SSL連接埠部分填443。按確定以後重啟原來的網站(預設的網站)，現在Port 80應該是不會通了，443那個應該會通(若不通應該是SSL設定問題，這邊不多贅述)。<a target="_blank" rel="noopener" href="http://photo.xuite.net/_r9009/retsamsu/3423409/68.jpg"><img src="http://e.share.photo.xuite.net/retsamsu/1e23247/3423409/141018774_m.jpg"></a></p>
+</li>
+<li><p>接著下來開一個新的網站，讓他聽80 Port，再轉到443 Port上面。網站說明的地方打你想要的字串就可以。TCP連接埠用Port 80就好。主目錄部分隨便找一個就行(因為等一下我們會來設redirect)，允許讀取就好(如果原來的網站有什麼，這邊就設什麼)，完成網站設定的動作。<br><img src="http://e.share.photo.xuite.net/retsamsu/1e23250/3423409/141019039_m.jpg"><br><a target="_blank" rel="noopener" href="http://photo.xuite.net/_r9009/retsamsu/3423409/70.jpg"><img src="http://e.share.photo.xuite.net/retsamsu/1e23252/3423409/141019041_m.jpg"></a><br><a target="_blank" rel="noopener" href="http://photo.xuite.net/_r9009/retsamsu/3423409/71.jpg"><img src="http://e.share.photo.xuite.net/retsamsu/1e23253/3423409/141019042_m.jpg"></a><br><a target="_blank" rel="noopener" href="http://photo.xuite.net/_r9009/retsamsu/3423409/72.jpg"><img src="http://e.share.photo.xuite.net/retsamsu/1e23255/3423409/141019044_m.jpg"></a><br><a target="_blank" rel="noopener" href="http://photo.xuite.net/_r9009/retsamsu/3423409/73.jpg"><img src="http://e.share.photo.xuite.net/retsamsu/1e23258/3423409/141019047_m.jpg"></a><br><a target="_blank" rel="noopener" href="http://photo.xuite.net/_r9009/retsamsu/3423409/74.jpg"><img src="http://e.share.photo.xuite.net/retsamsu/1e2325a/3423409/141019049_m.jpg"></a></p>
+</li>
+<li><p>接下來對剛剛新設的網站做設定，到主目錄的地方，選擇某個URL位置的重新導向，在導向到的地方要轉的網址(https:&#x2F;&#x2F;…)，根據需求勾選下面的選項：</p>
 <ul>
-<li>上面所輸入的URL：就是直接轉址，如果有旗下的AP(如<a href="http://abc/ap)，他也不會管，還是只有https://...。" target="_blank" rel="noopener">http://abc/ap)，他也不會管，還是只有https://...。</a></li>
+<li>上面所輸入的URL：就是直接轉址，如果有旗下的AP(如<a target="_blank" rel="noopener" href="http://abc/ap)%EF%BC%8C%E4%BB%96%E4%B9%9F%E4%B8%8D%E6%9C%83%E7%AE%A1%EF%BC%8C%E9%82%84%E6%98%AF%E5%8F%AA%E6%9C%89https://...%E3%80%82">http://abc/ap)，他也不會管，還是只有https://...。</a></li>
 <li>輸入的URL下的目錄：如果你想要轉到轉址下的某個檔案或目錄，就用這個。</li>
-<li>這個資源的永久重新導向：就是轉到妳的轉址，旗下自動對應轉址下的任何目錄(如<a href="http://abc/ap" target="_blank" rel="noopener">http://abc/ap</a> -&gt; <a href="https://.../ap" target="_blank" rel="noopener">https://…/ap</a>)</li>
+<li>這個資源的永久重新導向：就是轉到妳的轉址，旗下自動對應轉址下的任何目錄(如<a target="_blank" rel="noopener" href="http://abc/ap">http://abc/ap</a> -&gt; <a target="_blank" rel="noopener" href="https://.../ap">https:&#x2F;&#x2F;…&#x2F;ap</a>)</li>
 </ul>
 </li>
 </ol>
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="http://photo.xuite.net/_r9009/retsamsu/3423409/75.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e23212/3423409/141019489_m.jpg" alt></a></p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a target="_blank" rel="noopener" href="http://photo.xuite.net/_r9009/retsamsu/3423409/75.jpg"><img src="http://e.share.photo.xuite.net/retsamsu/1e23212/3423409/141019489_m.jpg"></a></p>
 <ol start="4">
 <li>選完以後重啟這個網頁，就完成了轉址動作，測試一下看有沒有什麼問題。</li>
 </ol>
@@ -40,33 +269,89 @@
 <li>3 - 所有SOAP API：全部使用SSL(網頁處理)。</li>
 </ul>
 <p>憑證名稱部分，就打你IIS用的憑證註冊網址(如abc.com.tw)，按套用就完成了。</p>
-<p><a href="http://photo.xuite.net/_r9009/retsamsu/3423409/76.jpg" target="_blank" rel="noopener"><img src="http://e.share.photo.xuite.net/retsamsu/1e2326e/3423409/141020349_m.jpg" alt></a><br>來到AP系統看看，發現錯誤又多了一個。</p>
-<p><strong><em>基礎連接已關閉</em>: <em>無法為SSL/TLS 安全通道建立信任關係</em></strong></p>
-<p>這個的原因是因為我們是一個憑證很多伺服器在用，但是在連接時會檢查這個憑證是否有問題，在瀏覽器瀏覽的時候可以按掉解決，這時候就不行了。再上網找解決方案，找到這個<a href="http://sanchen.blogspot.com/2008/04/httpwebrequest-https.html#links" target="_blank" rel="noopener">大大</a>寫的方法，修改自己的程式。不過我是用VB.NET寫的，所以再找一下MSDN，提供解法如下。</p>
-<figure class="highlight vb"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Public</span> <span class="keyword">Shared</span> <span class="keyword">Function</span> ValidateCert(<span class="keyword">ByVal</span> sender <span class="keyword">As</span> <span class="built_in">Object</span>, <span class="keyword">ByVal</span> certificate <span class="keyword">As</span> System.Security.Cryptography.X509Certificates.X509Certificate, <span class="keyword">ByVal</span> chain <span class="keyword">As</span> System.Security.Cryptography.X509Certificates.X509Chain, <span class="keyword">ByVal</span> sslPolicyErrors <span class="keyword">As</span> System.Net.Security.SslPolicyErrors) <span class="keyword">As</span> <span class="built_in">Boolean</span></span><br><span class="line">       <span class="keyword">Return</span> <span class="literal">True</span></span><br><span class="line"><span class="keyword">End</span> <span class="keyword">Function</span></span><br></pre></td></tr></table></figure>
-<p>然後在進入報表之前做下面的<a href="http://msdn.microsoft.com/zh-tw/library/system.net.servicepointmanager.servercertificatevalidationcallback%28VS.80%29.aspx" target="_blank" rel="noopener"> 動作</a>(每次登入只需做一次)即可。</p>
-<figure class="highlight vb"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">System.Net.ServicePointManager.ServerCertificateValidationCallback = <span class="keyword">New</span> System.Net.Security.RemoteCertificateValidationCallback(<span class="keyword">AddressOf</span> ValidateCert)</span><br></pre></td></tr></table></figure>
-<p>其實就是避掉錯誤的回傳這樣，詳情請看MSDN相關<a href="http://msdn.microsoft.com/en-us/library/system.net.security.remotecertificatevalidationcallback.aspx" target="_blank" rel="noopener">函式</a>介紹。</p>
+<p><a target="_blank" rel="noopener" href="http://photo.xuite.net/_r9009/retsamsu/3423409/76.jpg"><img src="http://e.share.photo.xuite.net/retsamsu/1e2326e/3423409/141020349_m.jpg"></a><br>來到AP系統看看，發現錯誤又多了一個。</p>
+<p><strong><em>基礎連接已關閉</em>: <em>無法為SSL&#x2F;TLS 安全通道建立信任關係</em></strong></p>
+<p>這個的原因是因為我們是一個憑證很多伺服器在用，但是在連接時會檢查這個憑證是否有問題，在瀏覽器瀏覽的時候可以按掉解決，這時候就不行了。再上網找解決方案，找到這個<a target="_blank" rel="noopener" href="http://sanchen.blogspot.com/2008/04/httpwebrequest-https.html#links">大大</a>寫的方法，修改自己的程式。不過我是用VB.NET寫的，所以再找一下MSDN，提供解法如下。</p>
+<figure class="highlight vb"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Public</span> <span class="keyword">Shared</span> <span class="keyword">Function</span> ValidateCert(<span class="keyword">ByVal</span> sender <span class="keyword">As</span> <span class="type">Object</span>, <span class="keyword">ByVal</span> certificate <span class="keyword">As</span> System.Security.Cryptography.X509Certificates.X509Certificate, <span class="keyword">ByVal</span> chain <span class="keyword">As</span> System.Security.Cryptography.X509Certificates.X509Chain, <span class="keyword">ByVal</span> sslPolicyErrors <span class="keyword">As</span> System.Net.Security.SslPolicyErrors) <span class="keyword">As</span> <span class="type">Boolean</span></span><br><span class="line">       <span class="keyword">Return</span> <span class="literal">True</span></span><br><span class="line"><span class="keyword">End</span> <span class="keyword">Function</span></span><br></pre></td></tr></table></figure>
+
+<p>然後在進入報表之前做下面的<a target="_blank" rel="noopener" href="http://msdn.microsoft.com/zh-tw/library/system.net.servicepointmanager.servercertificatevalidationcallback%28VS.80%29.aspx"> 動作</a>(每次登入只需做一次)即可。</p>
+<figure class="highlight vb"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">System.Net.ServicePointManager.ServerCertificateValidationCallback = <span class="built_in">New</span> System.Net.Security.RemoteCertificateValidationCallback(<span class="built_in">AddressOf</span> ValidateCert)</span><br></pre></td></tr></table></figure>
+
+<p>其實就是避掉錯誤的回傳這樣，詳情請看MSDN相關<a target="_blank" rel="noopener" href="http://msdn.microsoft.com/en-us/library/system.net.security.remotecertificatevalidationcallback.aspx">函式</a>介紹。</p>
 <p>這樣就完成所有的設定了。</p>
 <p>&nbsp;</p>
-</div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">
-var disqus_shortname = 'sujunmin';
-var disqus_identifier = '2009/12/18/IIS強迫跑SSL模式與SQL-2005-Reporting-Services-over-SSL/';
-var disqus_title = 'IIS強迫跑SSL模式與SQL 2005 Reporting Services over SSL';
-var disqus_url = 'https://sujunmin.github.io/blog/2009/12/18/IIS強迫跑SSL模式與SQL-2005-Reporting-Services-over-SSL/';
-(function() {
-   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-})();
-</script>
-<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="http://disqus.com" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><footer id="footer"><div class="container"><div class="bar"><div class="social"><a href="http://twitter.com/sujunmin_" target="_blank"><i class="fa fa-twitter"></i></a><a href="https://github.com/sujunmin" target="_blank"><i class="fa fa-github"></i></a><a href="https://plus.google.com/+JunMingSu" target="_blank"><i class="fa fa-google-plus"></i></a><a href="/atom.xml" target="_blank"><i class="fa fa-rss"></i></a></div><div class="footer">© 2019 <a href="/" rel="nofollow">Su, Jun-Ming</a>. Powered by <a rel="nofollow" target="_blank" href="https://hexo.io">Hexo</a>. Theme <a target="_blank" href="https://github.com/lotabout/very-simple">very-simple</a>.</div></div></div></footer><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
-    $(".fancybox").fancybox();
-});
-</script></body><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
-function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
-e=o.createElement(i);r=o.getElementsByTagName(i)[0];
-e.src='//www.google-analytics.com/analytics.js';
-r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
-ga('create','UA-78894509-1');ga('send','pageview');</script></html>
+</article><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/blog/tags/Net/">.Net</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/blog/2009/12/29/2009-%E8%8B%97%E6%A0%97%E8%81%96%E8%AA%95%E4%B9%8B%E6%97%85/" title="2009 苗栗聖誕之旅"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">2009 苗栗聖誕之旅</div></div><div class="info-2"><div class="info-item-1">今年的耶誕節拜某同事之賜，得到非常優惠的溫泉會館住宿券(也恭喜她有小baby，因為他的小baby，我們才有機會去)，以2500元的價格買到苗栗泰安湯悅溫泉會館一般客房住宿券(原來在旅展賣2999元，原價要5200-6600元呢)，也順便在附近走走，有很多bonnie以前參加社團活動的回憶，就用這篇來記錄今年最後的旅行吧。 這次的計畫是從今年8月多某同事賣我住宿券開始，那時bonnie覺得還在夏天的時候就在規劃冬天的事情會不會太早，不過時光飛逝，很快就冬天，也很快就到聖誕節了。 這兩天的照片在這邊。 感謝bonnie願意割捨她的日薪1000元跟我一起過聖誕節(哈哈，這樣寫夠意思了吧)，星期四(2009&#x2F;12&#x2F;25)的一早就往苗栗出發了。 (藍色是2009&#x2F;12&#x2F;25的行程，紅色是2009&#x2F;12&#x2F;26的行程)   我們走北二高，到新竹的時候轉中山高，下苗栗交流道，接台72線，在要去湯悅之前第一個要去的目的地，汶水老街到了。 可能是天候不佳跟非假日的關係吧，很多店都沒開，其實感覺除了那些做成一樣的”汶水老街”藝術字看板以外，沒...</div></div></div></a><a class="pagination-related" href="/blog/2009/12/16/%E5%8F%B0%E5%8C%97%E6%A4%8D%E7%89%A9%E5%9C%92%E8%88%87%E5%8A%8D%E6%BD%AD%E5%B1%B1%E9%81%8A%E8%A8%98/" title="台北植物園與劍潭山遊記"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">台北植物園與劍潭山遊記</div></div><div class="info-2"><div class="info-item-1">這篇遊記是把兩天的破碎時程合成一篇遊記，因為某人急著想看，所以就整理一下寫出來了。 上週六(2009&#x2F;12&#x2F;12)一大早爬起來去士林官邸拿公司發的點券。其實這個行程是後來才加的，原因實在是我耳根子太軟，前一個星期(2009&#x2F;12&#x2F;5)因為想說這個星期要去看展，所以上個星期先去了。在星期五(2009&#x2F;12&#x2F;11)的時候，同事說公司的點券不拿白不拿，然後梵谷展的票打電話去問，得知同天換場次(上午改下午)是不用加錢的…因此貪念又起，結果最後還是去拿了，而且我們像趕場似的，梵谷展也沒換票，直接去看。 看完梵谷展以後，想說順便在植物園裡逛逛。這邊我想自從小時候有來過幾次以外，應該是都沒去過吧。就連歷史博物館也是第一次進去，我真的是台北人嗎? 旁邊有夢寐以求的建中，這輩子沒辦法了，讀書沒法進去連想進去看看的慾望都沒有。植物園裡面有排到不能在排的人龍，要看梵谷展下午場的。在植物園與南海學堂那邊有個旋轉門出入口，我們過去的時候發現有人在咆哮，原來是某個人在跟發宗教傳單的人槓上了，實在很恐怖(…”邪教!你知道什麼叫阿彌陀佛嗎!真是邪教!”...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相關推薦</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/blog/2010/06/10/%E6%9C%80%E8%BF%91%E9%80%99%E6%AE%B5%E6%99%82%E9%96%93%E5%AF%AB%E5%80%8B%E7%B3%BB%E7%B5%B1%EF%BC%8C%E4%B8%80%E4%BA%9B%E5%8F%AF%E4%BB%A5%E8%A8%98%E9%8C%84%E4%B8%8B%E4%BE%86%E7%9A%84%E6%9D%B1%E8%A5%BF%E6%95%B4%E7%90%86-3/" title="最近這段時間寫個系統，一些可以記錄下來的東西整理(3)"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2010-06-10</div><div class="info-item-2">最近這段時間寫個系統，一些可以記錄下來的東西整理(3)</div></div><div class="info-2"><div class="info-item-1">這個系統剩下來大部分就是邏輯的部份了，不過仍有少部分的東西還是能拿來分享一下。 11. ASP.NET網站專案使用類似ASP.NET WEB應用程式專案編譯與管理：這個專案我是用ASP.NET網站專案來開啟的，並且放在InetPub\wwwroot下面，這個是我的習慣。  開發到一定的階段以後，都會用發行網站，把要放在Server上的程式發行到某個地方，再把它弄到Server上。  可是不管怎麼調，產生出來的bin目錄下的dll就是看起來亂七八糟。 隨便開一個.aspx的檔案，相關的資訊都已經被編譯器改成這樣奇怪的資訊了。 這是由先行編譯工具產生的資料標記檔，不應該加以刪除! 原來都不選的話就做Static Building。如果勾了讓這個先行編譯的站台成為可更新，每個aspx的內容都回來了(好做Dynamic Building)，但是還是有麻煩的東西(請注意看inherits的地方)。 這是什麼問題呢?如果我只是要改某個網頁的部份，或是CodeBehind的程式碼，在Server上除了bin目錄要替換之外，連原來aspx都要換(因為inherits會變)。加勾使用固定命名和單一...</div></div></div></a><a class="pagination-related" href="/blog/2010/06/07/%E6%9C%80%E8%BF%91%E9%80%99%E6%AE%B5%E6%99%82%E9%96%93%E5%AF%AB%E5%80%8B%E7%B3%BB%E7%B5%B1%EF%BC%8C%E4%B8%80%E4%BA%9B%E5%8F%AF%E4%BB%A5%E8%A8%98%E9%8C%84%E4%B8%8B%E4%BE%86%E7%9A%84%E6%9D%B1%E8%A5%BF%E6%95%B4%E7%90%86-2/" title="最近這段時間寫個系統，一些可以記錄下來的東西整理(2)"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2010-06-07</div><div class="info-item-2">最近這段時間寫個系統，一些可以記錄下來的東西整理(2)</div></div><div class="info-2"><div class="info-item-1">&lt;p&gt;原來預計是想上一篇就把它寫完的(應該是審視一下程式碼以後，發現重複的地方太高了)，不過感覺還是有點長(賺篇幅)，就在這一篇繼續把它寫完吧。&lt;&#x2F;p&gt; &lt;p&gt;6. 字串與時間的處理：最常用到的應該是DateTime.Parse()，不過大家都知道，不要想預期的字串一定會進來(笑)，然後就會System.ArgumenException摟。在不想做try-catch的方式下，其實還有很多method可以選擇：DateTime.ParseExact()，這個可以handle沒法轉換的情況，DateTime.TryParseExact()除了有ParseExact()的錯誤處理以外，還可以回傳是否轉換成功，這對於塞資料庫時使用參數傳遞的方式，當轉換錯誤時會有參數錯誤的情形，可以有個解套。&lt;&#x2F;p&gt; 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606...</div></div></div></a><a class="pagination-related" href="/blog/2010/09/28/Tech-Days-2010-Taiwan-Day-1/" title="Tech Days 2010 Taiwan Day 1"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2010-09-28</div><div class="info-item-2">Tech Days 2010 Taiwan Day 1</div></div><div class="info-2"><div class="info-item-1">2010&#x2F;9&#x2F;28-2010&#x2F;9&#x2F;30在TICC舉辦了盛大的微軟Tech Days 2010 Taiwan研討會，今年有幸又能參加了。 –廣告時間– 先來介紹一下BizSpark：想創業當老闆嘛？你的公司草創初期需要免費的資源嘛？買開發工具很貴，但是希望不要燒到這邊的錢嘛？BizSpark提供優惠的免費方案供企業有免費的資源來使用，歡迎大家參考喔~ –廣告時間– 今天(9&#x2F;28)起了個大早去當Early Bird，有早餐吃以外，還可以先悠閒的逛攤位。 今年的Tech Days跟往常不太一樣，除了活動變多了以外，覺得今年的參展廠商的小禮物都給的很多，跟去年不太一樣，可能還是在去年的反應意見有成效吧(笑)。 早上的Keynote Speech講了很多大綱，圍繞在雲端、Windows Phone 7、NET 4上面，看來又要多學一點東西了。 今年我上的課，不像往年那樣只上.NET與相關程式開發的課程，今年上比較多雲端開發、虛擬化、與SharePoint的應用，原因是覺得這些技術距離我聽到的也有一些的時間了，想必已經夠成熟到可以碰碰看，因...</div></div></div></a><a class="pagination-related" href="/blog/2010/07/19/%E4%BD%BF%E7%94%A8Exchange-Web-Services%E4%BE%86%E5%AD%98%E5%8F%96Exchange%E6%9C%8D%E5%8B%99/" title="使用Exchange Web Services來存取Exchange服務"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2010-07-19</div><div class="info-item-2">使用Exchange Web Services來存取Exchange服務</div></div><div class="info-2"><div class="info-item-1">最近公司的信箱因為申請改成了Exchange服務，信箱變大，也有比較好的介面(原來的只有200M，Mail2000的介面)。不過謎之程式(自動轉信程式)因為使用Exchange而不能使用。雖然原來使用的Email函式庫可以直接存取Exchange的信件伺服器，但也因為安全問題而無法直接存取。在網路上找呀找，最後找到Exchange Web Services(EWS)，試了一下又可以繼續Work了，也分享給大家。 首先使用之前，記得原來Exchange的憑證要匯入到執行程式的系統中，並且設定為受信任根憑證，要不然會無法執行。 另外Outlook Web Access(OWA)服務記得要先使用過一次，要不然會有奇怪無法執行的問題。我把程式給了同事，在同事的電腦上不能跑，直到上了公司的OWA，才可以跑。 開發部分從這裡知道需安裝Exchange Web Services Managed API，開一個專案，記得要引用安裝目錄下的dll檔(Microsoft.Exchange.WebServices.Data.dll)，並且using&#x2F;imports到程式裡。 接下來是程式內容...</div></div></div></a><a class="pagination-related" href="/blog/2010/09/30/Tech-Days-2010-Taiwan-Day-3-End/" title="Tech Days 2010 Taiwan Day 3 (End)"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2010-09-30</div><div class="info-item-2">Tech Days 2010 Taiwan Day 3 (End)</div></div><div class="info-2"><div class="info-item-1">今天(9&#x2F;30)是Tech Days 2010 Taiwan 最後一天，不過越來越懶得起那麼早了，除了因為攤位跟活動都逛過以外，也真的累了(笑)，不過今天還是算早來的。 早上上了DEV303：利用 ASP.NET MVC 專案特性實現 TDD 測試導向開發，講師也是網路上的名人，講解在ASP.NET MVC中用Test Project來開發程式。ASP.NET MVC在去上海玩前有看了一下文件跟影片，覺得是另一種開發方式，對於我這種開發Web Form很久的人來說，感覺更有條理了，不過附近的同事跟廠商都沒在用，應該可以從小專案開始來試試看。這個Session以3A開始(Arrange：準備資料、Act；執行測試、Assert：檢視結果)，對應到ASP.NET MVC測試專案，也是按照這樣的配置撰寫測試程式。接下來分項說明：Arrange時因為Uni-Test只會測試Function本身，因此多餘的動作(File I&#x2F;O、連資料庫等)不會測試，因此需要Mock(行為模擬)與Stub(狀態模擬 )來準備測試資料。最後再來正式測試導向開發：先開發測試程式，再用VS2...</div></div></div></a><a class="pagination-related" href="/blog/2009/06/22/AI-%E8%BD%89-JPEG-in-NET-C/" title="AI 轉 JPEG in .NET C#"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2009-06-23</div><div class="info-item-2">AI 轉 JPEG in .NET C#</div></div><div class="info-2"><div class="info-item-1">轉自己的噗 不知道是bonnie公司電腦太爛還是Adobe Illustrator太肥大，每一次要轉檔的時候就會說記憶體不足，再不然就要開半天~ 上網找Solution都不太適合我的需求，於是就乾脆自己寫一個來幫幫她~ 結果發現到ai檔還真難轉成jpeg，後來找到下面的方法~ 關於在.Net中矢量圖向位圖的轉換 後記：對於大圖檔的使用仍然沒法很完善的轉檔，應該找一天來測測看。 程式碼： 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960using System;using System.Collections.Generic;using System.Text;using ImageMagickObject;using System.IO;namespace AIToJPEG&#123;    class Program    &#123;        static void Main(string[] ar...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 評論</span></div></div><div class="comment-wrap"><div><div id="disqus_thread"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/blog/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/blog/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Su, Jun-Ming</div><div class="author-info-description">Linux、資料庫、MIS 實戰紀錄</div><div class="site-data"><a href="/blog/archives/"><div class="headline">文章</div><div class="length-num">134</div></a><a href="/blog/tags/"><div class="headline">標籤</div><div class="length-num">23</div></a><a href="/blog/categories/"><div class="headline">分類</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/sujunmin"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/sujunmin" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="https://twitter.com/sujunmin_" target="_blank" title="Twitter"><i class="fab fa-x-twitter"></i></a><a class="social-icon" href="/blog/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/blog/2018/06/12/%E7%94%A8%20Graylog%20%E5%8F%96%E4%BB%A3%20Splunk%20%E7%B4%80%E9%8C%84%20(%E4%B8%8B)/" title="用 Graylog 取代 Splunk 紀錄 (下)">用 Graylog 取代 Splunk 紀錄 (下)</a><time datetime="2018-06-12T07:50:55.000Z" title="發表於 2018-06-12 15:50:55">2018-06-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/blog/2018/05/31/%E7%94%A8%20Graylog%20%E5%8F%96%E4%BB%A3%20Splunk%20%E7%B4%80%E9%8C%84%20(%E4%B8%8A)/" title="用 Graylog 取代 Splunk 紀錄 (上)">用 Graylog 取代 Splunk 紀錄 (上)</a><time datetime="2018-05-31T07:43:12.000Z" title="發表於 2018-05-31 15:43:12">2018-05-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/blog/2017/08/31/Ubuntu%2016.04%20%E5%AE%89%E8%A3%9D%E8%88%87%E4%BD%BF%E7%94%A8%20Flashcache%20%E6%B5%81%E7%A8%8B%E7%B4%80%E9%8C%84/" title="Ubuntu 16.04 安裝與使用 Flashcache 流程紀錄">Ubuntu 16.04 安裝與使用 Flashcache 流程紀錄</a><time datetime="2017-08-31T04:31:57.000Z" title="發表於 2017-08-31 12:31:57">2017-08-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/blog/2017/07/27/IE%2011%20%E5%9B%A0%E7%82%BA%20KB2729094%20%E4%B8%8D%E8%83%BD%E5%AE%89%E8%A3%9D%E7%9A%84%E5%95%8F%E9%A1%8C/" title="IE 11 因為 KB2729094 不能安裝的問題">IE 11 因為 KB2729094 不能安裝的問題</a><time datetime="2017-07-27T10:31:45.000Z" title="發表於 2017-07-27 18:31:45">2017-07-27</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/blog/2017/07/02/%E5%9C%A8%20Pinebook%20%E4%B8%8A%E5%AE%89%E8%A3%9D%20Visual%20Studio%20Code/" title="在 Pinebook 上安裝 Visual Studio Code">在 Pinebook 上安裝 Visual Studio Code</a><time datetime="2017-07-02T15:53:43.000Z" title="發表於 2017-07-02 23:53:43">2017-07-02</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2009 - 2026 By Su, Jun-Ming</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主題 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.7.1.260810</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日夜模式切換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><a id="to_comment" href="#post-comment" title="前往評論"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到頂端"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/blog/js/utils.js?v=5.7.1.260810"></script><script src="/blog/js/main.js?v=5.7.1.260810"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+
+  const disqusReset = conf => {
+    window.DISQUS && window.DISQUS.reset({
+      reload: true,
+      config: conf
+    })
+  }
+
+  const loadDisqus = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyDisqus = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    window.disqus_identifier = isShuoshuo ? path : '/blog/2009/12/18/IIS%E5%BC%B7%E8%BF%AB%E8%B7%91SSL%E6%A8%A1%E5%BC%8F%E8%88%87SQL-2005-Reporting-Services-over-SSL/'
+    window.disqus_url = isShuoshuo ? location.origin + path : 'https://sujunmin.github.io/blog/2009/12/18/IIS%E5%BC%B7%E8%BF%AB%E8%B7%91SSL%E6%A8%A1%E5%BC%8F%E8%88%87SQL-2005-Reporting-Services-over-SSL/'
+
+    const disqus_config = function () {
+      this.page.url = disqus_url
+      this.page.identifier = disqus_identifier
+      this.page.title = 'IIS強迫跑SSL模式與SQL 2005 Reporting Services over SSL'
+    }
+
+    if (window.DISQUS) disqusReset(disqus_config)
+    else {
+      const script = document.createElement('script')
+      script.src = 'https://sujunmin.disqus.com/embed.js'
+      script.setAttribute('data-timestamp', +new Date())
+      document.head.appendChild(script)
+    }
+
+    btf.addGlobalFn('themeChange', () => disqusReset(disqus_config), 'disqus')
+  }
+
+  const getCount = async() => {
+    try {
+      const eleGroup = document.querySelector('#post-meta .disqus-comment-count')
+      if (!eleGroup) return
+      const cleanedLinks = eleGroup.href.replace(/#post-comment$/, '')
+
+      const res = await fetch(`https://disqus.com/api/3.0/threads/set.json?forum=sujunmin&api_key=&thread:link=${cleanedLinks}`,{
+        method: 'GET'
+      })
+      const result = await res.json()
+
+      const count = result.response.length ? result.response[0].posts : 0
+      eleGroup.textContent = count
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Disqus' === 'Disqus'
+      ? window.shuoshuoComment = { loadComment: loadDisqus }
+      : window.loadOtherComment = loadDisqus
+    return
+  }
+
+  if ('Disqus' === 'Disqus' || !false) {
+    if (false) btf.loadComment(document.getElementById('disqus_thread'), loadDisqus)
+    else {
+      loadDisqus()
+      
+    }
+  } else {
+    window.loadOtherComment = loadDisqus
+  }
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜尋</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  資料載入中</span></div><div class="local-search-input"><input placeholder="搜尋文章" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/blog/js/search/local-search.js?v=5.7.1.260810"></script></div></div></body></html>

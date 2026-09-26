@@ -1,9 +1,237 @@
-<!DOCTYPE html><html><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>從 SQL Server 到 MariaDB - [5] Log-shipping 與 MariaDB Replication | 隨意記事</title><link rel="stylesheet" type="text/css" href="/blog//css/normalize.css"><link rel="stylesheet" type="text/css" href="/blog//css/highlight.css"><link rel="stylesheet" type="text/css" href="/blog//css/very-simple.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/blog/favicon.ico"><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script>(adsbygoogle = window.adsbygoogle || []).push({
- google_ad_client: "ca-pub-0187888667607442",
- enable_page_level_ads: true
- });
-</script></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/blog/." class="title">隨意記事</a><span class="subtitle"></span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/blog/" class="sidebar-nav-item">Home</a><a href="/blog/archives" class="sidebar-nav-item">Archives</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>從 SQL Server 到 MariaDB - [5] Log-shipping 與 MariaDB Replication</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2016-09-19</div><div class="post-tags"><a class="post-tag-link" href="/blog/tags/MSSQL/">MSSQL</a>/<a class="post-tag-link" href="/blog/tags/MariaDB/">MariaDB</a></div></div></div><article><div class="container post"><h2 id="需求說明"><a href="#需求說明" class="headerlink" title="需求說明"></a>需求說明</h2><p>在資料庫的備援部份，採用 SQL Server Log-shipping 方式來處理，希望在移轉至 MariaDB 時也有不錯的類似 Log-shipping 方式執行。</p>
-<h2 id="MariaDB-Replication-uses-GTID"><a href="#MariaDB-Replication-uses-GTID" class="headerlink" title="MariaDB Replication uses GTID"></a>MariaDB Replication uses GTID</h2><p>接下來的文章來自於許多的文件，從<a href="https://mariadb.com/kb/en/mariadb/gtid/" target="_blank" rel="noopener">官方文件</a>，<a href="http://mysql.taobao.org/monthly/2016/02/08/" target="_blank" rel="noopener">MariaDB · 版本特性 · MariaDB 的 GTID 介绍</a>，還有<a href="https://segmentfault.com/a/1190000000598062" target="_blank" rel="noopener">mariadb10 GTID 研究笔记. md</a>與<a href="https://segmentfault.com/a/1190000000601849" target="_blank" rel="noopener">實作</a>，整理了一下。</p>
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>從 SQL Server 到 MariaDB - [5] Log-shipping 與 MariaDB Replication | 隨意記事</title><meta name="author" content="Su, Jun-Ming"><meta name="copyright" content="Su, Jun-Ming"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="需求說明在資料庫的備援部份，採用 SQL Server Log-shipping 方式來處理，希望在移轉至 MariaDB 時也有不錯的類似 Log-shipping 方式執行。 MariaDB Replication uses GTID接下來的文章來自於許多的文件，從官方文件，MariaDB · 版本特性 · MariaDB 的 GTID 介绍，還有mariadb10 GTID 研究笔记. md">
+<meta property="og:type" content="article">
+<meta property="og:title" content="從 SQL Server 到 MariaDB - [5] Log-shipping 與 MariaDB Replication">
+<meta property="og:url" content="https://sujunmin.github.io/blog/2016/09/19/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[5]%20Log-shipping%20%E8%88%87%20MariaDB%20Replication/index.html">
+<meta property="og:site_name" content="隨意記事">
+<meta property="og:description" content="需求說明在資料庫的備援部份，採用 SQL Server Log-shipping 方式來處理，希望在移轉至 MariaDB 時也有不錯的類似 Log-shipping 方式執行。 MariaDB Replication uses GTID接下來的文章來自於許多的文件，從官方文件，MariaDB · 版本特性 · MariaDB 的 GTID 介绍，還有mariadb10 GTID 研究笔记. md">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://sujunmin.github.io/blog/img/butterfly-icon.png">
+<meta property="article:published_time" content="2016-09-19T03:50:18.000Z">
+<meta property="article:modified_time" content="2026-09-26T03:17:55.353Z">
+<meta property="article:author" content="Su, Jun-Ming">
+<meta property="article:tag" content="MariaDB">
+<meta property="article:tag" content="MSSQL">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://sujunmin.github.io/blog/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "從 SQL Server 到 MariaDB - [5] Log-shipping 與 MariaDB Replication",
+  "url": "https://sujunmin.github.io/blog/2016/09/19/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[5]%20Log-shipping%20%E8%88%87%20MariaDB%20Replication/",
+  "image": "https://sujunmin.github.io/blog/img/butterfly-icon.png",
+  "datePublished": "2016-09-19T03:50:18.000Z",
+  "dateModified": "2026-09-26T03:17:55.353Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Su, Jun-Ming",
+      "url": "https://sujunmin.github.io/blog"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/blog/favicon.ico"><link rel="canonical" href="https://sujunmin.github.io/blog/2016/09/19/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[5]%20Log-shipping%20%E8%88%87%20MariaDB%20Replication/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/blog/css/index.css?v=5.7.1.260810"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.3.1/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        try {
+          const data = { value }
+
+          if (ttl != null) {
+            data.expiry = Date.now() + ttl * 86400000
+          }
+
+          localStorage.setItem(key, JSON.stringify(data))
+        } catch (e) {
+          console.error(e)
+        }
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return
+
+        try {
+          const data = JSON.parse(itemStr)
+
+          if (data.expiry && Date.now() > data.expiry) {
+            localStorage.removeItem(key)
+            return
+          }
+
+          return data.value
+        } catch {
+          localStorage.removeItem(key)
+        }
+      }
+    }
+
+    const scriptCache = new Map()
+    const cssCache = new Map()
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => {
+        if (scriptCache.has(url)) {
+          return scriptCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+
+          script.src = url
+          script.async = true
+
+          for (const key in attr) {
+            script.setAttribute(key, attr[key])
+          }
+
+          script.onload = resolve
+          script.onerror = reject
+
+          document.head.appendChild(script)
+        })
+
+        scriptCache.set(url, promise)
+
+        return promise
+      },
+      getCSS: (url, id) => {
+        if (cssCache.has(url)) {
+          return cssCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const link = document.createElement('link')
+
+          link.rel = 'stylesheet'
+          link.href = url
+
+          if (id) {
+            link.id = id
+          }
+
+          link.onload = resolve
+          link.onerror = reject
+
+          document.head.appendChild(link)
+        })
+
+        cssCache.set(url, promise)
+
+        return promise
+      },
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]')
+      const activateDarkMode = () => {
+        document.documentElement.dataset.theme = 'dark'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.dataset.theme = 'light'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const start = 6
+              const end = 18
+              const isNight =
+                start < end
+                    ? hour < start || hour >= end
+                    : hour >= start || hour < end
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', e => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/blog/',
+  algolia: undefined,
+  localSearch: {"path":"/blog/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"找不到符合您查詢的內容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":400,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '複製成功',
+    error: '複製失敗',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '載入更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '從 SQL Server 到 MariaDB - [5] Log-shipping 與 MariaDB Replication',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/blog/atom.xml" title="隨意記事" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/blog/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/blog/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/blog/archives/"><div class="headline">文章</div><div class="length-num">134</div></a><a href="/blog/tags/"><div class="headline">標籤</div><div class="length-num">23</div></a><a href="/blog/categories/"><div class="headline">分類</div><div class="length-num">0</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/blog/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 彙整</span></a></div><div class="menus_item"><a class="site-page" href="/blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/blog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/blog/"><span class="site-name">隨意記事</span></a><a class="nav-page-title" href="/blog/"><span class="site-name">從 SQL Server 到 MariaDB - [5] Log-shipping 與 MariaDB Replication</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首頁</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜尋</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/blog/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 彙整</span></a></div><div class="menus_item"><a class="site-page" href="/blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/blog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">從 SQL Server 到 MariaDB - [5] Log-shipping 與 MariaDB Replication</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">發表於</span><time class="post-meta-date-created" datetime="2016-09-19T03:50:18.000Z" title="發表於 2016-09-19 11:50:18">2016-09-19</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新於</span><time class="post-meta-date-updated" datetime="2026-09-26T03:17:55.353Z" title="更新於 2026-09-26 11:17:55">2026-09-26</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">總字數:</span><span class="word-count">2230</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀時間:</span><span>10 分鐘</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">瀏覽量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="需求說明"><a href="#需求說明" class="headerlink" title="需求說明"></a>需求說明</h2><p>在資料庫的備援部份，採用 SQL Server Log-shipping 方式來處理，希望在移轉至 MariaDB 時也有不錯的類似 Log-shipping 方式執行。</p>
+<h2 id="MariaDB-Replication-uses-GTID"><a href="#MariaDB-Replication-uses-GTID" class="headerlink" title="MariaDB Replication uses GTID"></a>MariaDB Replication uses GTID</h2><p>接下來的文章來自於許多的文件，從<a target="_blank" rel="noopener" href="https://mariadb.com/kb/en/mariadb/gtid/">官方文件</a>，<a target="_blank" rel="noopener" href="http://mysql.taobao.org/monthly/2016/02/08/">MariaDB · 版本特性 · MariaDB 的 GTID 介绍</a>，還有<a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000000598062">mariadb10 GTID 研究笔记. md</a>與<a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000000601849">實作</a>，整理了一下。</p>
 <h3 id="Master-與-Slave"><a href="#Master-與-Slave" class="headerlink" title="Master 與 Slave"></a>Master 與 Slave</h3><p>與 SQL Server Log-shipping 不一樣的地方如下</p>
 <ol>
 <li>不管什麼樣的 Replication (樹狀或是環型串聯)，發動端皆是 <b>Slave</b>，也就是說 Master 不存放任何有關 Replication 的資料，所有資料皆在 Slave 裡。</li>
@@ -12,7 +240,7 @@
 <li>Slave 重現完資料以後就會繼續跟 Master 要進一步的 binlog 資料，所以基本上是沒有落差可言的，在 SQL Server Log-shipping 是有發動時間設定的(預設為 15 分鐘)。</li>
 <li>系統的資料庫 (mysql 那些)也可以做 Replication。</li>
 </ol>
-<p>在 4 的部份，其實對於現在的維運有些麻煩。因為這 15 分鐘的落差，可以拿來利用成正式環境的 buffer，下錯指令時如果還在 15 分鐘的時間分隔下，還可以趕快去備援區拿資料蓋回去，現在沒有時間設定的話就比較麻煩。有人發個 <a href="https://jira.mariadb.org/browse/MDEV-7145" target="_blank" rel="noopener">issue</a> 希望能 merge MySQL 的 <code>MASTER_DELAY</code> 功能，不過表定是 10.2.x 的功能，希望能實作在 10.1.x。</p>
+<p>在 4 的部份，其實對於現在的維運有些麻煩。因為這 15 分鐘的落差，可以拿來利用成正式環境的 buffer，下錯指令時如果還在 15 分鐘的時間分隔下，還可以趕快去備援區拿資料蓋回去，現在沒有時間設定的話就比較麻煩。有人發個 <a target="_blank" rel="noopener" href="https://jira.mariadb.org/browse/MDEV-7145">issue</a> 希望能 merge MySQL 的 <code>MASTER_DELAY</code> 功能，不過表定是 10.2.x 的功能，希望能實作在 10.1.x。</p>
 <p>在 5 的部份我覺得還蠻方便的就是帳號密碼的同步，在 SQL Server Log-shipping 是要分開想辦法同步的，管理就很方便了。</p>
 <h3 id="Slave-如何透過-GTID-做-Replication"><a href="#Slave-如何透過-GTID-做-Replication" class="headerlink" title="Slave 如何透過 GTID 做 Replication"></a>Slave 如何透過 GTID 做 Replication</h3><p>GTID 的規格部份就不解釋了，上面的文件寫的很清楚。</p>
 <p>在 MariaDB 有一些 Server Variables 紀錄 GTID 的資訊</p>
@@ -23,8 +251,7 @@
 <th>意義</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td><code>gtid_binlog_pos</code></td>
 <td>binlog 裡最後一筆紀錄的  GTID</td>
 </tr>
@@ -36,14 +263,15 @@
 <td><code>gtid_current_pos</code></td>
 <td>Database 上紀錄的最後一個 binlog GTID</td>
 </tr>
-</tbody>
-</table>
+</tbody></table>
 <p>什麼叫作 “紀錄的最後一個 binlog GTID” 呢?</p>
 <p>對 <code>gtid_slave_pos</code> 來說，就是 master 的最後一筆 GTID。</p>
 <p>對 <code>gtid_current_pos</code> 來說，不管當下的 Instance 之前是 Master 還是 Slave</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">if gtid_binlog_pos.ServerID = Instance.ServerID and gtid_binlog_pos.DomainID = Instance.DomainID and gtid_binlog_pos.SequenceID &gt; gtid_slave_pos.SequenceID (同 ServerID 與 DomainID 狀態下) then</span><br><span class="line">  gtid_current_pos = gtid_binlog_pos</span><br><span class="line">else </span><br><span class="line">  gtid_current_pos = gtid_slave_pos (同 ServerID 與 DomainID 狀態下)</span><br><span class="line">end if</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">if gtid_binlog_pos.ServerID = Instance.ServerID and gtid_binlog_pos.DomainID = Instance.DomainID and gtid_binlog_pos.SequenceID &gt; gtid_slave_pos.SequenceID (同 ServerID 與 DomainID 狀態下) then</span><br><span class="line">  gtid_current_pos = gtid_binlog_pos</span><br><span class="line">else </span><br><span class="line">  gtid_current_pos = gtid_slave_pos (同 ServerID 與 DomainID 狀態下)</span><br><span class="line">end if</span><br></pre></td></tr></table></figure>
+
 <p>官方文件有說到一個例子，假設 A 為 Master，B 為 Slave，參數為 <code>slave_pos</code>，把 A 先關一會兒，讓 B 成為 Master，最後回復 A 並成為 B 的 Slave。</p>
-<p><img src="https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/MariaDB_Replication_1.png"></p>
+<img src = "https://raw.githubusercontent.com/sujunmin/sujunmin.github.com/master/test/MariaDB_Replication_1.png" />
+
 <ul>
 <li>一開始 A 的 <code>gtid_binlog_pos</code> 與 <code>gtid_current_pos</code> 相同（<code>1-1-123</code>, <code>1-1-137</code>, <code>1-1-145</code>），<code>gtid_slave_pos</code> 是空值。</li>
 <li>B 的 <code>gtid_slave_pos</code> 記著 A 的最後一個 GTID。</li>
@@ -65,20 +293,20 @@
 <ol>
 <li>當 Master 壞了就停掉 Slave 的 Service</li>
 <li>等到 Master 好的時候倒回 Slave 的備份</li>
-<li>同步完成後重新建立 Master / Slave 順序 </li>
+<li>同步完成後重新建立 Master &#x2F; Slave 順序</li>
 </ol>
 <h2 id="測試"><a href="#測試" class="headerlink" title="測試"></a>測試</h2><h3 id="在同一個機器上開新的-Instance"><a href="#在同一個機器上開新的-Instance" class="headerlink" title="在同一個機器上開新的 Instance"></a>在同一個機器上開新的 Instance</h3><ul>
-<li><p>有一個不錯用的工具 <a href="https://mariadb.com/kb/en/mariadb/mysql_install_dbexe/" target="_blank" rel="noopener">mysql_install_db.exe</a> 可以直接開新的 Instance。</p>
+<li><p>有一個不錯用的工具 <a target="_blank" rel="noopener" href="https://mariadb.com/kb/en/mariadb/mysql_install_dbexe/">mysql_install_db.exe</a> 可以直接開新的 Instance。</p>
 <p>我們用這個先開一個 Instance 在 Port 3307。</p>
 </li>
 <li><p>設定原來在 3306 的為 Master (<code>server-id=1</code>)，3307 的為 Slave (<code>server-id=2</code>)，都開啟 binlog (<code>log-bin</code>)。 </p>
 </li>
-<li>Event 記得設成 Disabled on Slave。</li>
+<li><p>Event 記得設成 Disabled on Slave。</p>
+</li>
 <li><p>接下來備份 Master</p>
 <figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">E:\<span class="title">backup</span>&gt;<span class="title">mysqldump</span> -<span class="title">u</span> <span class="title">sujunmin</span> -<span class="title">p</span> --<span class="title">master</span>-<span class="title">data</span> --<span class="title">all</span>-<span class="title">databases</span> --<span class="title">events</span> --<span class="title">routines</span> --<span class="title">gtid</span> &gt; <span class="title">all_db.sql</span></span></span><br><span class="line"><span class="function"><span class="title">Enter</span> <span class="title">password</span>: ************</span></span><br></pre></td></tr></table></figure>
+
 <p>其中幾個重要參數</p>
-</li>
-</ul>
 <table>
 <thead>
 <tr>
@@ -86,8 +314,7 @@
 <th>意義</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td><code>master-data</code></td>
 <td>dump 出來的掛 master ID</td>
 </tr>
@@ -103,16 +330,19 @@
 <td><code>gtid</code></td>
 <td>產生 <code>CHANGE MASTER TO master_use_gtid</code> 語法</td>
 </tr>
-</tbody>
-</table>
-<p>  觀察一下 <code>all_db.sql</code> 的內容<br>  <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- MySQL dump 10.16  Distrib 10.1.17-MariaDB, for Win64 (AMD64)</span></span><br><span class="line">(中間省略)</span><br><span class="line"><span class="comment">--</span></span><br><span class="line"><span class="comment">-- Position to start replication or point-in-time recovery from</span></span><br><span class="line"><span class="comment">--</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- CHANGE MASTER TO MASTER_LOG_FILE='WSTest-bin.000002', MASTER_LOG_POS=3732;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">--</span></span><br><span class="line"><span class="comment">-- GTID to start replication from</span></span><br><span class="line"><span class="comment">--</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">CHANGE</span> <span class="keyword">MASTER</span> <span class="keyword">TO</span> MASTER_USE_GTID=slave_pos;</span><br><span class="line"><span class="keyword">SET</span> <span class="keyword">GLOBAL</span> gtid_slave_pos=<span class="string">'0-1-770'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">--</span></span><br><span class="line"><span class="comment">-- Current Database: 'master'</span></span><br><span class="line"><span class="comment">--</span></span><br><span class="line">(後面省略)</span><br></pre></td></tr></table></figure></p>
-<p>  可以看到如果要用舊的方式(兼容 MySQL Replication) 與新的方式。</p>
-<ul>
-<li>啟動 Slave 的 Instance。  </li>
-<li>把 <code>all_db.sql</code> 倒到 Slave (3307) 上面。</li>
-<li>在 Master 上開一個 User <code>lsuser</code> 作為 Replication 用，權限是 <code>REPLICATION SLAVE</code> 與 <code>SUPER</code> (這個我不設定會沒權限登入，但是官方網站沒有這個權限)。</li>
+</tbody></table>
+<p>觀察一下 <code>all_db.sql</code> 的內容</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- MySQL dump 10.16  Distrib 10.1.17-MariaDB, for Win64 (AMD64)</span></span><br><span class="line">(中間省略)</span><br><span class="line"><span class="comment">--</span></span><br><span class="line"><span class="comment">-- Position to start replication or point-in-time recovery from</span></span><br><span class="line"><span class="comment">--</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- CHANGE MASTER TO MASTER_LOG_FILE=&#x27;WSTest-bin.000002&#x27;, MASTER_LOG_POS=3732;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">--</span></span><br><span class="line"><span class="comment">-- GTID to start replication from</span></span><br><span class="line"><span class="comment">--</span></span><br><span class="line"></span><br><span class="line">CHANGE MASTER <span class="keyword">TO</span> MASTER_USE_GTID<span class="operator">=</span>slave_pos;</span><br><span class="line"><span class="keyword">SET</span> <span class="keyword">GLOBAL</span> gtid_slave_pos<span class="operator">=</span><span class="string">&#x27;0-1-770&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">--</span></span><br><span class="line"><span class="comment">-- Current Database: &#x27;master&#x27;</span></span><br><span class="line"><span class="comment">--</span></span><br><span class="line">(後面省略)</span><br></pre></td></tr></table></figure>
+<p>可以看到如果要用舊的方式(兼容 MySQL Replication) 與新的方式。</p>
+</li>
+<li><p>啟動 Slave 的 Instance。  </p>
+</li>
+<li><p>把 <code>all_db.sql</code> 倒到 Slave (3307) 上面。</p>
+</li>
+<li><p>在 Master 上開一個 User <code>lsuser</code> 作為 Replication 用，權限是 <code>REPLICATION SLAVE</code> 與 <code>SUPER</code> (這個我不設定會沒權限登入，但是官方網站沒有這個權限)。</p>
+</li>
 <li><p>在 Slave 上設定 <code>CHANGE MASTER</code> </p>
-<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [(none)]&gt; change master to master_host='localhost', master_port=<span class="number">3306</span>, master_user='lsuser', master_password='password';</span><br><span class="line">Query OK, <span class="number">0</span> rows affected (<span class="number">0</span>.<span class="number">05</span> sec)</span><br></pre></td></tr></table></figure>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [(none)]&gt; change master to master_host=&#x27;localhost&#x27;, master_port=<span class="number">3306</span>, master_user=&#x27;lsuser&#x27;, master_password=&#x27;password&#x27;;</span><br><span class="line">Query OK, <span class="number">0</span> rows affected (<span class="number">0</span>.<span class="number">05</span> sec)</span><br></pre></td></tr></table></figure>
 </li>
 <li><p><code>START SLAVE;</code></p>
 </li>
@@ -121,45 +351,50 @@
 </li>
 <li><p>看一下同步狀況</p>
 </li>
-<li>移除 Master 模擬 Master 壞掉了狀態<ul>
+<li><p>移除 Master 模擬 Master 壞掉了狀態</p>
+<ul>
 <li><code>sc stop mariadb</code></li>
 <li><code>sc delete mariadb</code></li>
 <li>移除資料</li>
 </ul>
 </li>
 <li><p>Slave 沒法連到 Master 了</p>
-<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [(none)]&gt; show slave status\G</span><br><span class="line">*************************** <span class="number">1</span>. row ***************************</span><br><span class="line"><span class="function">             Slave_IO_State: <span class="title">Reconnecting</span> <span class="title">after</span> <span class="title">a</span> <span class="title">failed</span> <span class="title">master</span> <span class="title">event</span> <span class="title">read</span></span></span><br><span class="line"><span class="function">                <span class="title">Master_Host</span>: <span class="title">localhost</span></span></span><br><span class="line"><span class="function">                <span class="title">Master_User</span>: <span class="title">lsuser</span></span></span><br><span class="line"><span class="function">                <span class="title">Master_Port</span>: 3306</span></span><br><span class="line"><span class="function">              <span class="title">Connect_Retry</span>: 60</span></span><br><span class="line"><span class="function">            <span class="title">Master_Log_File</span>: <span class="title">WSTest</span>-<span class="title">bin</span>.000002</span></span><br><span class="line"><span class="function">        <span class="title">Read_Master_Log_Pos</span>: 8223</span></span><br><span class="line"><span class="function">             <span class="title">Relay_Log_File</span>: <span class="title">WSTest</span>-<span class="title">relay</span>-<span class="title">bin</span>.000002</span></span><br><span class="line"><span class="function">              <span class="title">Relay_Log_Pos</span>: 8551</span></span><br><span class="line"><span class="function">      <span class="title">Relay_Master_Log_File</span>: <span class="title">WSTest</span>-<span class="title">bin</span>.000002</span></span><br><span class="line"><span class="function">           <span class="title">Slave_IO_Running</span>: <span class="title">Connecting</span></span></span><br><span class="line"><span class="function">          <span class="title">Slave_SQL_Running</span>: <span class="title">Yes</span></span></span><br><span class="line"><span class="function">                         (省略)</span></span><br><span class="line"><span class="function">              <span class="title">Last_IO_Errno</span>: 2003</span></span><br><span class="line"><span class="function">              <span class="title">Last_IO_Error</span>: <span class="title">error</span> <span class="title">reconnecting</span> <span class="title">to</span> <span class="title">master</span> '<span class="title">lsuser</span>@<span class="title">localhost</span>:3306' - <span class="title">retry</span>-<span class="title">time</span>: 60  <span class="title">retries</span>: 86400  <span class="title">message</span>: <span class="title">Can</span>'<span class="title">t</span> <span class="title">connect</span> <span class="title">to</span> <span class="title">MySQL</span> <span class="title">server</span> <span class="title">on</span>'<span class="title">localhost</span>' (10061 "<span class="title">Unknown</span> <span class="title">error</span>")</span></span><br><span class="line"><span class="function">             <span class="title">Last_SQL_Errno</span>: 0</span></span><br><span class="line"><span class="function">             <span class="title">Last_SQL_Error</span>:</span></span><br><span class="line"><span class="function"> <span class="title">Replicate_Ignore_Server_Ids</span>:</span></span><br><span class="line"><span class="function">           <span class="title">Master_Server_Id</span>: 1</span></span><br><span class="line"><span class="function">             <span class="title">Master_SSL_Crl</span>:</span></span><br><span class="line"><span class="function">         <span class="title">Master_SSL_Crlpath</span>:</span></span><br><span class="line"><span class="function">                 <span class="title">Using_Gtid</span>: <span class="title">Slave_Pos</span></span></span><br><span class="line"><span class="function">                <span class="title">Gtid_IO_Pos</span>: 0-1-784</span></span><br><span class="line"><span class="function">    <span class="title">Replicate_Do_Domain_Ids</span>:</span></span><br><span class="line"><span class="function"> <span class="title">Replicate_Ignore_Domain_Ids</span>:</span></span><br><span class="line"><span class="function">              <span class="title">Parallel_Mode</span>: <span class="title">conservative</span></span></span><br><span class="line"><span class="function"> 1 <span class="title">row</span> <span class="title">in</span> <span class="title">set</span> (0.00 <span class="title">sec</span>)</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [(none)]&gt; show slave status\G</span><br><span class="line">*************************** <span class="number">1</span>. row ***************************</span><br><span class="line"><span class="function">             Slave_IO_State: <span class="title">Reconnecting</span> <span class="title">after</span> <span class="title">a</span> <span class="title">failed</span> <span class="title">master</span> <span class="title">event</span> <span class="title">read</span></span></span><br><span class="line"><span class="function">                <span class="title">Master_Host</span>: <span class="title">localhost</span></span></span><br><span class="line"><span class="function">                <span class="title">Master_User</span>: <span class="title">lsuser</span></span></span><br><span class="line"><span class="function">                <span class="title">Master_Port</span>: 3306</span></span><br><span class="line"><span class="function">              <span class="title">Connect_Retry</span>: 60</span></span><br><span class="line"><span class="function">            <span class="title">Master_Log_File</span>: <span class="title">WSTest</span>-<span class="title">bin</span>.000002</span></span><br><span class="line"><span class="function">        <span class="title">Read_Master_Log_Pos</span>: 8223</span></span><br><span class="line"><span class="function">             <span class="title">Relay_Log_File</span>: <span class="title">WSTest</span>-<span class="title">relay</span>-<span class="title">bin</span>.000002</span></span><br><span class="line"><span class="function">              <span class="title">Relay_Log_Pos</span>: 8551</span></span><br><span class="line"><span class="function">      <span class="title">Relay_Master_Log_File</span>: <span class="title">WSTest</span>-<span class="title">bin</span>.000002</span></span><br><span class="line"><span class="function">           <span class="title">Slave_IO_Running</span>: <span class="title">Connecting</span></span></span><br><span class="line"><span class="function">          <span class="title">Slave_SQL_Running</span>: <span class="title">Yes</span></span></span><br><span class="line"><span class="function">                         (省略)</span></span><br><span class="line"><span class="function">              <span class="title">Last_IO_Errno</span>: 2003</span></span><br><span class="line"><span class="function">              <span class="title">Last_IO_Error</span>: <span class="title">error</span> <span class="title">reconnecting</span> <span class="title">to</span> <span class="title">master</span> &#x27;<span class="title">lsuser</span>@<span class="title">localhost</span>:3306&#x27; - <span class="title">retry</span>-<span class="title">time</span>: 60  <span class="title">retries</span>: 86400  <span class="title">message</span>: <span class="title">Can</span>&#x27;<span class="title">t</span> <span class="title">connect</span> <span class="title">to</span> <span class="title">MySQL</span> <span class="title">server</span> <span class="title">on</span>&#x27;<span class="title">localhost</span>&#x27; (10061 &quot;<span class="title">Unknown</span> <span class="title">error</span>&quot;)</span></span><br><span class="line"><span class="function">             <span class="title">Last_SQL_Errno</span>: 0</span></span><br><span class="line"><span class="function">             <span class="title">Last_SQL_Error</span>:</span></span><br><span class="line"><span class="function"> <span class="title">Replicate_Ignore_Server_Ids</span>:</span></span><br><span class="line"><span class="function">           <span class="title">Master_Server_Id</span>: 1</span></span><br><span class="line"><span class="function">             <span class="title">Master_SSL_Crl</span>:</span></span><br><span class="line"><span class="function">         <span class="title">Master_SSL_Crlpath</span>:</span></span><br><span class="line"><span class="function">                 <span class="title">Using_Gtid</span>: <span class="title">Slave_Pos</span></span></span><br><span class="line"><span class="function">                <span class="title">Gtid_IO_Pos</span>: 0-1-784</span></span><br><span class="line"><span class="function">    <span class="title">Replicate_Do_Domain_Ids</span>:</span></span><br><span class="line"><span class="function"> <span class="title">Replicate_Ignore_Domain_Ids</span>:</span></span><br><span class="line"><span class="function">              <span class="title">Parallel_Mode</span>: <span class="title">conservative</span></span></span><br><span class="line"><span class="function"> 1 <span class="title">row</span> <span class="title">in</span> <span class="title">set</span> (0.00 <span class="title">sec</span>)</span></span><br></pre></td></tr></table></figure>
 </li>
 <li><p><code>STOP SLAVE</code></p>
 </li>
-<li>打開 Slave 的 Event 服務</li>
-<li>繼續服務</li>
+<li><p>打開 Slave 的 Event 服務</p>
+</li>
+<li><p>繼續服務</p>
+</li>
 <li><p>重建 Master</p>
 <figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">E:\<span class="title">backup</span>&gt;<span class="title">mysqldump</span> -<span class="title">u</span> <span class="title">sujunmin</span> -<span class="title">p</span> --<span class="title">port</span> 3307 --<span class="title">master</span>-<span class="title">data</span> --<span class="title">all</span>-<span class="title">databases</span> --<span class="title">events</span> --<span class="title">routines</span> --<span class="title">gtid</span> &gt; <span class="title">all_db.sql</span></span></span><br><span class="line"><span class="function"><span class="title">Enter</span> <span class="title">password</span>: ************</span></span><br></pre></td></tr></table></figure>
+
+<p>觀察一下 <code>all_db.sql</code> 的內容</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- MySQL dump 10.16  Distrib 10.1.17-MariaDB, for Win64 (AMD64)</span></span><br><span class="line">(中間省略)</span><br><span class="line"><span class="comment">--</span></span><br><span class="line"><span class="comment">-- Position to start replication or point-in-time recovery from</span></span><br><span class="line"><span class="comment">--</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- CHANGE MASTER TO MASTER_LOG_FILE=&#x27;WSTest-bin.000003&#x27;, MASTER_LOG_POS=12441;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">--</span></span><br><span class="line"><span class="comment">-- GTID to start replication from</span></span><br><span class="line"><span class="comment">--</span></span><br><span class="line"></span><br><span class="line">CHANGE MASTER <span class="keyword">TO</span> MASTER_USE_GTID<span class="operator">=</span>slave_pos;</span><br><span class="line"><span class="keyword">SET</span> <span class="keyword">GLOBAL</span> gtid_slave_pos<span class="operator">=</span><span class="string">&#x27;0-2-976&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">--</span></span><br><span class="line"><span class="comment">-- Current Database: &#x27;master&#x27;</span></span><br><span class="line"><span class="comment">--</span></span><br><span class="line">(後面省略)</span><br></pre></td></tr></table></figure>
 </li>
-</ul>
-<p>  觀察一下 <code>all_db.sql</code> 的內容</p>
-  <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- MySQL dump 10.16  Distrib 10.1.17-MariaDB, for Win64 (AMD64)</span></span><br><span class="line">(中間省略)</span><br><span class="line"><span class="comment">--</span></span><br><span class="line"><span class="comment">-- Position to start replication or point-in-time recovery from</span></span><br><span class="line"><span class="comment">--</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- CHANGE MASTER TO MASTER_LOG_FILE='WSTest-bin.000003', MASTER_LOG_POS=12441;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">--</span></span><br><span class="line"><span class="comment">-- GTID to start replication from</span></span><br><span class="line"><span class="comment">--</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">CHANGE</span> <span class="keyword">MASTER</span> <span class="keyword">TO</span> MASTER_USE_GTID=slave_pos;</span><br><span class="line"><span class="keyword">SET</span> <span class="keyword">GLOBAL</span> gtid_slave_pos=<span class="string">'0-2-976'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">--</span></span><br><span class="line"><span class="comment">-- Current Database: 'master'</span></span><br><span class="line"><span class="comment">--</span></span><br><span class="line">(後面省略)</span><br></pre></td></tr></table></figure>
-<ul>
-<li>啟動 Master 的 Instance。  </li>
-<li>把 <code>all_db.sql</code> 倒到 Master (3307) 上面。</li>
+<li><p>啟動 Master 的 Instance。  </p>
+</li>
+<li><p>把 <code>all_db.sql</code> 倒到 Master (3307) 上面。</p>
+</li>
 <li><p>在 Slave 上設定 <code>CHANGE MASTER</code> 為 <code>current_pos</code> </p>
-<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [(none)]&gt; change master to master_host='localhost', master_port=<span class="number">3306</span>, master_user='lsuser', master_password='password', master_use_gtid=current_pos;</span><br><span class="line">Query OK, <span class="number">0</span> rows affected (<span class="number">0</span>.<span class="number">05</span> sec)</span><br></pre></td></tr></table></figure>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [(none)]&gt; change master to master_host=&#x27;localhost&#x27;, master_port=<span class="number">3306</span>, master_user=&#x27;lsuser&#x27;, master_password=&#x27;password&#x27;, master_use_gtid=current_pos;</span><br><span class="line">Query OK, <span class="number">0</span> rows affected (<span class="number">0</span>.<span class="number">05</span> sec)</span><br></pre></td></tr></table></figure>
 </li>
 <li><p><code>START SLAVE;</code></p>
 </li>
 <li><p><code>SHOW SLAVE STATUS;</code></p>
- <figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"> MariaDB [(none)]&gt; show slave status\G</span><br><span class="line">*************************** <span class="number">1</span>. row ***************************</span><br><span class="line">                           (省略)</span><br><span class="line"><span class="function">              Last_IO_Errno: 1236</span></span><br><span class="line"><span class="function">              <span class="title">Last_IO_Error</span>: <span class="title">Got</span> <span class="title">fatal</span> <span class="title">error</span> 1236 <span class="title">from</span> <span class="title">master</span> <span class="title">when</span> <span class="title">reading</span> <span class="title">data</span> <span class="title">from</span> <span class="title">binary</span> <span class="title">log</span>: '<span class="title">Error</span>: <span class="title">connecting</span> <span class="title">slave</span> <span class="title">requested</span> <span class="title">to</span> <span class="title">start</span> <span class="title">from</span> <span class="title">GTID</span> 0-2-980, <span class="title">which</span> <span class="title">is</span> <span class="title">not</span> <span class="title">in</span> <span class="title">the</span> <span class="title">master</span>'<span class="title">s</span> <span class="title">binlog</span>. <span class="title">Since</span> <span class="title">the</span> <span class="title">master</span>'<span class="title">s</span> <span class="title">binlog</span> <span class="title">contains</span> <span class="title">GTIDs</span> <span class="title">with</span> <span class="title">higher</span> <span class="title">sequence</span> <span class="title">numbers</span>, <span class="title">it</span> <span class="title">probably</span> <span class="title">means</span> <span class="title">that</span> <span class="title">the</span> <span class="title">slave</span> <span class="title">has</span> <span class="title">diverged</span> <span class="title">due</span> <span class="title">to</span> <span class="title">executing</span> <span class="title">extra</span> <span class="title">erroneous</span> <span class="title">transactions</span>'</span></span><br><span class="line"><span class="function">             <span class="title">Last_SQL_Errno</span>: 0</span></span><br><span class="line"><span class="function">             <span class="title">Last_SQL_Error</span>:</span></span><br><span class="line"><span class="function"> <span class="title">Replicate_Ignore_Server_Ids</span>:</span></span><br><span class="line"><span class="function">           <span class="title">Master_Server_Id</span>: 1</span></span><br><span class="line"><span class="function">             <span class="title">Master_SSL_Crl</span>:</span></span><br><span class="line"><span class="function">         <span class="title">Master_SSL_Crlpath</span>:</span></span><br><span class="line"><span class="function">                 <span class="title">Using_Gtid</span>: <span class="title">Current_Pos</span></span></span><br><span class="line"><span class="function">                <span class="title">Gtid_IO_Pos</span>: 0-2-980</span></span><br><span class="line"><span class="function">    <span class="title">Replicate_Do_Domain_Ids</span>:</span></span><br><span class="line"><span class="function"> <span class="title">Replicate_Ignore_Domain_Ids</span>:</span></span><br><span class="line"><span class="function">               <span class="title">Parallel_Mode</span>: <span class="title">conservative</span></span></span><br><span class="line"><span class="function">1 <span class="title">row</span> <span class="title">in</span> <span class="title">set</span> (0.00 <span class="title">sec</span>)</span></span><br></pre></td></tr></table></figure>
+ <figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"> MariaDB [(none)]&gt; show slave status\G</span><br><span class="line">*************************** <span class="number">1</span>. row ***************************</span><br><span class="line">                           (省略)</span><br><span class="line"><span class="function">              Last_IO_Errno: 1236</span></span><br><span class="line"><span class="function">              <span class="title">Last_IO_Error</span>: <span class="title">Got</span> <span class="title">fatal</span> <span class="title">error</span> 1236 <span class="title">from</span> <span class="title">master</span> <span class="title">when</span> <span class="title">reading</span> <span class="title">data</span> <span class="title">from</span> <span class="title">binary</span> <span class="title">log</span>: &#x27;<span class="title">Error</span>: <span class="title">connecting</span> <span class="title">slave</span> <span class="title">requested</span> <span class="title">to</span> <span class="title">start</span> <span class="title">from</span> <span class="title">GTID</span> 0-2-980, <span class="title">which</span> <span class="title">is</span> <span class="title">not</span> <span class="title">in</span> <span class="title">the</span> <span class="title">master</span>&#x27;<span class="title">s</span> <span class="title">binlog</span>. <span class="title">Since</span> <span class="title">the</span> <span class="title">master</span>&#x27;<span class="title">s</span> <span class="title">binlog</span> <span class="title">contains</span> <span class="title">GTIDs</span> <span class="title">with</span> <span class="title">higher</span> <span class="title">sequence</span> <span class="title">numbers</span>, <span class="title">it</span> <span class="title">probably</span> <span class="title">means</span> <span class="title">that</span> <span class="title">the</span> <span class="title">slave</span> <span class="title">has</span> <span class="title">diverged</span> <span class="title">due</span> <span class="title">to</span> <span class="title">executing</span> <span class="title">extra</span> <span class="title">erroneous</span> <span class="title">transactions</span>&#x27;</span></span><br><span class="line"><span class="function">             <span class="title">Last_SQL_Errno</span>: 0</span></span><br><span class="line"><span class="function">             <span class="title">Last_SQL_Error</span>:</span></span><br><span class="line"><span class="function"> <span class="title">Replicate_Ignore_Server_Ids</span>:</span></span><br><span class="line"><span class="function">           <span class="title">Master_Server_Id</span>: 1</span></span><br><span class="line"><span class="function">             <span class="title">Master_SSL_Crl</span>:</span></span><br><span class="line"><span class="function">         <span class="title">Master_SSL_Crlpath</span>:</span></span><br><span class="line"><span class="function">                 <span class="title">Using_Gtid</span>: <span class="title">Current_Pos</span></span></span><br><span class="line"><span class="function">                <span class="title">Gtid_IO_Pos</span>: 0-2-980</span></span><br><span class="line"><span class="function">    <span class="title">Replicate_Do_Domain_Ids</span>:</span></span><br><span class="line"><span class="function"> <span class="title">Replicate_Ignore_Domain_Ids</span>:</span></span><br><span class="line"><span class="function">               <span class="title">Parallel_Mode</span>: <span class="title">conservative</span></span></span><br><span class="line"><span class="function">1 <span class="title">row</span> <span class="title">in</span> <span class="title">set</span> (0.00 <span class="title">sec</span>)</span></span><br></pre></td></tr></table></figure>
 </li>
 <li><p><code>STOP SLAVE;</code></p>
 </li>
 <li><p>在 Slave 上設定 <code>CHANGE MASTER</code> 為 <code>slave_pos</code>   </p>
-<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [(none)]&gt; change master to master_host='localhost', master_port=<span class="number">3306</span>, master_user='lsuser', master_password='password', master_use_gtid=slave_pos;</span><br><span class="line">Query OK, <span class="number">0</span> rows affected (<span class="number">0</span>.<span class="number">05</span> sec)</span><br></pre></td></tr></table></figure>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [(none)]&gt; change master to master_host=&#x27;localhost&#x27;, master_port=<span class="number">3306</span>, master_user=&#x27;lsuser&#x27;, master_password=&#x27;password&#x27;, master_use_gtid=slave_pos;</span><br><span class="line">Query OK, <span class="number">0</span> rows affected (<span class="number">0</span>.<span class="number">05</span> sec)</span><br></pre></td></tr></table></figure>
 </li>
 <li><p><code>START SLAVE;</code></p>
 </li>
 <li><p><code>SHOW SLAVE STATUS;</code></p>
  <figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [(none)]&gt; show slave status\G</span><br><span class="line">*************************** <span class="number">1</span>. row ***************************</span><br><span class="line"><span class="function">            Slave_IO_State: <span class="title">Waiting</span> <span class="title">for</span> <span class="title">master</span> <span class="title">to</span> <span class="title">send</span> <span class="title">event</span></span></span><br><span class="line"><span class="function">               <span class="title">Master_Host</span>: <span class="title">localhost</span></span></span><br><span class="line"><span class="function">               <span class="title">Master_User</span>: <span class="title">lsuser</span></span></span><br><span class="line"><span class="function">               <span class="title">Master_Port</span>: 3306</span></span><br><span class="line"><span class="function">             <span class="title">Connect_Retry</span>: 60</span></span><br><span class="line"><span class="function">           <span class="title">Master_Log_File</span>: <span class="title">WSTest</span>-<span class="title">bin</span>.000003</span></span><br><span class="line"><span class="function">       <span class="title">Read_Master_Log_Pos</span>: 7177</span></span><br><span class="line"><span class="function">            <span class="title">Relay_Log_File</span>: <span class="title">WSTest</span>-<span class="title">relay</span>-<span class="title">bin</span>.000003</span></span><br><span class="line"><span class="function">             <span class="title">Relay_Log_Pos</span>: 7466</span></span><br><span class="line"><span class="function">     <span class="title">Relay_Master_Log_File</span>: <span class="title">WSTest</span>-<span class="title">bin</span>.000003</span></span><br><span class="line"><span class="function">          <span class="title">Slave_IO_Running</span>: <span class="title">Yes</span></span></span><br><span class="line"><span class="function">         <span class="title">Slave_SQL_Running</span>: <span class="title">Yes</span></span></span><br><span class="line"><span class="function">                        (省略)</span></span><br><span class="line"><span class="function">                <span class="title">Using_Gtid</span>: <span class="title">Slave_Pos</span></span></span><br><span class="line"><span class="function">               <span class="title">Gtid_IO_Pos</span>: 0-1-1167</span></span><br><span class="line"><span class="function">   <span class="title">Replicate_Do_Domain_Ids</span>:</span></span><br><span class="line"><span class="function"> <span class="title">Replicate_Ignore_Domain_Ids</span>:</span></span><br><span class="line"><span class="function">               <span class="title">Parallel_Mode</span>: <span class="title">conservative</span></span></span><br><span class="line"><span class="function">1 <span class="title">row</span> <span class="title">in</span> <span class="title">set</span> (0.00 <span class="title">sec</span>)</span></span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>這兩個對應 (<code>0-2-976</code>, <code>0-1-1167</code>) 都幫你做好了</li>
 <li>完成</li>
@@ -169,29 +404,82 @@
 <li>Slave 如果要快速完復，不需要備份還原的話，那麼就只能當 Snapshot 來用 (不能動他讓他產生自己的 binlog)</li>
 <li>對於原來的需求 (單一 Master 單一 Slave) 基本上設定一下就完成了</li>
 </ul>
-<h2 id="上線紀錄"><a href="#上線紀錄" class="headerlink" title="上線紀錄"></a>上線紀錄</h2><h3 id="2016-11-8"><a href="#2016-11-8" class="headerlink" title="2016/11/8"></a>2016/11/8</h3><p>有時候會碰到有些指令沒法傳過去的問題(如建立 FederatedX Table)，這時候 Slave 會卡在 Error 的地方不能過去，所以要手動 bypass 它。</p>
+<h2 id="上線紀錄"><a href="#上線紀錄" class="headerlink" title="上線紀錄"></a>上線紀錄</h2><h3 id="2016-11-8"><a href="#2016-11-8" class="headerlink" title="2016&#x2F;11&#x2F;8"></a>2016&#x2F;11&#x2F;8</h3><p>有時候會碰到有些指令沒法傳過去的問題(如建立 FederatedX Table)，這時候 Slave 會卡在 Error 的地方不能過去，所以要手動 bypass 它。</p>
 <p>但是不太清楚要 skip 幾個的狀態下，就一個一個看了。</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">stop</span> <span class="keyword">slave</span>;</span><br><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> sql_slave_skip_counter=<span class="number">1</span>;</span><br><span class="line"><span class="keyword">start</span> <span class="keyword">slave</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> <span class="keyword">sleep</span>(<span class="number">10</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">show</span> <span class="keyword">slave</span> <span class="keyword">status</span>;</span><br></pre></td></tr></table></figure>
-</li>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">stop slave;</span><br><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> sql_slave_skip_counter<span class="operator">=</span><span class="number">1</span>;</span><br><span class="line"><span class="keyword">start</span> slave;</span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> sleep(<span class="number">10</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">show</span> slave status;</span><br></pre></td></tr></table></figure></li>
 </ul>
-</div><!-- comment system--><div class="container"><hr><div id="disqus_thread"></div><script type="text/javascript">
-var disqus_shortname = 'sujunmin';
-var disqus_identifier = '2016/09/19/從 SQL Server 到 MariaDB - [5] Log-shipping 與 MariaDB Replication/';
-var disqus_title = '從 SQL Server 到 MariaDB - [5] Log-shipping 與 MariaDB Replication';
-var disqus_url = 'https://sujunmin.github.io/blog/2016/09/19/從 SQL Server 到 MariaDB - [5] Log-shipping 與 MariaDB Replication/';
-(function() {
-   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-})();
-</script>
-<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="http://disqus.com" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><footer id="footer"><div class="container"><div class="bar"><div class="social"><a href="http://twitter.com/sujunmin_" target="_blank"><i class="fa fa-twitter"></i></a><a href="https://github.com/sujunmin" target="_blank"><i class="fa fa-github"></i></a><a href="https://plus.google.com/+JunMingSu" target="_blank"><i class="fa fa-google-plus"></i></a><a href="/atom.xml" target="_blank"><i class="fa fa-rss"></i></a></div><div class="footer">© 2019 <a href="/" rel="nofollow">Su, Jun-Ming</a>. Powered by <a rel="nofollow" target="_blank" href="https://hexo.io">Hexo</a>. Theme <a target="_blank" href="https://github.com/lotabout/very-simple">very-simple</a>.</div></div></div></footer><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
-    $(".fancybox").fancybox();
-});
-</script></body><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
-function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
-e=o.createElement(i);r=o.getElementsByTagName(i)[0];
-e.src='//www.google-analytics.com/analytics.js';
-r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
-ga('create','UA-78894509-1');ga('send','pageview');</script></html>
+</article><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/blog/tags/MariaDB/">MariaDB</a><a class="post-meta__tags" href="/blog/tags/MSSQL/">MSSQL</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/blog/2016/09/27/%E7%94%A8%E6%8C%87%E4%BB%A4%E9%96%8B%E5%95%9F%E6%88%96%E9%97%9C%E9%96%89%20SD%20%E5%8D%A1%E5%90%88%E4%BD%B5%E5%88%B0%E5%85%A7%E5%AD%98/" title="用指令開啟或關閉 SD 卡合併到內存"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">用指令開啟或關閉 SD 卡合併到內存</div></div><div class="info-2"><div class="info-item-1">今天老婆說剛買沒多久的手機又滿了，不能裝東西，想說颱風天來幫她合併 SD 卡內存，這樣她又更能盡情裝 APP 了(?)，結果系統一直顯示無法合併 (因為速度太慢)，但是其實測速以後還好阿，因此用手動的方式來設定合併內存。 這篇有用的對象如下  Android 6.0 以上設備 會開啟 adb 跟 debug 模式 不管 SD 卡的速度 (因為合併內存一定會降速度，很差的卡降更多) 合併內存功能被鎖起來，或是因為速度偵測而無法合併的都可以使用  合併內存 備份 SD 卡 adb start-server adb shell sm list-volumes all [應該類似 public:179,32 mounted … 這樣，後面的 179,32 等會會用到] adb shell sm set-force-adoptable true adb shell sm partition disk:179,32 private [這步將會把 SD 卡合併到內存，包含格式化，等了很久才完成，這時候看手機應該看不到 SD 卡了] adb shell sm set-force-adoptabl...</div></div></div></a><a class="pagination-related" href="/blog/2016/09/10/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20%5B4%5D%20SQL%20Agent%20%E8%88%87%20MariaDB%20Event/" title="從 SQL Server 到 MariaDB - [4] SQL Agent 與 MariaDB Event"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">從 SQL Server 到 MariaDB - [4] SQL Agent 與 MariaDB Event</div></div><div class="info-2"><div class="info-item-1">需求說明回到維運面的處理，在 SQL Server 有 SQL Server Agent Service 作為 Job System，說實在真的好用，在 msdb 裡儲存了很多 Job 的資料，不管是統計還是錯誤時的資料收集都做的非常好，因此系統每天會出資料庫系統狀態報表，其中有兩個項目有很多東西能看     因此每天的檢查大部份都是看這些 Log 的狀態，希望在 MariaDB 上面希望也有類似的方法實作。 Job System 的選擇在 MariaDB 上有 Event 可以用，在 Windows 裡有 Windows Tasks 可以用，但他們跟 SQL Server Agent Service 真的是差太多了，這兩個服務 MariaDB 的 Event 幾乎是射後不理，Windows 的 Tasks 也只有少少的 Log 可以用，基本上直接用是沒法達到原來維運的要求的，最後仍然是選擇 MariaDB 的 Event 配合一點紀錄來實作 Job System。 MariaDB 的 Event詳細資料可以參考這個，基本上很簡單，就是設定某個 Schema 的什麼時候做什麼事情...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相關推薦</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/blog/2016/10/03/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20%5B6%5D%20Audit%20%E7%9A%84%E5%AF%A6%E4%BD%9C/" title="從 SQL Server 到 MariaDB - [6] Audit 的實作"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2016-10-03</div><div class="info-item-2">從 SQL Server 到 MariaDB - [6] Audit 的實作</div></div><div class="info-2"><div class="info-item-1">需求說明在資料庫的 Audit (稽核) 部份，需要有一套如同 SQL Server 的方式來執行。 MariaDB Server Audit Plugin好在 MariaDB 有 Server Audit Plugin，相關文件在此。 開起來很簡單，設定也很容易。 MariaDB Server Audit Plugin 與 SQL Sever Trace File Audit 的比較SQL Server 的 Audit 是用 Trace File 來儲存 Audit 資料，以下用一個表格做一個比較    項目 SQL Server Trace File Audit MariaDB Server Audit Plugin    儲存方式 Binary File 自有格式 Text File (逗號隔開)， syslog   取用方式 fn_trace_gettable() 取得資料 打開檔案或是 syslog client   紀錄分類方式與數量 20 種 Class，每個 Class 數個 Events (2012) 8 種 (CONNECT, QUERY, READ, WRI...</div></div></div></a><a class="pagination-related" href="/blog/2016/11/08/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20%5B8%5D%20User-defined%20Functions%20%E8%88%87%E6%93%B4%E5%A2%9E%20Event%20%E5%8A%9F%E8%83%BD/" title="從 SQL Server 到 MariaDB - [8] User-defined Functions 與擴增 Event 功能"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2016-11-08</div><div class="info-item-2">從 SQL Server 到 MariaDB - [8] User-defined Functions 與擴增 Event 功能</div></div><div class="info-2"><div class="info-item-1">需求說明雖然一些排程或是資訊可以透過系統排程來處理，但是原有的 SQL Server 管理方式幾乎都是透過 SQL Server Job 系統執行，加上 SQL Server 有許多可以在 Server 本體就能做完的方式，為了追求一樣的管理方式，導入 User-defined Functions (UDF) 來擴增 Server 功能。 透過 MariaDB 裡的 Event System 進行備份基本上 Google 搜尋 MariaDB&#x2F;MySQL 備份，不外乎是利用 cron jobs 或是 Windows tasks 來進行備份，這樣進行備份一則與原來的 SQL Server 管理不一樣，另外一個也沒辦法知道備份的情況 (要登入主機看 Task 狀態)。 如果能透過 MariaDB 來發動備份 (透過 Event) 感覺能夠與以前的管理方式一樣，Server 要的排程 Server 自己發動，而且也能收集相關資料進行監控。 但是 MariaDB 沒有什麼介面可以來執行系統作業，這時候剛好找到 UDF，還有一大堆神人做好的 MySQLUDF Repository...</div></div></div></a><a class="pagination-related" href="/blog/2016/12/29/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20%5B11%5D%20Audit%20Log%20Parser%20%E7%9A%84%E5%AF%A6%E5%81%9A/" title="從 SQL Server 到 MariaDB - [11] Audit Log Parser 的實做"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2016-12-29</div><div class="info-item-2">從 SQL Server 到 MariaDB - [11] Audit Log Parser 的實做</div></div><div class="info-2"><div class="info-item-1">需求說明因為公司的稽核項目很多，所以大部分的專案都會買一些 SIEM 的設備 (Arcsight, 趨勢的平台…)，有的時候很好用，但是有的時候太複雜或是很慢，所以就有自己作 Audit Log Parser 的動機。 對於 SQL Server 的 Audit Log (Trace File)有個自己作的 Parser，對於 MariaDB 應該也要有一樣的方式處理。 基本架構我的環境除了正式機以外，還有備援機 (Slave)，原來是想在備援機上的 relayed binlog 來作處理，結果大失所望。那些從 master relayed 來的 binlog 完全不會有紀錄，這樣就不能從備援機正式機的 Audit Log 了。 我的 SQL Server 正式機因為怕效能損耗不會在正式機上 Parsing Trace Files，而是把資料透過網芳存到備援機，由備援機來 Parsing，那 MariaDB 可不可以這樣做呢? 答案是可以的。 在 server_audit_file_path 設定 ////remotehost//dir//audit.log 這樣就能達到遠端存資...</div></div></div></a><a class="pagination-related" href="/blog/2016/12/27/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20%5B9%5D%20DBA%20Daily%20Check%20Report%20%E7%9A%84%E8%A3%BD%E4%BD%9C%20%5B1%5D/" title="從 SQL Server 到 MariaDB - [9] DBA Daily Check Report 的製作 [1]"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2016-12-27</div><div class="info-item-2">從 SQL Server 到 MariaDB - [9] DBA Daily Check Report 的製作 [1]</div></div><div class="info-2"><div class="info-item-1">需求說明(這篇與下一篇是因為參加 2017 iT 邦幫幫忙鐵人賽而產生的，原來是沒有那麼快要開始作，但是因為沒稿子了就只能趕快做出來，分享給大家) 在 SQL Server 與 Oracle DB 都有一個 Daily Check Scripts 來讓我在上班開始的時候作一些自主檢查，並且產出報告，這個對於管理多台機器較為方便。 在 SQL Server 上我採用這個 Scripts， Oracle DB 的部份採用這個，十分方便，很多東西都能顯示，大部分的問題都能夠馬上發現。 到了 MariaDB 希望能夠 Porting 這個來方便管理。 接下來針對這個 Porting 來說明過程  PowerShell 基礎架構 Uptime and Version Disk Drive Status Backup Status Event Status Fail Events Status Database File Status Session List Replication Status  PowerShell 基礎架構在作這個 Porting 之前，筆者先到 Google 找有沒...</div></div></div></a><a class="pagination-related" href="/blog/2016/09/06/SQL%20Server%20%E5%88%B0%20MariaDB%20-%20%5B3%5D%20%E8%B3%87%E6%96%99%E5%BA%AB%E7%A7%BB%E8%BD%89%E8%88%87%E7%B3%BB%E7%B5%B1%E7%A8%8B%E5%BC%8F%E4%BF%AE%E6%94%B9/" title="從 SQL Server 到 MariaDB - [3] 資料庫移轉與系統程式修改"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2016-09-06</div><div class="info-item-2">從 SQL Server 到 MariaDB - [3] 資料庫移轉與系統程式修改</div></div><div class="info-2"><div class="info-item-1">需求說明在資料庫移轉的部份，原來的資料庫有廠商使用的部份，然後也有我們自己維護的系統的部份。廠商的部份使用 MySQL Workbench 的 Database Migrate 功能，花了一點時間轉置，基本上沒有太大的問題，系統程式都能正常運行，因此我想我們這邊的程式應該也可以如法泡製吧。 結果花了一個星期的時間才完成進入測試，相關的過程紀錄如下。 系統架構  Classic ASP，程式跟 Html 寫在一起 Windows 2008 R2 64 bits  IIS 7.5 MariaDB ODBC 2.0.11 SQL Server 2008 R2 使用 SQL Server 基本欄位 加密資料使用對稱式金鑰加密 登入系統密碼用 MD5 Hash  基本需求  程式的流程與架構不要被修改 著重於語法與使用方式的轉換 最快方法處理完畢  資料庫移轉如同前面所說，原來是想用 MySQL Workbench 的 Database Migrate 功能轉換即可，結果碰到釘子，原因如下。  資料庫裡的資料有 Html Codes (上傳活動網頁使用)，有換行符號，匯入工具的換行符號辨識...</div></div></div></a><a class="pagination-related" href="/blog/2016/08/07/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20%5B0%5D%20%E8%B5%B7%E5%A7%8B/" title="從 SQL Server 到 MariaDB - [0] 起始"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2016-08-07</div><div class="info-item-2">從 SQL Server 到 MariaDB - [0] 起始</div></div><div class="info-2"><div class="info-item-1">需求說明公司因為 SQL Server 的支援快要到期，加上資料的等級與加值性不如預期，所以開始有從 SQL Server 轉到 MariaDB 的計劃。 測試環境 SQL Server 2008 R2 64 bits (要汰換的) Oracle DB 12c (要汰換的) MariaDB 10.1.16 64 bits MariaDB 10.1.17 64 bits MariaDB 10.1.18 64 bits Windows Server 2012 64 bits (上面的資料庫都跑在這個上面) MariaDB ODBC 2.0.12 64bits Visual Studio 2015 Community  移轉紀錄 從 SQL Server 到 MariaDB - [1] 備份與還原 從 SQL Server 到 MariaDB - [2] 資料庫 ACL 與帳號管理 從 SQL Server 到 MariaDB - [3] 資料庫移轉與系統程式修改 從 SQL Server 到 MariaDB - [4] SQL Agent 與 MariaDB Event 從 SQL ...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 評論</span></div></div><div class="comment-wrap"><div><div id="disqus_thread"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/blog/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/blog/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Su, Jun-Ming</div><div class="author-info-description">Linux、資料庫、MIS 實戰紀錄</div><div class="site-data"><a href="/blog/archives/"><div class="headline">文章</div><div class="length-num">134</div></a><a href="/blog/tags/"><div class="headline">標籤</div><div class="length-num">23</div></a><a href="/blog/categories/"><div class="headline">分類</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/sujunmin"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/sujunmin" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="https://twitter.com/sujunmin_" target="_blank" title="Twitter"><i class="fab fa-x-twitter"></i></a><a class="social-icon" href="/blog/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目錄</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9C%80%E6%B1%82%E8%AA%AA%E6%98%8E"><span class="toc-number">1.</span> <span class="toc-text">需求說明</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MariaDB-Replication-uses-GTID"><span class="toc-number">2.</span> <span class="toc-text">MariaDB Replication uses GTID</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Master-%E8%88%87-Slave"><span class="toc-number">2.1.</span> <span class="toc-text">Master 與 Slave</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Slave-%E5%A6%82%E4%BD%95%E9%80%8F%E9%81%8E-GTID-%E5%81%9A-Replication"><span class="toc-number">2.2.</span> <span class="toc-text">Slave 如何透過 GTID 做 Replication</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E5%BE%8C%E7%9A%84%E8%A8%AD%E8%A8%88"><span class="toc-number">3.</span> <span class="toc-text">最後的設計</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B8%AC%E8%A9%A6"><span class="toc-number">4.</span> <span class="toc-text">測試</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%A8%E5%90%8C%E4%B8%80%E5%80%8B%E6%A9%9F%E5%99%A8%E4%B8%8A%E9%96%8B%E6%96%B0%E7%9A%84-Instance"><span class="toc-number">4.1.</span> <span class="toc-text">在同一個機器上開新的 Instance</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E4%BA%9B%E6%83%B3%E6%B3%95"><span class="toc-number">5.</span> <span class="toc-text">一些想法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8A%E7%B7%9A%E7%B4%80%E9%8C%84"><span class="toc-number">6.</span> <span class="toc-text">上線紀錄</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2016-11-8"><span class="toc-number">6.1.</span> <span class="toc-text">2016&#x2F;11&#x2F;8</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/blog/2018/06/12/%E7%94%A8%20Graylog%20%E5%8F%96%E4%BB%A3%20Splunk%20%E7%B4%80%E9%8C%84%20(%E4%B8%8B)/" title="用 Graylog 取代 Splunk 紀錄 (下)">用 Graylog 取代 Splunk 紀錄 (下)</a><time datetime="2018-06-12T07:50:55.000Z" title="發表於 2018-06-12 15:50:55">2018-06-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/blog/2018/05/31/%E7%94%A8%20Graylog%20%E5%8F%96%E4%BB%A3%20Splunk%20%E7%B4%80%E9%8C%84%20(%E4%B8%8A)/" title="用 Graylog 取代 Splunk 紀錄 (上)">用 Graylog 取代 Splunk 紀錄 (上)</a><time datetime="2018-05-31T07:43:12.000Z" title="發表於 2018-05-31 15:43:12">2018-05-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/blog/2017/08/31/Ubuntu%2016.04%20%E5%AE%89%E8%A3%9D%E8%88%87%E4%BD%BF%E7%94%A8%20Flashcache%20%E6%B5%81%E7%A8%8B%E7%B4%80%E9%8C%84/" title="Ubuntu 16.04 安裝與使用 Flashcache 流程紀錄">Ubuntu 16.04 安裝與使用 Flashcache 流程紀錄</a><time datetime="2017-08-31T04:31:57.000Z" title="發表於 2017-08-31 12:31:57">2017-08-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/blog/2017/07/27/IE%2011%20%E5%9B%A0%E7%82%BA%20KB2729094%20%E4%B8%8D%E8%83%BD%E5%AE%89%E8%A3%9D%E7%9A%84%E5%95%8F%E9%A1%8C/" title="IE 11 因為 KB2729094 不能安裝的問題">IE 11 因為 KB2729094 不能安裝的問題</a><time datetime="2017-07-27T10:31:45.000Z" title="發表於 2017-07-27 18:31:45">2017-07-27</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/blog/2017/07/02/%E5%9C%A8%20Pinebook%20%E4%B8%8A%E5%AE%89%E8%A3%9D%20Visual%20Studio%20Code/" title="在 Pinebook 上安裝 Visual Studio Code">在 Pinebook 上安裝 Visual Studio Code</a><time datetime="2017-07-02T15:53:43.000Z" title="發表於 2017-07-02 23:53:43">2017-07-02</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2009 - 2026 By Su, Jun-Ming</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主題 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.7.1.260810</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日夜模式切換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目錄"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往評論"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到頂端"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/blog/js/utils.js?v=5.7.1.260810"></script><script src="/blog/js/main.js?v=5.7.1.260810"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+
+  const disqusReset = conf => {
+    window.DISQUS && window.DISQUS.reset({
+      reload: true,
+      config: conf
+    })
+  }
+
+  const loadDisqus = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyDisqus = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    window.disqus_identifier = isShuoshuo ? path : '/blog/2016/09/19/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20%5B5%5D%20Log-shipping%20%E8%88%87%20MariaDB%20Replication/'
+    window.disqus_url = isShuoshuo ? location.origin + path : 'https://sujunmin.github.io/blog/2016/09/19/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20[5]%20Log-shipping%20%E8%88%87%20MariaDB%20Replication/'
+
+    const disqus_config = function () {
+      this.page.url = disqus_url
+      this.page.identifier = disqus_identifier
+      this.page.title = '從 SQL Server 到 MariaDB - [5] Log-shipping 與 MariaDB Replication'
+    }
+
+    if (window.DISQUS) disqusReset(disqus_config)
+    else {
+      const script = document.createElement('script')
+      script.src = 'https://sujunmin.disqus.com/embed.js'
+      script.setAttribute('data-timestamp', +new Date())
+      document.head.appendChild(script)
+    }
+
+    btf.addGlobalFn('themeChange', () => disqusReset(disqus_config), 'disqus')
+  }
+
+  const getCount = async() => {
+    try {
+      const eleGroup = document.querySelector('#post-meta .disqus-comment-count')
+      if (!eleGroup) return
+      const cleanedLinks = eleGroup.href.replace(/#post-comment$/, '')
+
+      const res = await fetch(`https://disqus.com/api/3.0/threads/set.json?forum=sujunmin&api_key=&thread:link=${cleanedLinks}`,{
+        method: 'GET'
+      })
+      const result = await res.json()
+
+      const count = result.response.length ? result.response[0].posts : 0
+      eleGroup.textContent = count
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Disqus' === 'Disqus'
+      ? window.shuoshuoComment = { loadComment: loadDisqus }
+      : window.loadOtherComment = loadDisqus
+    return
+  }
+
+  if ('Disqus' === 'Disqus' || !false) {
+    if (false) btf.loadComment(document.getElementById('disqus_thread'), loadDisqus)
+    else {
+      loadDisqus()
+      
+    }
+  } else {
+    window.loadOtherComment = loadDisqus
+  }
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜尋</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  資料載入中</span></div><div class="local-search-input"><input placeholder="搜尋文章" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/blog/js/search/local-search.js?v=5.7.1.260810"></script></div></div></body></html>
