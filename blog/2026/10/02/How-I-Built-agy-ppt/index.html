@@ -1,0 +1,334 @@
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>How I Built agy-ppt — An Agent Skill That Turns Reports into PowerPoint Decks Without the AI-Slop Look | 隨意記事</title><meta name="author" content="Su, Jun-Ming"><meta name="copyright" content="Su, Jun-Ming"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Every AI-generated slide deck looks the same. You know the look: purple gradient background, three generic icon cards in a row, a stock photo of diverse people pointing at a whiteboard. I call it the">
+<meta property="og:type" content="article">
+<meta property="og:title" content="How I Built agy-ppt — An Agent Skill That Turns Reports into PowerPoint Decks Without the AI-Slop Look">
+<meta property="og:url" content="https://sujunmin.github.io/blog/2026/10/02/How-I-Built-agy-ppt/index.html">
+<meta property="og:site_name" content="隨意記事">
+<meta property="og:description" content="Every AI-generated slide deck looks the same. You know the look: purple gradient background, three generic icon cards in a row, a stock photo of diverse people pointing at a whiteboard. I call it the">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://sujunmin.github.io/blog/img/butterfly-icon.png">
+<meta property="article:published_time" content="2026-10-02T09:10:00.000Z">
+<meta property="article:modified_time" content="2026-10-02T09:10:10.341Z">
+<meta property="article:author" content="Su, Jun-Ming">
+<meta property="article:tag" content="AI">
+<meta property="article:tag" content="Agent Skill">
+<meta property="article:tag" content="PowerPoint">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://sujunmin.github.io/blog/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "How I Built agy-ppt — An Agent Skill That Turns Reports into PowerPoint Decks Without the AI-Slop Look",
+  "url": "https://sujunmin.github.io/blog/2026/10/02/How-I-Built-agy-ppt/",
+  "image": "https://sujunmin.github.io/blog/img/butterfly-icon.png",
+  "datePublished": "2026-10-02T09:10:00.000Z",
+  "dateModified": "2026-10-02T09:10:10.341Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Su, Jun-Ming",
+      "url": "https://sujunmin.github.io/blog"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/blog/favicon.ico"><link rel="canonical" href="https://sujunmin.github.io/blog/2026/10/02/How-I-Built-agy-ppt/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/blog/css/index.css?v=5.7.1.260810"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.3.1/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        try {
+          const data = { value }
+
+          if (ttl != null) {
+            data.expiry = Date.now() + ttl * 86400000
+          }
+
+          localStorage.setItem(key, JSON.stringify(data))
+        } catch (e) {
+          console.error(e)
+        }
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return
+
+        try {
+          const data = JSON.parse(itemStr)
+
+          if (data.expiry && Date.now() > data.expiry) {
+            localStorage.removeItem(key)
+            return
+          }
+
+          return data.value
+        } catch {
+          localStorage.removeItem(key)
+        }
+      }
+    }
+
+    const scriptCache = new Map()
+    const cssCache = new Map()
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => {
+        if (scriptCache.has(url)) {
+          return scriptCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+
+          script.src = url
+          script.async = true
+
+          for (const key in attr) {
+            script.setAttribute(key, attr[key])
+          }
+
+          script.onload = resolve
+          script.onerror = reject
+
+          document.head.appendChild(script)
+        })
+
+        scriptCache.set(url, promise)
+
+        return promise
+      },
+      getCSS: (url, id) => {
+        if (cssCache.has(url)) {
+          return cssCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const link = document.createElement('link')
+
+          link.rel = 'stylesheet'
+          link.href = url
+
+          if (id) {
+            link.id = id
+          }
+
+          link.onload = resolve
+          link.onerror = reject
+
+          document.head.appendChild(link)
+        })
+
+        cssCache.set(url, promise)
+
+        return promise
+      },
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]')
+      const activateDarkMode = () => {
+        document.documentElement.dataset.theme = 'dark'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.dataset.theme = 'light'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const start = 6
+              const end = 18
+              const isNight =
+                start < end
+                    ? hour < start || hour >= end
+                    : hour >= start || hour < end
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', e => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/blog/',
+  algolia: undefined,
+  localSearch: {"path":"/blog/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"找不到符合您查詢的內容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":400,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '複製成功',
+    error: '複製失敗',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '載入更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'How I Built agy-ppt — An Agent Skill That Turns Reports into PowerPoint Decks Without the AI-Slop Look',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/blog/atom.xml" title="隨意記事" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/blog/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/blog/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/blog/archives/"><div class="headline">文章</div><div class="length-num">136</div></a><a href="/blog/tags/"><div class="headline">標籤</div><div class="length-num">26</div></a><a href="/blog/categories/"><div class="headline">分類</div><div class="length-num">0</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/blog/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 彙整</span></a></div><div class="menus_item"><a class="site-page" href="/blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/blog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/blog/"><span class="site-name">隨意記事</span></a><a class="nav-page-title" href="/blog/"><span class="site-name">How I Built agy-ppt — An Agent Skill That Turns Reports into PowerPoint Decks Without the AI-Slop Look</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首頁</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜尋</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/blog/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 彙整</span></a></div><div class="menus_item"><a class="site-page" href="/blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/blog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">How I Built agy-ppt — An Agent Skill That Turns Reports into PowerPoint Decks Without the AI-Slop Look</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">發表於</span><time class="post-meta-date-created" datetime="2026-10-02T09:10:00.000Z" title="發表於 2026-10-02 17:10:00">2026-10-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新於</span><time class="post-meta-date-updated" datetime="2026-10-02T09:10:10.341Z" title="更新於 2026-10-02 17:10:10">2026-10-02</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">總字數:</span><span class="word-count">829</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀時間:</span><span>6 分鐘</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">瀏覽量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>Every AI-generated slide deck looks the same. You know the look: purple gradient background, three generic icon cards in a row, a stock photo of diverse people pointing at a whiteboard. I call it the AI-slop fingerprint, and once you’ve seen it, you can’t unsee it.</p>
+<p>I build a lot of decks with AI agents, and I got tired of apologizing for how they look. So I built <a target="_blank" rel="noopener" href="https://github.com/sujunmin/agy-ppt">agy-ppt</a> — an open-source agent skill that turns reports into PowerPoint decks with actual visual design. It’s MIT licensed, and it installs with one command.</p>
+<p>But the interesting part of this story isn’t the skill. It’s the experiment that decided the entire architecture — and it has to do with how image models handle Traditional Chinese text.</p>
+<h2 id="The-experiment-Gemini-vs-GPT-on-dense-Traditional-Chinese"><a href="#The-experiment-Gemini-vs-GPT-on-dense-Traditional-Chinese" class="headerlink" title="The experiment: Gemini vs GPT on dense Traditional Chinese"></a>The experiment: Gemini vs GPT on dense Traditional Chinese</h2><p>In my own testing, I found that Gemini-generated images can barely hold any Traditional Chinese text. Give it a slide layout with a paragraph or two of Chinese and the characters blur, warp, or dissolve into plausible-looking gibberish.</p>
+<p>Run the exact same layout through GPT’s image models, and it holds dozens of Chinese characters cleanly — dense paragraphs, data tables, small annotations, all legible.</p>
+<p>This matters more than it sounds. Slides are the most text-dense visuals in common use. A marketing hero image can survive on five words; a slide with five words is an empty slide. If your renderer can’t do dense CJK text, you cannot do slides. Full stop.</p>
+<p>So the renderer wasn’t chosen by brand loyalty. It was chosen by experiment: GPT image models render every slide.</p>
+<h2 id="One-director-strict-ownership"><a href="#One-director-strict-ownership" class="headerlink" title="One director, strict ownership"></a>One director, strict ownership</h2><p>With the renderer settled, I split the remaining work by what each agent is actually good at — and I made the ownership brutally explicit, because multi-agent workflows rot the moment two agents both think they’re in charge:</p>
+<ul>
+<li><strong>Antigravity (AGY)</strong> is the sole director. It owns the outline (<code>outline.md</code>), the visual spec (<code>deck_spec.json</code>), the copy on every slide, the approval gates, and content&#x2F;visual QA. The workflow is always AGY → worker → AGY. Workers never hand off to each other directly, and nobody moves to the next phase without AGY.</li>
+<li><strong>Kiro</strong> owns all engineering. Every line of executable code — assembly scripts, validators, schema changes, bug fixes — goes through Kiro. AGY may run existing verified scripts, but it may not modify code just because it can.</li>
+<li><strong>Codex</strong> renders images. Only images. It is explicitly forbidden from touching the outline, the visual spec, the copy, the page count, the code, or the assembly step — and forbidden from faking AI-generated slides with Pillow, SVG, or python-pptx. This sounds paranoid until you’ve watched an image agent “helpfully” rewrite your facts.</li>
+</ul>
+<p>This strictness is the whole trick. Most agent pipelines fail not on capability but on authority ambiguity. Here there is none.</p>
+<h2 id="Contracts-before-code"><a href="#Contracts-before-code" class="headerlink" title="Contracts before code"></a>Contracts before code</h2><p>The skill wasn’t vibe-coded. Every phase of the build was written up as a contract before implementation — <code>docs/</code> holds dozens of them: raster contracts, image contracts, provider UX contracts, grounding&#x2F;translation contracts, validation contracts, each with its own validation report.</p>
+<p>And the contracts are frozen. A CI check called <code>frozen-contract-guard</code> blocks any pull request that violates them. Verification runs in three classes: deterministic CI that must pass before any merge, a manual release-readiness pass in a clean-room environment before shipping, and scheduled live validation against a stable public source.</p>
+<p>There’s also a boundary the project states explicitly and honestly: CI verifies engineering contracts — syntax, schemas, determinism, recovery scenarios. It does not and cannot verify semantic truth, such as whether a claim on a slide actually matches its source document. That judgment stays with AGY’s review, by design. Knowing what your automation <em>can’t</em> prove is part of engineering rigor too.</p>
+<h2 id="No-API-keys"><a href="#No-API-keys" class="headerlink" title="No API keys"></a>No API keys</h2><p>The skill is OAuth-only. It assumes three CLIs already logged in with their own subscription sessions — Google AI Pro, Kiro Pro, ChatGPT Plus — and it never touches, copies, or forwards any OAuth tokens. No <code>OPENAI_API_KEY</code>, no key management, no billing surprises. If you have the subscriptions, you have the pipeline.</p>
+<h2 id="Approval-gates-before-pixels"><a href="#Approval-gates-before-pixels" class="headerlink" title="Approval gates before pixels"></a>Approval gates before pixels</h2><p>Nothing renders until you’ve approved three things: the outline, the visual style, and a real single-slide sample. Only then does the full deck generate, slide by slide, with QA notes at each step. Re-rendering one bad slide is cheap; discovering on slide 18 that the design direction was wrong is expensive.</p>
+<p>The output is hybrid PowerPoint: full-page 16:9 rendered images preserve the visual fidelity (this is what kills the AI-slop look), while key text, native charts, and images stay editable and replaceable inside PowerPoint. A typo fix shouldn’t require a re-render.</p>
+<h2 id="Try-it"><a href="#Try-it" class="headerlink" title="Try it"></a>Try it</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npx skills add sujunmin/agy-ppt</span><br></pre></td></tr></table></figure>
+
+<p>It’s also on <a target="_blank" rel="noopener" href="https://clawhub.ai/sujunmin/skills/agy-ppt">ClawHub</a>. The one hard requirement: your agent environment needs image-generation capability — that’s the load-bearing wall of the whole pipeline.</p>
+<p><a target="_blank" rel="noopener" href="https://youtu.be/vPSsj7aZMtU">70-second demo</a> · <a target="_blank" rel="noopener" href="https://github.com/sujunmin/agy-ppt">GitHub</a></p>
+<p><img src="https://raw.githubusercontent.com/sujunmin/agy-ppt/main/assets/agy-ppt-teaser.gif" alt="agy-ppt output preview"></p>
+<p>If you make decks in CJK languages — the use case most slide tools ignore — I’d especially like to hear what breaks for you. Issues welcome; I read every one.</p>
+</article><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/blog/tags/AI/">AI</a><a class="post-meta__tags" href="/blog/tags/Agent-Skill/">Agent Skill</a><a class="post-meta__tags" href="/blog/tags/PowerPoint/">PowerPoint</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/blog/2026/10/02/agy-ppt-%E5%B9%95%E5%BE%8C-%E6%B2%92%E6%9C%89AI%E5%91%B3%E7%9A%84%E7%B0%A1%E5%A0%B1%E6%98%AF%E6%80%8E%E9%BA%BC%E5%81%9A%E5%87%BA%E4%BE%86%E7%9A%84/" title="打造沒有 AI 味的簡報：agy-ppt 幕後"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">打造沒有 AI 味的簡報：agy-ppt 幕後</div></div><div class="info-2"><div class="info-item-1">AI 生的投影片，長得都一個樣。你一定看過：紫色漸層背景、三張一模一樣的 icon 卡片，再配一張「多元團隊指著白板」的 stock photo。我叫它 AI 味，一旦看出來就回不去了。 我平常很常用 AI agent 做簡報，做到後來真的受不了，每次都要先跟人道歉「這版醜了點」。所以我做了 agy-ppt — 一個開源的 agent skill，專門把報告變成「看起來像人做的」PowerPoint。MIT 授權，一行指令就能裝。 不過這篇想講的不是 skill 本身，而是決定整個架構的那場實驗 — 跟圖片模型怎麼算繁體中文有關。 實測：Gemini 和 GPT，誰算得動繁體中文？我自己實測的結果是這樣：叫 Gemini 生一張帶繁體中文的圖，字稍微多一點就糊掉、扭曲，或變成看起來像字但根本不是字的東西。 同樣的版面拿給 GPT 的圖片模型算，幾十個中文字都清清楚楚 — 段落、表格、小註解，全部可讀。 這件事比聽起來重要。投影片是日常生活中「文字密度最高」的視覺物。行銷主視覺五個字就能交差，投影片五個字就是一頁空白。如果你的算圖引擎做不出高密度的中日韓文字，那你根本做不了投影片。...</div></div></div></a><a class="pagination-related" href="/blog/2018/06/12/%E7%94%A8%20Graylog%20%E5%8F%96%E4%BB%A3%20Splunk%20%E7%B4%80%E9%8C%84%20(%E4%B8%8B)/" title="用 Graylog 取代 Splunk 紀錄 (下)"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">用 Graylog 取代 Splunk 紀錄 (下)</div></div><div class="info-2"><div class="info-item-1">需求說明有了前一篇的架設，這邊來說明要怎麼從 Splunk 把報表轉到 Graylog。 先前準備因為在 Graylog 的 Web 界面是沒辦法直接拉報表，必須透過 Graylog Restful API 來做介接取得資料後再自己 Render 出來，所以以下的基本知識需要先了解。  REST&#x2F;RESTFul API 介紹，怎麼操作 API Lucene Query Syntax，最重要的核心，如何去找到你要的東西 報表系統使用的平台，必須要能夠吃 Graylog 產生出來的 JSON  因為在 SQL Server、MariaDB 的經驗，這次還是選擇 Windows 上面的 Powershell 來實做報表。 Graylog RESTFul API官方文件就是只叫用戶到 System&#x2F;Node 底下的 API Browser 去看，說實在的，就只是這樣而已，因此大部分的時間都在在這個用 Swagger 做出來的 API Browser 上。 登入帳號密碼以後可以看到列表，點開每一個項目會有說明，下面的圖應該就是寫報表的主體。  點開一個方法就會有每個方法...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相關推薦</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/blog/2026/10/02/agy-ppt-%E5%B9%95%E5%BE%8C-%E6%B2%92%E6%9C%89AI%E5%91%B3%E7%9A%84%E7%B0%A1%E5%A0%B1%E6%98%AF%E6%80%8E%E9%BA%BC%E5%81%9A%E5%87%BA%E4%BE%86%E7%9A%84/" title="打造沒有 AI 味的簡報：agy-ppt 幕後"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-02</div><div class="info-item-2">打造沒有 AI 味的簡報：agy-ppt 幕後</div></div><div class="info-2"><div class="info-item-1">AI 生的投影片，長得都一個樣。你一定看過：紫色漸層背景、三張一模一樣的 icon 卡片，再配一張「多元團隊指著白板」的 stock photo。我叫它 AI 味，一旦看出來就回不去了。 我平常很常用 AI agent 做簡報，做到後來真的受不了，每次都要先跟人道歉「這版醜了點」。所以我做了 agy-ppt — 一個開源的 agent skill，專門把報告變成「看起來像人做的」PowerPoint。MIT 授權，一行指令就能裝。 不過這篇想講的不是 skill 本身，而是決定整個架構的那場實驗 — 跟圖片模型怎麼算繁體中文有關。 實測：Gemini 和 GPT，誰算得動繁體中文？我自己實測的結果是這樣：叫 Gemini 生一張帶繁體中文的圖，字稍微多一點就糊掉、扭曲，或變成看起來像字但根本不是字的東西。 同樣的版面拿給 GPT 的圖片模型算，幾十個中文字都清清楚楚 — 段落、表格、小註解，全部可讀。 這件事比聽起來重要。投影片是日常生活中「文字密度最高」的視覺物。行銷主視覺五個字就能交差，投影片五個字就是一頁空白。如果你的算圖引擎做不出高密度的中日韓文字，那你根本做不了投影片。...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 評論</span></div></div><div class="comment-wrap"><div><div id="disqus_thread"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/blog/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/blog/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Su, Jun-Ming</div><div class="author-info-description">Linux、資料庫、MIS 實戰紀錄</div><div class="site-data"><a href="/blog/archives/"><div class="headline">文章</div><div class="length-num">136</div></a><a href="/blog/tags/"><div class="headline">標籤</div><div class="length-num">26</div></a><a href="/blog/categories/"><div class="headline">分類</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/sujunmin"><i class="fab fa-github"></i><span>GitHub</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/sujunmin" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="https://twitter.com/sujunmin_" target="_blank" title="Twitter"><i class="fab fa-x-twitter"></i></a><a class="social-icon" href="/blog/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目錄</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#The-experiment-Gemini-vs-GPT-on-dense-Traditional-Chinese"><span class="toc-number">1.</span> <span class="toc-text">The experiment: Gemini vs GPT on dense Traditional Chinese</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#One-director-strict-ownership"><span class="toc-number">2.</span> <span class="toc-text">One director, strict ownership</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Contracts-before-code"><span class="toc-number">3.</span> <span class="toc-text">Contracts before code</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#No-API-keys"><span class="toc-number">4.</span> <span class="toc-text">No API keys</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Approval-gates-before-pixels"><span class="toc-number">5.</span> <span class="toc-text">Approval gates before pixels</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Try-it"><span class="toc-number">6.</span> <span class="toc-text">Try it</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/blog/2026/10/02/agy-ppt-%E5%B9%95%E5%BE%8C-%E6%B2%92%E6%9C%89AI%E5%91%B3%E7%9A%84%E7%B0%A1%E5%A0%B1%E6%98%AF%E6%80%8E%E9%BA%BC%E5%81%9A%E5%87%BA%E4%BE%86%E7%9A%84/" title="打造沒有 AI 味的簡報：agy-ppt 幕後">打造沒有 AI 味的簡報：agy-ppt 幕後</a><time datetime="2026-10-02T09:15:00.000Z" title="發表於 2026-10-02 17:15:00">2026-10-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/blog/2026/10/02/How-I-Built-agy-ppt/" title="How I Built agy-ppt — An Agent Skill That Turns Reports into PowerPoint Decks Without the AI-Slop Look">How I Built agy-ppt — An Agent Skill That Turns Reports into PowerPoint Decks Without the AI-Slop Look</a><time datetime="2026-10-02T09:10:00.000Z" title="發表於 2026-10-02 17:10:00">2026-10-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/blog/2018/06/12/%E7%94%A8%20Graylog%20%E5%8F%96%E4%BB%A3%20Splunk%20%E7%B4%80%E9%8C%84%20(%E4%B8%8B)/" title="用 Graylog 取代 Splunk 紀錄 (下)">用 Graylog 取代 Splunk 紀錄 (下)</a><time datetime="2018-06-12T07:50:55.000Z" title="發表於 2018-06-12 15:50:55">2018-06-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/blog/2018/05/31/%E7%94%A8%20Graylog%20%E5%8F%96%E4%BB%A3%20Splunk%20%E7%B4%80%E9%8C%84%20(%E4%B8%8A)/" title="用 Graylog 取代 Splunk 紀錄 (上)">用 Graylog 取代 Splunk 紀錄 (上)</a><time datetime="2018-05-31T07:43:12.000Z" title="發表於 2018-05-31 15:43:12">2018-05-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/blog/2017/08/31/Ubuntu%2016.04%20%E5%AE%89%E8%A3%9D%E8%88%87%E4%BD%BF%E7%94%A8%20Flashcache%20%E6%B5%81%E7%A8%8B%E7%B4%80%E9%8C%84/" title="Ubuntu 16.04 安裝與使用 Flashcache 流程紀錄">Ubuntu 16.04 安裝與使用 Flashcache 流程紀錄</a><time datetime="2017-08-31T04:31:57.000Z" title="發表於 2017-08-31 12:31:57">2017-08-31</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2009 - 2026 By Su, Jun-Ming</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主題 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.7.1.260810</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日夜模式切換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目錄"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往評論"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到頂端"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/blog/js/utils.js?v=5.7.1.260810"></script><script src="/blog/js/main.js?v=5.7.1.260810"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+
+  const disqusReset = conf => {
+    window.DISQUS && window.DISQUS.reset({
+      reload: true,
+      config: conf
+    })
+  }
+
+  const loadDisqus = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyDisqus = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    window.disqus_identifier = isShuoshuo ? path : '/blog/2026/10/02/How-I-Built-agy-ppt/'
+    window.disqus_url = isShuoshuo ? location.origin + path : 'https://sujunmin.github.io/blog/2026/10/02/How-I-Built-agy-ppt/'
+
+    const disqus_config = function () {
+      this.page.url = disqus_url
+      this.page.identifier = disqus_identifier
+      this.page.title = 'How I Built agy-ppt — An Agent Skill That Turns Reports into PowerPoint Decks Without the AI-Slop Look'
+    }
+
+    if (window.DISQUS) disqusReset(disqus_config)
+    else {
+      const script = document.createElement('script')
+      script.src = 'https://sujunmin.disqus.com/embed.js'
+      script.setAttribute('data-timestamp', +new Date())
+      document.head.appendChild(script)
+    }
+
+    btf.addGlobalFn('themeChange', () => disqusReset(disqus_config), 'disqus')
+  }
+
+  const getCount = async() => {
+    try {
+      const eleGroup = document.querySelector('#post-meta .disqus-comment-count')
+      if (!eleGroup) return
+      const cleanedLinks = eleGroup.href.replace(/#post-comment$/, '')
+
+      const res = await fetch(`https://disqus.com/api/3.0/threads/set.json?forum=sujunmin&api_key=&thread:link=${cleanedLinks}`,{
+        method: 'GET'
+      })
+      const result = await res.json()
+
+      const count = result.response.length ? result.response[0].posts : 0
+      eleGroup.textContent = count
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Disqus' === 'Disqus'
+      ? window.shuoshuoComment = { loadComment: loadDisqus }
+      : window.loadOtherComment = loadDisqus
+    return
+  }
+
+  if ('Disqus' === 'Disqus' || !false) {
+    if (false) btf.loadComment(document.getElementById('disqus_thread'), loadDisqus)
+    else {
+      loadDisqus()
+      
+    }
+  } else {
+    window.loadOtherComment = loadDisqus
+  }
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜尋</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  資料載入中</span></div><div class="local-search-input"><input placeholder="搜尋文章" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/blog/js/search/local-search.js?v=5.7.1.260810"></script></div></div></body></html>

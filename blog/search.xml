@@ -544,6 +544,42 @@ CHT9100接上電腦，開三色模式
       </tags>
   </entry>
   <entry>
+    <title>How I Built agy-ppt — An Agent Skill That Turns Reports into PowerPoint Decks Without the AI-Slop Look</title>
+    <url>/blog/2026/10/02/How-I-Built-agy-ppt/</url>
+    <content><![CDATA[Every AI-generated slide deck looks the same. You know the look: purple gradient background, three generic icon cards in a row, a stock photo of diverse people pointing at a whiteboard. I call it the AI-slop fingerprint, and once you’ve seen it, you can’t unsee it.
+I build a lot of decks with AI agents, and I got tired of apologizing for how they look. So I built agy-ppt — an open-source agent skill that turns reports into PowerPoint decks with actual visual design. It’s MIT licensed, and it installs with one command.
+But the interesting part of this story isn’t the skill. It’s the experiment that decided the entire architecture — and it has to do with how image models handle Traditional Chinese text.
+The experiment: Gemini vs GPT on dense Traditional ChineseIn my own testing, I found that Gemini-generated images can barely hold any Traditional Chinese text. Give it a slide layout with a paragraph or two of Chinese and the characters blur, warp, or dissolve into plausible-looking gibberish.
+Run the exact same layout through GPT’s image models, and it holds dozens of Chinese characters cleanly — dense paragraphs, data tables, small annotations, all legible.
+This matters more than it sounds. Slides are the most text-dense visuals in common use. A marketing hero image can survive on five words; a slide with five words is an empty slide. If your renderer can’t do dense CJK text, you cannot do slides. Full stop.
+So the renderer wasn’t chosen by brand loyalty. It was chosen by experiment: GPT image models render every slide.
+One director, strict ownershipWith the renderer settled, I split the remaining work by what each agent is actually good at — and I made the ownership brutally explicit, because multi-agent workflows rot the moment two agents both think they’re in charge:
+
+Antigravity (AGY) is the sole director. It owns the outline (outline.md), the visual spec (deck_spec.json), the copy on every slide, the approval gates, and content&#x2F;visual QA. The workflow is always AGY → worker → AGY. Workers never hand off to each other directly, and nobody moves to the next phase without AGY.
+Kiro owns all engineering. Every line of executable code — assembly scripts, validators, schema changes, bug fixes — goes through Kiro. AGY may run existing verified scripts, but it may not modify code just because it can.
+Codex renders images. Only images. It is explicitly forbidden from touching the outline, the visual spec, the copy, the page count, the code, or the assembly step — and forbidden from faking AI-generated slides with Pillow, SVG, or python-pptx. This sounds paranoid until you’ve watched an image agent “helpfully” rewrite your facts.
+
+This strictness is the whole trick. Most agent pipelines fail not on capability but on authority ambiguity. Here there is none.
+Contracts before codeThe skill wasn’t vibe-coded. Every phase of the build was written up as a contract before implementation — docs/ holds dozens of them: raster contracts, image contracts, provider UX contracts, grounding&#x2F;translation contracts, validation contracts, each with its own validation report.
+And the contracts are frozen. A CI check called frozen-contract-guard blocks any pull request that violates them. Verification runs in three classes: deterministic CI that must pass before any merge, a manual release-readiness pass in a clean-room environment before shipping, and scheduled live validation against a stable public source.
+There’s also a boundary the project states explicitly and honestly: CI verifies engineering contracts — syntax, schemas, determinism, recovery scenarios. It does not and cannot verify semantic truth, such as whether a claim on a slide actually matches its source document. That judgment stays with AGY’s review, by design. Knowing what your automation can’t prove is part of engineering rigor too.
+No API keysThe skill is OAuth-only. It assumes three CLIs already logged in with their own subscription sessions — Google AI Pro, Kiro Pro, ChatGPT Plus — and it never touches, copies, or forwards any OAuth tokens. No OPENAI_API_KEY, no key management, no billing surprises. If you have the subscriptions, you have the pipeline.
+Approval gates before pixelsNothing renders until you’ve approved three things: the outline, the visual style, and a real single-slide sample. Only then does the full deck generate, slide by slide, with QA notes at each step. Re-rendering one bad slide is cheap; discovering on slide 18 that the design direction was wrong is expensive.
+The output is hybrid PowerPoint: full-page 16:9 rendered images preserve the visual fidelity (this is what kills the AI-slop look), while key text, native charts, and images stay editable and replaceable inside PowerPoint. A typo fix shouldn’t require a re-render.
+Try itnpx skills add sujunmin/agy-ppt
+
+It’s also on ClawHub. The one hard requirement: your agent environment needs image-generation capability — that’s the load-bearing wall of the whole pipeline.
+70-second demo · GitHub
+
+If you make decks in CJK languages — the use case most slide tools ignore — I’d especially like to hear what breaks for you. Issues welcome; I read every one.
+]]></content>
+      <tags>
+        <tag>AI</tag>
+        <tag>Agent Skill</tag>
+        <tag>PowerPoint</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>IE 11 因為 KB2729094 不能安裝的問題</title>
     <url>/blog/2017/07/27/IE%2011%20%E5%9B%A0%E7%82%BA%20KB2729094%20%E4%B8%8D%E8%83%BD%E5%AE%89%E8%A3%9D%E7%9A%84%E5%95%8F%E9%A1%8C/</url>
     <content><![CDATA[最近碰到一台電腦的更新卡在 IE 11 無法更新，查了很多資料看 Log 都是安裝程式判定 KB2729094 沒有安裝的問題，但是明明就有安裝的狀態下該怎麼解決。
@@ -830,6 +866,28 @@ Else, a choice is made among any normal indexes on the table (e.g. a FULLTEXT in
       </tags>
   </entry>
   <entry>
+    <title>Office 365 移除部分功能的方法</title>
+    <url>/blog/2016/04/06/Office%20365%20%E7%A7%BB%E9%99%A4%E9%83%A8%E5%88%86%E5%8A%9F%E8%83%BD%E7%9A%84%E6%96%B9%E6%B3%95/</url>
+    <content><![CDATA[當使用 Office 365 的時候，不能像以前安裝 Office 一樣可以選擇想要的功能，一股腦的全裝進去，有時候看到不需要的功能在那邊蠻礙眼而且會誤點，這裡查到一個方法可以選擇想要的功能。
+
+到這邊下載需要的 Office Deployment Tool。
+下載下來可以點兩下解壓縮到想要的地方。
+下載的連結裡有提到如何在安裝前就設定好，因為我已經安裝了，所以選擇安裝後要移除的方法 (Remove programs from computers that already have Office 365 ProPlus installed)。
+解壓縮檔案裏頭有個 configuration.xml，裏頭可以設定要移除的功能。
+OfficeClientEdition 如果安裝的是 64 位元 Office，這裡要改成 64。
+現在的版本是 2016，如不想升級先看看自己的 Office 版本號，再加到 Version 裡，如 Version&#x3D;”15.1.2.3”。
+Language ID&#x3D;zh-tw。
+加入 &lt;ExcludeApp ID&#x3D;”XXX” &#x2F;&gt;，其中 XXX 為功能名稱。
+改好以後儲存，開 cmd (系統管理員模式)。
+setup.exe &#x2F;configure configuration.xml。
+等程式跑完就完成了。
+
+]]></content>
+      <tags>
+        <tag>MIS</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Oracle 12c 的 Database 預設是開 Unified Auditing 的!</title>
     <url>/blog/2016/02/13/Oracle%2012c%20%E7%9A%84%20Database%20%E9%A0%90%E8%A8%AD%E6%98%AF%E9%96%8B%20Unified%20Auditing%20%E7%9A%84!/</url>
     <content><![CDATA[之前才說剛急救一下 Oracle sysaux 滿的問題， 沒隔幾天又發生了(昨天晚上)。昨天仍透過 exec dbms_stats.purge_stats() 移除部分資料，甚至只留下一天也會發生。急救完以後，想說好好來看看問題到底在哪邊，發現到一個很有趣的問題，有人(A)認為是文件寫錯，連 Oracle 的人(B)也開文說明問題在哪邊，以下紀錄一下處理過程。
@@ -873,28 +931,6 @@ Don’t trust our slides - only believe what you’ve verified by yourself…Sho
 ]]></content>
       <tags>
         <tag>OracleDB</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Office 365 移除部分功能的方法</title>
-    <url>/blog/2016/04/06/Office%20365%20%E7%A7%BB%E9%99%A4%E9%83%A8%E5%88%86%E5%8A%9F%E8%83%BD%E7%9A%84%E6%96%B9%E6%B3%95/</url>
-    <content><![CDATA[當使用 Office 365 的時候，不能像以前安裝 Office 一樣可以選擇想要的功能，一股腦的全裝進去，有時候看到不需要的功能在那邊蠻礙眼而且會誤點，這裡查到一個方法可以選擇想要的功能。
-
-到這邊下載需要的 Office Deployment Tool。
-下載下來可以點兩下解壓縮到想要的地方。
-下載的連結裡有提到如何在安裝前就設定好，因為我已經安裝了，所以選擇安裝後要移除的方法 (Remove programs from computers that already have Office 365 ProPlus installed)。
-解壓縮檔案裏頭有個 configuration.xml，裏頭可以設定要移除的功能。
-OfficeClientEdition 如果安裝的是 64 位元 Office，這裡要改成 64。
-現在的版本是 2016，如不想升級先看看自己的 Office 版本號，再加到 Version 裡，如 Version&#x3D;”15.1.2.3”。
-Language ID&#x3D;zh-tw。
-加入 &lt;ExcludeApp ID&#x3D;”XXX” &#x2F;&gt;，其中 XXX 為功能名稱。
-改好以後儲存，開 cmd (系統管理員模式)。
-setup.exe &#x2F;configure configuration.xml。
-等程式跑完就完成了。
-
-]]></content>
-      <tags>
-        <tag>MIS</tag>
       </tags>
   </entry>
   <entry>
@@ -1059,6 +1095,57 @@ embrace: 擁抱。mandate: 任務。
       </tags>
   </entry>
   <entry>
+    <title>PMI月刊第一次讀書會 - Why do projects really fail?</title>
+    <url>/blog/2010/08/13/PMI%E6%9C%88%E5%88%8A%E7%AC%AC%E4%B8%80%E6%AC%A1%E8%AE%80%E6%9B%B8%E6%9C%83-Why-do-projects-really-fail/</url>
+    <content><![CDATA[很高興我的PMP同學Bonnie有此興致，想要召開PMI月刊的讀書會，除了聯絡感情外，更能藉由這樣的活動，來有個共同讓自己提昇的目標。在2010&#x2F;8&#x2F;12晚上的Kick Off Meeting後，我與Jerry各選兩個PMI月刊7月號的Topics，將於9月中來舉辦。
+我選了兩個比較簡單的Topics(沒辦法，先選先贏嘛~)，這一篇是其中一個Topic，取自PMI月刊7月號P20-P21，Viewpoints for voice on project management: Why do projects really fail?，作者是Kareem Shaker, PMP。
+詳細文章內容請至PMI網站觀看，以下是我的心得(黑色為翻譯，藍色為我加入的心得，紫色為單字說明)。
+
+
+
+
+
+
+
+
+
+
+
+
+專案的失敗總是一個熱門的議題，現在讓專案出軌的迷失開始消失了，因為組織開始努力的挖掘失敗的根源在哪邊。以下是一個最常發生的專案失敗原因，還有對應不要再犯相同錯誤的知識。
+ferret out:深挖，ferret是一種動物，很喜歡挖巢穴，顧名思義，加個out就是深深的挖的意思_。_
+1. 與組織的走向不合(Poor alignment)好的專案不一定是最有價值的專案，但一定是跟組織的走向策略一定要合。如果沒有的話，缺乏執行單位的後盾會葬送一個專案。如果專案可以提供給顧客、使用者、利害關係人的支持與擁有的話，會更強化專案成功的可能性。
+我自己執行的專案，倒是比較沒發生這樣的情形，如果說真的有的話，那應該是在開發新專案的時候，雖是組織希望的，但是可能守成概念比較濃厚，我單打獨鬥的機會比較多。
+backing:後盾。
+2. 失敗的規劃(Bad planning)有一句老諺語是這麼說的：如果你規劃失敗，那你就是準備失敗(If you fail to plan, you plan to fail.)。在專案規劃階段，每個專案必須都以嚴謹的態度面對。專案經理必須辨識出風險、相依性、利害關係者、溝通、與品質需求。 顧問團隊與相關議題的專家會幫助專案完善規劃與承諾。
+我自己執行的專案覺得這邊的情形其實也很難發生，雖然最後有時候作不太好，但還是有其他原因，不應歸類在這個部分。
+adage:諺語。
+3. 缺乏執行單位的支援(Lack of executive support)專案經理與執行單位總是有個鴻溝，較為資深的專案經理都會讓專案發起人不需要知道太多或是基本的專案管理知識，這樣會造成專案發起人不能夠有效的配置執行單位，專案就會缺乏支援。常常都會發現專案經理都是獨自與專案議題角力、處理利害關係人的衝突、與資源經理、系統使用者、團隊成員、或與其他部門缺乏合作。因此，專案發起人必須真的去深刻了解專案章程每一個地方到底在說什麼。當專案章程被正式核可時，發起人就要聯絡與請求其他利害關係人，提供相關支援。這樣的作法可以把非專案導向的組織帶向好的專案結果。執行單位需要持續的在專案的所有階段支援專案與專案經理，並且參與專案會議。
+我自己執行的專案大部分都是外包，基本上外包就要按照合約執行，有問題就求償或是以合約方式解決。但是實際上所派的人力資源素質，有時候就像缺了什麼東西一樣，有人卻不好用的，或是亂擺位子的。
+4. 不完整的需求(Incomplete requirements)對於IT的專案來說，有一個常常發生的問題就是高度的不確定性。為了要避免在接下來的階段有這樣劇烈的變更，專案經理就要有套很強的需求分析流程，並且對各個利害關係人的衝突建立共識。
+我自己執行的專案大部分都是這個問題，這個問題的層面很廣，我現在做的大部分還是業主或使用者需求在專案開始甚至是執行階段，仍停留在高階需求的狀態(就是只有想法，可是沒有整體規劃)，需求因為經辦人或是其他單位的想法一改在改，甚至到結案前，以要脅無法結案為由，修改需求。這不只是專案經理無法掌控需求，而是業主仍停留在過去專案執行方式與本位主義(出錢的最大)，導致常常在補破網的狀態。
+haunt:出沒。drastic:激烈。consensus:共識。
+5. 不清楚的期望(Unclear expectations)不同的利害關係人對於專案有著不同的想法，每一個想法要實現它都有不同的執行時間、花費、與品質。確定期望與建立是必須要作的。如果不作的話，某個重要的利害關係人掌握過度的權力，他就會因為不能滿足他的期望而把案子結束。在整個專案需持續的預知與監控利害關係人的態度、需求、與行動。
+我自己執行的專案另一個會不好收尾的部份就是對於期望與利害關係人的特性分析部分。因為有時候對於利害關係人的軟技能需要非常的熟練(譬如說有人就是很容易生氣、有人就是唯唯諾諾，拿別人的話當令箭)，分析完以後仍需要盡力去社交(台語叫ㄆㄨㄚ ㄋㄨㄚˋ)，期望其實很多都是在於利害關係者個人的期望，而不是該利害關係者對專案的期望。(有時候還要去業主某重要人士的家修電腦)
+perceive:感受。inevitable:必然的。wield:職掌。undue:過分的。anticipate:預知。
+6. 範疇潛變(Scope creep)不能掌控的變更會導致浪費專案預算。專案經理需要建立一個有效的變更管理流程來掌控大的或是小的改變。要注意鍍金也算是一種範疇潛變，就像專案團隊隨意的放任利害關係人新增額外的東西。專案經理需要把讓業主知道需求變更的文化，維護專案的範疇並與專案章程一致。理想的狀況下，每個變更需要判定變更在費用、時間、風險、與品質的衝擊。
+這個跟4提及的不完整的需求有一些關連，因為需求不定，所以一直變化需求，但有可能已經超出了專案範疇，大家都希望能把案子好好的結束，但有時會發生鍍金。某個案子就是這樣，在利害關係人混亂的狀態下，就像裡面說的，維護專案的範疇，卻也遭受業主利害關係人的態度惡化。我的包商跟我說：你真的很好，幫我們擋了很多砲火。但是有時候還是需要被炸一炸的，不能老是say no，這就是該案的生態。
+extravagant:揮霍。indulge:放縱，姑息。
+7. 缺乏資源(Lack of resources)最近的不景氣改變了組織對於專案建設的方式：專案完成需使用更少的資源、更嚴格的結案、更高的期望與更少的預算。在個弱矩陣的工作環境要結合所有相關事項，因為資源是各個專案一起用的，功能經理去定義每個專案使用資源的優先程度。專案經理要保有自己專案的資源與執行單位的支援，需要有不錯的社交技能。
+這個比較多是在cook案子的時候，只有自己一個人跑的感覺。組織希望這個領域能夠帶領大家走出舊有的框架，但有時候人不一定會給那麼多，不會給人，給了人是大家一起用，甚至是幫別的案子要人，有時候還蠻麻煩的。
+recession:不景氣。alter:改變。well-versed:精通。
+8. 技術選擇(Choice of technology)新的技術都有風險。選錯的技術、不合的系統整合、不合時宜的產品會導致專案有問題。經銷商誇大他們的產品，許多專案經理因此而受騙。專案經理與團隊需要對於使用的產品相關連的案例分析與技術證明所使用的產品是好的。
+這邊的話對於我來說是還好，比較多是在多樣化系統整合方面，除了硬體買了有時候會因為選擇的平台發生問題外，其他是還好。
+dup:被騙。due diligence:盡職調查。
+9. 沒經驗(Inexperience)雖然大家都不想承認，專案專家本身就是造成專案失敗的主要原因。有些缺乏教育或經驗，或是使用不適當的專案管理風格。一些專案經理在專案發生問題的時候承擔責任，但是他們第一步先要做的是先從他們錯誤中學東西。
+我先承認我真的很沒經驗，自己的教育跟學習應該是夠的，還有PMP證照，但是軟技能仍然是無窮無盡的，人脈的累積與社交能力的實踐才是我要從錯誤中學習的目標。
+loath:厭惡。admit:承認。
+]]></content>
+      <tags>
+        <tag>PMP</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>PMI月刊第五次讀書會 - So, you want to be a consultant?</title>
     <url>/blog/2011/02/24/PMI%E6%9C%88%E5%88%8A%E7%AC%AC%E4%BA%94%E6%AC%A1%E8%AE%80%E6%9B%B8%E6%9C%83-So-you-want-to-be-a-consultant/</url>
     <content><![CDATA[這一篇是另一個Topic，取自PMI月刊2010年12月號P56-P59，So, you want to be a consultant?，作者是Rachel Zupek。
@@ -1193,57 +1280,6 @@ championing:倡導。
       </tags>
   </entry>
   <entry>
-    <title>PMI月刊第一次讀書會 - Why do projects really fail?</title>
-    <url>/blog/2010/08/13/PMI%E6%9C%88%E5%88%8A%E7%AC%AC%E4%B8%80%E6%AC%A1%E8%AE%80%E6%9B%B8%E6%9C%83-Why-do-projects-really-fail/</url>
-    <content><![CDATA[很高興我的PMP同學Bonnie有此興致，想要召開PMI月刊的讀書會，除了聯絡感情外，更能藉由這樣的活動，來有個共同讓自己提昇的目標。在2010&#x2F;8&#x2F;12晚上的Kick Off Meeting後，我與Jerry各選兩個PMI月刊7月號的Topics，將於9月中來舉辦。
-我選了兩個比較簡單的Topics(沒辦法，先選先贏嘛~)，這一篇是其中一個Topic，取自PMI月刊7月號P20-P21，Viewpoints for voice on project management: Why do projects really fail?，作者是Kareem Shaker, PMP。
-詳細文章內容請至PMI網站觀看，以下是我的心得(黑色為翻譯，藍色為我加入的心得，紫色為單字說明)。
-
-
-
-
-
-
-
-
-
-
-
-
-專案的失敗總是一個熱門的議題，現在讓專案出軌的迷失開始消失了，因為組織開始努力的挖掘失敗的根源在哪邊。以下是一個最常發生的專案失敗原因，還有對應不要再犯相同錯誤的知識。
-ferret out:深挖，ferret是一種動物，很喜歡挖巢穴，顧名思義，加個out就是深深的挖的意思_。_
-1. 與組織的走向不合(Poor alignment)好的專案不一定是最有價值的專案，但一定是跟組織的走向策略一定要合。如果沒有的話，缺乏執行單位的後盾會葬送一個專案。如果專案可以提供給顧客、使用者、利害關係人的支持與擁有的話，會更強化專案成功的可能性。
-我自己執行的專案，倒是比較沒發生這樣的情形，如果說真的有的話，那應該是在開發新專案的時候，雖是組織希望的，但是可能守成概念比較濃厚，我單打獨鬥的機會比較多。
-backing:後盾。
-2. 失敗的規劃(Bad planning)有一句老諺語是這麼說的：如果你規劃失敗，那你就是準備失敗(If you fail to plan, you plan to fail.)。在專案規劃階段，每個專案必須都以嚴謹的態度面對。專案經理必須辨識出風險、相依性、利害關係者、溝通、與品質需求。 顧問團隊與相關議題的專家會幫助專案完善規劃與承諾。
-我自己執行的專案覺得這邊的情形其實也很難發生，雖然最後有時候作不太好，但還是有其他原因，不應歸類在這個部分。
-adage:諺語。
-3. 缺乏執行單位的支援(Lack of executive support)專案經理與執行單位總是有個鴻溝，較為資深的專案經理都會讓專案發起人不需要知道太多或是基本的專案管理知識，這樣會造成專案發起人不能夠有效的配置執行單位，專案就會缺乏支援。常常都會發現專案經理都是獨自與專案議題角力、處理利害關係人的衝突、與資源經理、系統使用者、團隊成員、或與其他部門缺乏合作。因此，專案發起人必須真的去深刻了解專案章程每一個地方到底在說什麼。當專案章程被正式核可時，發起人就要聯絡與請求其他利害關係人，提供相關支援。這樣的作法可以把非專案導向的組織帶向好的專案結果。執行單位需要持續的在專案的所有階段支援專案與專案經理，並且參與專案會議。
-我自己執行的專案大部分都是外包，基本上外包就要按照合約執行，有問題就求償或是以合約方式解決。但是實際上所派的人力資源素質，有時候就像缺了什麼東西一樣，有人卻不好用的，或是亂擺位子的。
-4. 不完整的需求(Incomplete requirements)對於IT的專案來說，有一個常常發生的問題就是高度的不確定性。為了要避免在接下來的階段有這樣劇烈的變更，專案經理就要有套很強的需求分析流程，並且對各個利害關係人的衝突建立共識。
-我自己執行的專案大部分都是這個問題，這個問題的層面很廣，我現在做的大部分還是業主或使用者需求在專案開始甚至是執行階段，仍停留在高階需求的狀態(就是只有想法，可是沒有整體規劃)，需求因為經辦人或是其他單位的想法一改在改，甚至到結案前，以要脅無法結案為由，修改需求。這不只是專案經理無法掌控需求，而是業主仍停留在過去專案執行方式與本位主義(出錢的最大)，導致常常在補破網的狀態。
-haunt:出沒。drastic:激烈。consensus:共識。
-5. 不清楚的期望(Unclear expectations)不同的利害關係人對於專案有著不同的想法，每一個想法要實現它都有不同的執行時間、花費、與品質。確定期望與建立是必須要作的。如果不作的話，某個重要的利害關係人掌握過度的權力，他就會因為不能滿足他的期望而把案子結束。在整個專案需持續的預知與監控利害關係人的態度、需求、與行動。
-我自己執行的專案另一個會不好收尾的部份就是對於期望與利害關係人的特性分析部分。因為有時候對於利害關係人的軟技能需要非常的熟練(譬如說有人就是很容易生氣、有人就是唯唯諾諾，拿別人的話當令箭)，分析完以後仍需要盡力去社交(台語叫ㄆㄨㄚ ㄋㄨㄚˋ)，期望其實很多都是在於利害關係者個人的期望，而不是該利害關係者對專案的期望。(有時候還要去業主某重要人士的家修電腦)
-perceive:感受。inevitable:必然的。wield:職掌。undue:過分的。anticipate:預知。
-6. 範疇潛變(Scope creep)不能掌控的變更會導致浪費專案預算。專案經理需要建立一個有效的變更管理流程來掌控大的或是小的改變。要注意鍍金也算是一種範疇潛變，就像專案團隊隨意的放任利害關係人新增額外的東西。專案經理需要把讓業主知道需求變更的文化，維護專案的範疇並與專案章程一致。理想的狀況下，每個變更需要判定變更在費用、時間、風險、與品質的衝擊。
-這個跟4提及的不完整的需求有一些關連，因為需求不定，所以一直變化需求，但有可能已經超出了專案範疇，大家都希望能把案子好好的結束，但有時會發生鍍金。某個案子就是這樣，在利害關係人混亂的狀態下，就像裡面說的，維護專案的範疇，卻也遭受業主利害關係人的態度惡化。我的包商跟我說：你真的很好，幫我們擋了很多砲火。但是有時候還是需要被炸一炸的，不能老是say no，這就是該案的生態。
-extravagant:揮霍。indulge:放縱，姑息。
-7. 缺乏資源(Lack of resources)最近的不景氣改變了組織對於專案建設的方式：專案完成需使用更少的資源、更嚴格的結案、更高的期望與更少的預算。在個弱矩陣的工作環境要結合所有相關事項，因為資源是各個專案一起用的，功能經理去定義每個專案使用資源的優先程度。專案經理要保有自己專案的資源與執行單位的支援，需要有不錯的社交技能。
-這個比較多是在cook案子的時候，只有自己一個人跑的感覺。組織希望這個領域能夠帶領大家走出舊有的框架，但有時候人不一定會給那麼多，不會給人，給了人是大家一起用，甚至是幫別的案子要人，有時候還蠻麻煩的。
-recession:不景氣。alter:改變。well-versed:精通。
-8. 技術選擇(Choice of technology)新的技術都有風險。選錯的技術、不合的系統整合、不合時宜的產品會導致專案有問題。經銷商誇大他們的產品，許多專案經理因此而受騙。專案經理與團隊需要對於使用的產品相關連的案例分析與技術證明所使用的產品是好的。
-這邊的話對於我來說是還好，比較多是在多樣化系統整合方面，除了硬體買了有時候會因為選擇的平台發生問題外，其他是還好。
-dup:被騙。due diligence:盡職調查。
-9. 沒經驗(Inexperience)雖然大家都不想承認，專案專家本身就是造成專案失敗的主要原因。有些缺乏教育或經驗，或是使用不適當的專案管理風格。一些專案經理在專案發生問題的時候承擔責任，但是他們第一步先要做的是先從他們錯誤中學東西。
-我先承認我真的很沒經驗，自己的教育跟學習應該是夠的，還有PMP證照，但是軟技能仍然是無窮無盡的，人脈的累積與社交能力的實踐才是我要從錯誤中學習的目標。
-loath:厭惡。admit:承認。
-]]></content>
-      <tags>
-        <tag>PMP</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>PMP專案管理方法論與CMMI管理方式比較</title>
     <url>/blog/2010/03/19/PMP%E5%B0%88%E6%A1%88%E7%AE%A1%E7%90%86%E6%96%B9%E6%B3%95%E8%AB%96%E8%88%87CMMI%E7%AE%A1%E7%90%86%E6%96%B9%E5%BC%8F%E6%AF%94%E8%BC%83/</url>
     <content><![CDATA[這篇發表在rogersnote 20100318 電子報裡，拿到10個PDUs:D
@@ -1281,17 +1317,6 @@ CMMI的流程類別有：1. 流程管理(Process Management)：此部份著重�
       <tags>
         <tag>Boutique</tag>
         <tag>Ubuntu</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SQL Server Management Studio (SSMS) 碰到 Value cannot be null (值不能為 Null) 的解決方式</title>
-    <url>/blog/2017/05/18/SQL%20Server%20Management%20Studio%20(SSMS)%20%E7%A2%B0%E5%88%B0%20Value%20cannot%20be%20null%20(%E5%80%BC%E4%B8%8D%E8%83%BD%E7%82%BA%20Null)%20%E7%9A%84%E8%A7%A3%E6%B1%BA%E6%96%B9%E5%BC%8F/</url>
-    <content><![CDATA[今天廠商說到他們 SSMS 登入資料庫會有 “值不能為 Null” 的問題，會造成資料表打不開。
-找了一下方法，有人說是 Temp Path 的問題，不過後來是按照這裡面的方法砍掉設定檔重開就好了，紀錄一下。
-真的是很奇怪的問題呀。
-]]></content>
-      <tags>
-        <tag>MSSQL</tag>
       </tags>
   </entry>
   <entry>
@@ -1339,6 +1364,17 @@ Sydney用Mymulti。
 ]]></content>
       <tags>
         <tag>Travel</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SQL Server Management Studio (SSMS) 碰到 Value cannot be null (值不能為 Null) 的解決方式</title>
+    <url>/blog/2017/05/18/SQL%20Server%20Management%20Studio%20(SSMS)%20%E7%A2%B0%E5%88%B0%20Value%20cannot%20be%20null%20(%E5%80%BC%E4%B8%8D%E8%83%BD%E7%82%BA%20Null)%20%E7%9A%84%E8%A7%A3%E6%B1%BA%E6%96%B9%E5%BC%8F/</url>
+    <content><![CDATA[今天廠商說到他們 SSMS 登入資料庫會有 “值不能為 Null” 的問題，會造成資料表打不開。
+找了一下方法，有人說是 Temp Path 的問題，不過後來是按照這裡面的方法砍掉設定檔重開就好了，紀錄一下。
+真的是很奇怪的問題呀。
+]]></content>
+      <tags>
+        <tag>MSSQL</tag>
       </tags>
   </entry>
   <entry>
@@ -2041,6 +2077,42 @@ Email: ad1@sevenjay.tw
       </tags>
   </entry>
   <entry>
+    <title>打造沒有 AI 味的簡報：agy-ppt 幕後</title>
+    <url>/blog/2026/10/02/agy-ppt-%E5%B9%95%E5%BE%8C-%E6%B2%92%E6%9C%89AI%E5%91%B3%E7%9A%84%E7%B0%A1%E5%A0%B1%E6%98%AF%E6%80%8E%E9%BA%BC%E5%81%9A%E5%87%BA%E4%BE%86%E7%9A%84/</url>
+    <content><![CDATA[AI 生的投影片，長得都一個樣。你一定看過：紫色漸層背景、三張一模一樣的 icon 卡片，再配一張「多元團隊指著白板」的 stock photo。我叫它 AI 味，一旦看出來就回不去了。
+我平常很常用 AI agent 做簡報，做到後來真的受不了，每次都要先跟人道歉「這版醜了點」。所以我做了 agy-ppt — 一個開源的 agent skill，專門把報告變成「看起來像人做的」PowerPoint。MIT 授權，一行指令就能裝。
+不過這篇想講的不是 skill 本身，而是決定整個架構的那場實驗 — 跟圖片模型怎麼算繁體中文有關。
+實測：Gemini 和 GPT，誰算得動繁體中文？我自己實測的結果是這樣：叫 Gemini 生一張帶繁體中文的圖，字稍微多一點就糊掉、扭曲，或變成看起來像字但根本不是字的東西。
+同樣的版面拿給 GPT 的圖片模型算，幾十個中文字都清清楚楚 — 段落、表格、小註解，全部可讀。
+這件事比聽起來重要。投影片是日常生活中「文字密度最高」的視覺物。行銷主視覺五個字就能交差，投影片五個字就是一頁空白。如果你的算圖引擎做不出高密度的中日韓文字，那你根本做不了投影片。就這麼簡單。
+所以算圖引擎不是憑喜好選的，是實驗選出來的：每一張投影片都用 GPT 圖片模型算。
+一個導演，權責分明引擎決定之後，剩下的工作就照各家 agent 擅長的來分 — 而且權責寫得非常死，因為多 agent 流程只要有兩個人都覺得自己是老大，馬上就爛掉：
+
+Antigravity（AGY）是唯一導演。大綱（outline.md）、視覺規格（deck_spec.json）、每頁文案、審核關卡、內容／視覺 QA，全都歸它。流程永遠是 AGY → 打工仔 → AGY，打工仔之間不准私下交接，沒它點頭誰都不准進下一階段。
+Kiro 管全部工程。所有能執行的程式碼 — 組裝腳本、驗證器、schema 修改、修 bug — 一律走 Kiro。AGY 可以執行已經驗證過的腳本，但不准因為自己會寫就手癢改 code。
+Codex 只負責算圖。只能算圖。它被明文禁止碰大綱、視覺規格、文案、頁數、程式碼、組裝 — 甚至禁止用 Pillow、SVG、python-pptx 假裝自己是 AI 生圖。聽起來很偏執，直到你親眼看過圖片 agent「好心」幫你改事實。
+
+嚴格就是全部的心法。多 agent 流程通常不是死在能力，是死在權責不清。這裡沒有模糊地帶。
+先寫合約再寫 code這個 skill 不是 vibe coding 出來的。每個開發階段都是先寫合約才實作 — docs/ 底下有幾十份：raster 合約、圖片合約、provider UX 合約、grounding／翻譯合約、驗證合約，每份都有自己的驗證報告。
+而且合約是凍結的。CI 有個叫 frozen-contract-guard 的檢查，任何違反合約的 PR 直接擋掉。驗證分三級：擋 merge 的確定性 CI、發布前在乾淨環境的手動驗證、排程的 live validation。
+另外有一條這個專案明說的界線，我覺得很值得寫出來：CI 只驗證工程合約 — 語法、schema、確定性、災難復原。它不驗證、也驗證不了語意真實，比如「投影片上的說法跟來源文件對不對得上」。那個判斷永遠留在 AGY 的人工審查。這種「知道自己的自動化證明不了什麼」的誠實，也是工程嚴謹的一部分。
+不用 API key這個 skill 是純 OAuth 制。假設三個 CLI 都已經用各自的訂閱登入 — Google AI Pro、Kiro Pro、ChatGPT Plus — skill 不碰、不複製、不轉傳任何 OAuth token。沒有 OPENAI_API_KEY，沒有 key 管理，沒有帳單驚喜。有訂閱，就有整條 pipeline。
+先審核，再算圖在你點頭之前，什麼都不會算：大綱、視覺風格、一張真實的單頁樣張，三關都過了才開始整份產出，一頁一頁生，每步都有 QA。重算一頁很便宜，第 18 頁才發現設計方向錯了很貴。
+輸出是混合式 PowerPoint：整頁 16:9 的算圖保留視覺完整度（這就是 AI 味消失的原因），關鍵文字、原生圖表、圖片在 PowerPoint 裡照樣可以編輯替換。改個錯字不應該要重算整頁。
+來玩玩看npx skills add sujunmin/agy-ppt
+
+ClawHub 上也有。唯一的硬需求：你的 agent 環境要有圖片生成能力 — 這是整條 pipeline 的承重牆。
+70 秒 demo · GitHub
+
+如果你也在做中日韓文的簡報 — 就是那些主流工具都不理的使用情境 — 很想聽聽你那邊會壞在哪裡。歡迎開 issue，我每則都會看。
+]]></content>
+      <tags>
+        <tag>AI</tag>
+        <tag>Agent Skill</tag>
+        <tag>PowerPoint</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Ubuntu 16.04 關機變成登出的解法</title>
     <url>/blog/2016/06/14/ubuntu%2016.04%20%E9%97%9C%E6%A9%9F%E8%AE%8A%E6%88%90%E7%99%BB%E5%87%BA%E7%9A%84%E8%A7%A3%E6%B3%95/</url>
     <content><![CDATA[現在家裡的機器與公司的工作機大多是用 Ubuntu 來作業的(公司的工作機開 VM)，安裝完 Ubuntu 16.04 後就安裝了 Macbuntu 妝點一下桌面，結果發現到原來右上角的關機鍵變成了登出了。
@@ -2316,20 +2388,6 @@ Email:*   網址:*   日期: 2010-10-13 00:06:13
       </tags>
   </entry>
   <entry>
-    <title>[上海世博6日遊][05] 世博D、E片區 (下)</title>
-    <url>/blog/2010/10/11/%E4%B8%8A%E6%B5%B7%E4%B8%96%E5%8D%9A6%E6%97%A5%E9%81%8A-05-%E4%B8%96%E5%8D%9AD%E3%80%81E%E7%89%87%E5%8D%80-%E4%B8%8B/</url>
-    <content><![CDATA[(續前篇)
-最近發生了一件重大的事情，就是我跟我女朋友分手了，傷心之餘，必須趕快振作。麻煩的是，這些回憶有她的影子。不過我想把這次的遊記寫完的動力仍然不減，所以後面有一些可能寫的不太穩的，就請大家多多包含吧。
-在等上汽集團館的入場時，雖說有快速預約券，也是等了15分才進去後，終於好不容易進去了。裡面有許多鋪後來梗的地方，介紹著未來的車子設計：需要停車位嘛？以後只要一些小小的空間利用，就能夠停車，因為未來的車將會是全自動、環保節能不用油料、更高效能的概念車。因此不用駕照了，只要有鑰匙就能開。是不是要跑大老遠開車?不用，因為電梯系統會把車送來給你。紅綠燈是不是需要?不用，因為車輛會自動感應周邊狀態…。一連串的概念，到了這個館的高潮：直達2030身歷其境影片。除了觀眾是坐著體感座椅(會動來動去那種)，影片的內容也是很有未來概念的意味：不同時間的歌手能夠同時表演、盲人能開車、簡化停車問題、多用途的車上配備…，實在是很有趣。結束以後，更有舞者帶領著影片裡的概念車表演展示，甚至離場以後外面也展示這些概念車(都有序號跟開發號碼了)，希望未來這些東西能夠興起汽車革命。離開E片區，接下來回到D片區，到之前有預約的上企聯合館。這邊也是一樣，排了一下子的隊，有一些互動遊戲可以玩。我們是在該館的建築物下面排隊，頭上一根一根的東西是用廢棄的光碟片作的塑膠棒，旁邊有一些螢幕，上面播放一個老人跟一個小孩在說夢的事情。跟前面的活力矩陣一樣，有個聲控裝置(雖然Bonnie說那個可能是套好的)，只要跟隨著播放的螢幕故事作，就會有拍手時光線會跟隨著節奏閃動的感覺。裡面還有一些影片與聲光效果極佳的電影，描述著未來的體驗。
-繼續往前走，看到可口可樂館，發現到一個結論：晚上逛的人比較少。怎麼說呢?白天這邊都一堆人的，現在人變少很多，只可惜有一些館有比較早的關館時間，所以想要看也不行。不過這也是我們後來幾天的看館策略：有的晚上來看比較好些。不過可口可樂館、石油館都已不能排隊了，旁邊的中國人保館沒什麼人，就進去看看。沒想到，真的也沒什麼，看到蓋章處有個大螢幕都被工作人員拿來撥歌(開Winamp)，裡面一下就逛完了。再往前走是太空家園館，選擇不看電影可以直接進去參觀，就是講中國的太空歷史。最後就到我們今天的最後一站，日本產業館。這個館是Bonnie今天最想進去的一個館，無奈早上人太多，沒辦法看。辛苦了一天以後，人已少很多，我們進入排隊的時間，剛好是截止時間前10幾分鐘，後來的人都進不來了。排了一下隊，進入場館，果然是不一樣，是由各家日本廠商出資展示。不過大部分都不能拍照。有百面劇場，一面很多電視的牆，來代表日本多樣化的文化。再生紙館做成一個劇場，展示著日本脈動的”宴”。生命之星展演著新的醫療技術，醫療的進化，用3D眼鏡來展演3D的影片，身體的奧妙。人類和地球的珍寶、誕生的軌跡都很不錯。心的橋樑代表日本郵政為人民服務的概念。金門玉堂展示一面金門，不過不能拍，很亮晶晶的。青花流水、調美味、品人生，都打廣告打的不錯。外面有一些精品店，逛了一下。看完這個，也代表今天的世博D、E片區之旅結束了，浦西，再見。
-回去真是又餓又累，找了一下地鐵的便利商店，說實在，還真難找。找到有一家，不過因為地鐵打烊了。飯店旁邊的商場又都關光了(晚上11點多)，無計可施之餘，看到飯店對面有一家全家便利商店，還在開，我跟Bonnie兩人就好像難民一樣，欣喜若狂，大肆收購，一直在裡面傻笑，店員可能以為我們瘋了，想說在台灣，之前有拿到全家的禮券，還不太想用，送給了Bonnie用。不想用的原因是沒什麼活動又不能儲值，不過在這邊讓我對全家便利商店(不是打廣告喔)有不一樣的看法，謝謝你了，全家。另外一件事，就是把第一天去小南國吃剩的熱一熱，當做宵夜。不過飯店除了怕怕的要我填一個切結書，保證吃壞肚子不是他們的問題以外，連個筷子湯匙也不給我，實在是很不像5星級的飯店(叫我拿房裡的兩個喝咖啡湯匙來吃)，之前說到有一件不滿意的事就是這件事，還好Bonnie有留之前吃飯的叉子，要不然真的要用手扒了。
-吃飽以後，整理一下，洗個澡，就進入夢鄉了。因為今天實在太累，加上問飯店服務人員說，我們明天要早起看中國館云云，她覺得不用那麼早起，加上自己的惰心，原來是早上4:30起來，5:00出發的，定鬧鐘的時候，延後一個小時，覺得應該還好。不過我們當時不知道，我們會碰上隔天最恐怖的狀態，世博創記錄，也是最累也是最辛苦的一天，就要面對了。
-]]></content>
-      <tags>
-        <tag>Travel</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[上海世博6日遊][06] 世博A、B片區 (上)</title>
     <url>/blog/2010/10/13/%E4%B8%8A%E6%B5%B7%E4%B8%96%E5%8D%9A6%E6%97%A5%E9%81%8A-06-%E4%B8%96%E5%8D%9AA%E3%80%81B%E7%89%87%E5%8D%80-%E4%B8%8A/</url>
     <content><![CDATA[2010&#x2F;9&#x2F;23 上海世博6日遊 Day 3
@@ -2343,6 +2401,20 @@ Email:*   網址:*   日期: 2010-10-13 00:06:13
 A片區部分：
 B片區的部份：
 接下來計畫是去日本館，不過先從近的開始：摩洛哥館。外表十分有異國風情，人排的多，但是都有在動，於是開始來看看這個館…(待續)。
+]]></content>
+      <tags>
+        <tag>Travel</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[上海世博6日遊][05] 世博D、E片區 (下)</title>
+    <url>/blog/2010/10/11/%E4%B8%8A%E6%B5%B7%E4%B8%96%E5%8D%9A6%E6%97%A5%E9%81%8A-05-%E4%B8%96%E5%8D%9AD%E3%80%81E%E7%89%87%E5%8D%80-%E4%B8%8B/</url>
+    <content><![CDATA[(續前篇)
+最近發生了一件重大的事情，就是我跟我女朋友分手了，傷心之餘，必須趕快振作。麻煩的是，這些回憶有她的影子。不過我想把這次的遊記寫完的動力仍然不減，所以後面有一些可能寫的不太穩的，就請大家多多包含吧。
+在等上汽集團館的入場時，雖說有快速預約券，也是等了15分才進去後，終於好不容易進去了。裡面有許多鋪後來梗的地方，介紹著未來的車子設計：需要停車位嘛？以後只要一些小小的空間利用，就能夠停車，因為未來的車將會是全自動、環保節能不用油料、更高效能的概念車。因此不用駕照了，只要有鑰匙就能開。是不是要跑大老遠開車?不用，因為電梯系統會把車送來給你。紅綠燈是不是需要?不用，因為車輛會自動感應周邊狀態…。一連串的概念，到了這個館的高潮：直達2030身歷其境影片。除了觀眾是坐著體感座椅(會動來動去那種)，影片的內容也是很有未來概念的意味：不同時間的歌手能夠同時表演、盲人能開車、簡化停車問題、多用途的車上配備…，實在是很有趣。結束以後，更有舞者帶領著影片裡的概念車表演展示，甚至離場以後外面也展示這些概念車(都有序號跟開發號碼了)，希望未來這些東西能夠興起汽車革命。離開E片區，接下來回到D片區，到之前有預約的上企聯合館。這邊也是一樣，排了一下子的隊，有一些互動遊戲可以玩。我們是在該館的建築物下面排隊，頭上一根一根的東西是用廢棄的光碟片作的塑膠棒，旁邊有一些螢幕，上面播放一個老人跟一個小孩在說夢的事情。跟前面的活力矩陣一樣，有個聲控裝置(雖然Bonnie說那個可能是套好的)，只要跟隨著播放的螢幕故事作，就會有拍手時光線會跟隨著節奏閃動的感覺。裡面還有一些影片與聲光效果極佳的電影，描述著未來的體驗。
+繼續往前走，看到可口可樂館，發現到一個結論：晚上逛的人比較少。怎麼說呢?白天這邊都一堆人的，現在人變少很多，只可惜有一些館有比較早的關館時間，所以想要看也不行。不過這也是我們後來幾天的看館策略：有的晚上來看比較好些。不過可口可樂館、石油館都已不能排隊了，旁邊的中國人保館沒什麼人，就進去看看。沒想到，真的也沒什麼，看到蓋章處有個大螢幕都被工作人員拿來撥歌(開Winamp)，裡面一下就逛完了。再往前走是太空家園館，選擇不看電影可以直接進去參觀，就是講中國的太空歷史。最後就到我們今天的最後一站，日本產業館。這個館是Bonnie今天最想進去的一個館，無奈早上人太多，沒辦法看。辛苦了一天以後，人已少很多，我們進入排隊的時間，剛好是截止時間前10幾分鐘，後來的人都進不來了。排了一下隊，進入場館，果然是不一樣，是由各家日本廠商出資展示。不過大部分都不能拍照。有百面劇場，一面很多電視的牆，來代表日本多樣化的文化。再生紙館做成一個劇場，展示著日本脈動的”宴”。生命之星展演著新的醫療技術，醫療的進化，用3D眼鏡來展演3D的影片，身體的奧妙。人類和地球的珍寶、誕生的軌跡都很不錯。心的橋樑代表日本郵政為人民服務的概念。金門玉堂展示一面金門，不過不能拍，很亮晶晶的。青花流水、調美味、品人生，都打廣告打的不錯。外面有一些精品店，逛了一下。看完這個，也代表今天的世博D、E片區之旅結束了，浦西，再見。
+回去真是又餓又累，找了一下地鐵的便利商店，說實在，還真難找。找到有一家，不過因為地鐵打烊了。飯店旁邊的商場又都關光了(晚上11點多)，無計可施之餘，看到飯店對面有一家全家便利商店，還在開，我跟Bonnie兩人就好像難民一樣，欣喜若狂，大肆收購，一直在裡面傻笑，店員可能以為我們瘋了，想說在台灣，之前有拿到全家的禮券，還不太想用，送給了Bonnie用。不想用的原因是沒什麼活動又不能儲值，不過在這邊讓我對全家便利商店(不是打廣告喔)有不一樣的看法，謝謝你了，全家。另外一件事，就是把第一天去小南國吃剩的熱一熱，當做宵夜。不過飯店除了怕怕的要我填一個切結書，保證吃壞肚子不是他們的問題以外，連個筷子湯匙也不給我，實在是很不像5星級的飯店(叫我拿房裡的兩個喝咖啡湯匙來吃)，之前說到有一件不滿意的事就是這件事，還好Bonnie有留之前吃飯的叉子，要不然真的要用手扒了。
+吃飽以後，整理一下，洗個澡，就進入夢鄉了。因為今天實在太累，加上問飯店服務人員說，我們明天要早起看中國館云云，她覺得不用那麼早起，加上自己的惰心，原來是早上4:30起來，5:00出發的，定鬧鐘的時候，延後一個小時，覺得應該還好。不過我們當時不知道，我們會碰上隔天最恐怖的狀態，世博創記錄，也是最累也是最辛苦的一天，就要面對了。
 ]]></content>
       <tags>
         <tag>Travel</tag>
@@ -3132,6 +3204,43 @@ Dimple與我都覺得服務的熱誠與衣服的好看比較重要。其他兩�
       </tags>
   </entry>
   <entry>
+    <title>幸福活力100-政大貓空元旦健康知性之旅</title>
+    <url>/blog/2011/01/02/%E5%B9%B8%E7%A6%8F%E6%B4%BB%E5%8A%9B100-%E6%94%BF%E5%A4%A7%E8%B2%93%E7%A9%BA%E5%85%83%E6%97%A6%E5%81%A5%E5%BA%B7%E7%9F%A5%E6%80%A7%E4%B9%8B%E6%97%85/</url>
+    <content><![CDATA[先說好，這個漂亮的slogan是Dimple想出來的。
+元旦的前一天，度過一個不錯的跨年夜之後，新年的第一天，就開始精實的、健康的度過。
+希望未來的一年都能健健康康，幸福的過下去。
+我跟Dimple選擇回她的母校，政治大學爬山與認識貓空。
+
+
+主要的路程就是，政治大學-&gt;樟山寺步道-&gt;貓纜貓空站-&gt;茶推中心-&gt;茶推中心步道-&gt;壺穴-&gt;貓纜貓空站坐貓纜-&gt;貓纜動物園站-&gt;政治大學。
+花了一天的時間，走了10公里多，不會很累(可能是Dimple上山前的熱身運動有差別)，天氣雖冷，但是有人一起走，其實心裡就很暖和了。
+我是第一次到政大。
+政大覺得不是想像中的小，覺得還蠻大的，聽Dimple說到很多關於政大的歷史、特色，還蠻有趣的。不過吸引我的，是漂亮的景色。
+我們化成大四的學長(轉校來這邊)與大二的學妹，時空錯亂下，回到過去。
+風雲(雨)走廊，學生在颳風下雨的時候走的路，旁邊有一些壁報，很有感覺。學妹說上山的路有兩條，一條是很快就能上山的路(行健道)，另一個可以繞整個校園，但是比較遠的路。不過對我來說，我的個性一定會選可以整個看過的路，一定看到底的(笑)。這邊要說到一個趣事，這時候學妹跟她哥哥借的腳架壞掉了，花了好一番功夫以後才修好，這一次爬山還學到腳架的構造，真是謝謝她哥哥了。
+環山一道，要去上語文課，學妹的偶像林依晨讀的外語學院都在這邊，她說她都沒有蹺課，真的是很好學的藝人阿。楓葉很漂亮，特別紀念一下。
+在走上去可以看到一個關起來的小七，不過有優美的音樂，與漂亮的平台吸引我們過去。學妹說以沒有這個店家的。那邊的景色真的很漂亮。可以清楚看到101，想起昨天午夜在101大樓的震撼與激情。新光大樓也很清楚。下面是籃球場與一些運動場地，學妹說他投籃很準，以前還有打過籃球比賽，因為他常常跟他哥哥挑籃球，可以想見當時的感覺了。旁邊一些學生輕快的唱著悠揚的詩歌，很好聽，也跟學妹講到信教的一些事情，一路走的非常輕快。
+環山二道上工程很多，沒什麼人走，路上很多蜿蜒的地方，有很多的後照鏡，我跟學妹玩得不亦樂乎，忘了彎來彎去的討厭感。其中一張照片我覺得很不錯，取名為慢，投到阿默的GR Digital 浪漫隨手拍了(可以的話幫我按個贊吧)。
+接下來就到樟山寺步道口了。在那邊稍微休息一下，拉了一下筋(感謝學妹)，就上去了。上去的路也沒什麼人，景色不錯，一些狗兒跑來跑去，十分愜意。階梯很平緩，沒什麼很陡的地方(不像上次爬陽明山那樣)，風很大。爬到底就是樟山寺了。
+爬上樟山寺，這邊的景色依然優美，今天的天氣很乾淨，可以看到很遠的地方。其實政大的爬山之旅已經結束了，不過身為政大人與貓空通的學妹建議我去貓空的起源看看。貓空雖來沒來很多次，不過每次來都是只有坐纜車，上來喝喝茶而已，貓空的由來還真的不太清楚。好奇心旺盛的我，當然是很想去一看究竟啦。休息一下以後，繼續往貓空的起源，壺穴看一看。首先從樟山寺步道開始出發，先到貓纜貓空站吃點東西。這一段的路很長，中間經過分歧道路，通往杏花村，現在好像還沒開的樣子，真想以後去看看。
+一路上都是平緩的柏油車行路，旁邊映入眼簾的就是茶園山谷，附近有許多主題餐廳，下午茶、茶藝、茶壺的一大堆。其中還有台北市政府整修的一些古農舍、木炭爐、揉茶機等，很有趣。走著玩著到了貓纜貓空站，我們在這邊吃了好吃的臭豆腐，還發生了一段小插曲。旁邊有個賣粿的阿嬤，有賣不錯的粿。剛好學妹想吃甜的，但是這個甜的需求，實在是很難說清楚。我：ㄟ，有沒有甜的。阿嬤：阿，有阿，我們有甜的。我：哪個是甜的。阿嬤：阿，妳要買什麼?我：ㄟ，我要買包甜的(looping)。阿嬤：阿，妳要買包甜的喔?我：….阿嬤：阿，妳要買包甜的喔?(looping)
+我：….
+阿嬤：ㄟ，今天的沒有甜的。
+我：….(裝笑為)
+這個是這一段的笑點。拿了邊走邊吃，就到了茶推中心。
+茶推中心每一次來這邊都沒開，今天去有開，趁快要閉館之前進去看了一下，不過有些失望。出來以後就往茶推中心步道走下去，到達壺穴。
+下去一段路程以後，學妹擔心是不是能到達壺穴，雖然有聽到河水聲(因為在河床邊)，還是問了一下上來的路人。路人有些喘的說，快到了。果然柳暗花明後，真的是有一村。壺穴為什麼是貓空的由來呢?旁邊有個解說牌說明了一切。
+「貓空」的名稱來自當地河流沖刷岩礁所形成的「壺穴」地形，閩南語稱為「皺孔」（ji&acirc;u-khang；凹凸不平的孔洞）。日治時期又以讀音相近的「貓空」代替，至此貓空名稱誕生。
+離開這邊，再次往貓纜貓空站，這時候天色已晚，排隊的人很多，蠻冷的。在纜車上實在是很舒服，夜景也很美。不過前面的人一直在講公事，實在是煞風景。
+到達動物園站，我們又一路走回政大，完成今天繞行一圈的壯舉。這裡最後的小插曲是，我們買了燒仙草進校園裡去吃，旁邊有一隻胖貓咪一直在Dimple的腿上不走，想說貓空跟貓沒關係，但是這時候的關係就很密切了。雖然Dimple說這個貓可能只是想取暖，不過說的也沒錯，最後用一些方法讓他離開的時候，那隻貓連看我們都不看一眼，我們也帶著這樣的心情與貓說再見，也跟貓空說再見了。
+希望今年都能夠像今天一樣健康精實的過著。
+&nbsp;
+]]></content>
+      <tags>
+        <tag>Travel</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>婚紗處理紀實(下)</title>
     <url>/blog/2011/08/20/%E5%A9%9A%E7%B4%97%E8%99%95%E7%90%86%E7%B4%80%E5%AF%A6-%E4%B8%8B/</url>
     <content><![CDATA[今天是特別的空閒日子，就把婚紗的事情寫完吧。
@@ -3183,43 +3292,6 @@ Dimple與我都覺得服務的熱誠與衣服的好看比較重要。其他兩�
 ]]></content>
       <tags>
         <tag>Marriage</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>幸福活力100-政大貓空元旦健康知性之旅</title>
-    <url>/blog/2011/01/02/%E5%B9%B8%E7%A6%8F%E6%B4%BB%E5%8A%9B100-%E6%94%BF%E5%A4%A7%E8%B2%93%E7%A9%BA%E5%85%83%E6%97%A6%E5%81%A5%E5%BA%B7%E7%9F%A5%E6%80%A7%E4%B9%8B%E6%97%85/</url>
-    <content><![CDATA[先說好，這個漂亮的slogan是Dimple想出來的。
-元旦的前一天，度過一個不錯的跨年夜之後，新年的第一天，就開始精實的、健康的度過。
-希望未來的一年都能健健康康，幸福的過下去。
-我跟Dimple選擇回她的母校，政治大學爬山與認識貓空。
-
-
-主要的路程就是，政治大學-&gt;樟山寺步道-&gt;貓纜貓空站-&gt;茶推中心-&gt;茶推中心步道-&gt;壺穴-&gt;貓纜貓空站坐貓纜-&gt;貓纜動物園站-&gt;政治大學。
-花了一天的時間，走了10公里多，不會很累(可能是Dimple上山前的熱身運動有差別)，天氣雖冷，但是有人一起走，其實心裡就很暖和了。
-我是第一次到政大。
-政大覺得不是想像中的小，覺得還蠻大的，聽Dimple說到很多關於政大的歷史、特色，還蠻有趣的。不過吸引我的，是漂亮的景色。
-我們化成大四的學長(轉校來這邊)與大二的學妹，時空錯亂下，回到過去。
-風雲(雨)走廊，學生在颳風下雨的時候走的路，旁邊有一些壁報，很有感覺。學妹說上山的路有兩條，一條是很快就能上山的路(行健道)，另一個可以繞整個校園，但是比較遠的路。不過對我來說，我的個性一定會選可以整個看過的路，一定看到底的(笑)。這邊要說到一個趣事，這時候學妹跟她哥哥借的腳架壞掉了，花了好一番功夫以後才修好，這一次爬山還學到腳架的構造，真是謝謝她哥哥了。
-環山一道，要去上語文課，學妹的偶像林依晨讀的外語學院都在這邊，她說她都沒有蹺課，真的是很好學的藝人阿。楓葉很漂亮，特別紀念一下。
-在走上去可以看到一個關起來的小七，不過有優美的音樂，與漂亮的平台吸引我們過去。學妹說以沒有這個店家的。那邊的景色真的很漂亮。可以清楚看到101，想起昨天午夜在101大樓的震撼與激情。新光大樓也很清楚。下面是籃球場與一些運動場地，學妹說他投籃很準，以前還有打過籃球比賽，因為他常常跟他哥哥挑籃球，可以想見當時的感覺了。旁邊一些學生輕快的唱著悠揚的詩歌，很好聽，也跟學妹講到信教的一些事情，一路走的非常輕快。
-環山二道上工程很多，沒什麼人走，路上很多蜿蜒的地方，有很多的後照鏡，我跟學妹玩得不亦樂乎，忘了彎來彎去的討厭感。其中一張照片我覺得很不錯，取名為慢，投到阿默的GR Digital 浪漫隨手拍了(可以的話幫我按個贊吧)。
-接下來就到樟山寺步道口了。在那邊稍微休息一下，拉了一下筋(感謝學妹)，就上去了。上去的路也沒什麼人，景色不錯，一些狗兒跑來跑去，十分愜意。階梯很平緩，沒什麼很陡的地方(不像上次爬陽明山那樣)，風很大。爬到底就是樟山寺了。
-爬上樟山寺，這邊的景色依然優美，今天的天氣很乾淨，可以看到很遠的地方。其實政大的爬山之旅已經結束了，不過身為政大人與貓空通的學妹建議我去貓空的起源看看。貓空雖來沒來很多次，不過每次來都是只有坐纜車，上來喝喝茶而已，貓空的由來還真的不太清楚。好奇心旺盛的我，當然是很想去一看究竟啦。休息一下以後，繼續往貓空的起源，壺穴看一看。首先從樟山寺步道開始出發，先到貓纜貓空站吃點東西。這一段的路很長，中間經過分歧道路，通往杏花村，現在好像還沒開的樣子，真想以後去看看。
-一路上都是平緩的柏油車行路，旁邊映入眼簾的就是茶園山谷，附近有許多主題餐廳，下午茶、茶藝、茶壺的一大堆。其中還有台北市政府整修的一些古農舍、木炭爐、揉茶機等，很有趣。走著玩著到了貓纜貓空站，我們在這邊吃了好吃的臭豆腐，還發生了一段小插曲。旁邊有個賣粿的阿嬤，有賣不錯的粿。剛好學妹想吃甜的，但是這個甜的需求，實在是很難說清楚。我：ㄟ，有沒有甜的。阿嬤：阿，有阿，我們有甜的。我：哪個是甜的。阿嬤：阿，妳要買什麼?我：ㄟ，我要買包甜的(looping)。阿嬤：阿，妳要買包甜的喔?我：….阿嬤：阿，妳要買包甜的喔?(looping)
-我：….
-阿嬤：ㄟ，今天的沒有甜的。
-我：….(裝笑為)
-這個是這一段的笑點。拿了邊走邊吃，就到了茶推中心。
-茶推中心每一次來這邊都沒開，今天去有開，趁快要閉館之前進去看了一下，不過有些失望。出來以後就往茶推中心步道走下去，到達壺穴。
-下去一段路程以後，學妹擔心是不是能到達壺穴，雖然有聽到河水聲(因為在河床邊)，還是問了一下上來的路人。路人有些喘的說，快到了。果然柳暗花明後，真的是有一村。壺穴為什麼是貓空的由來呢?旁邊有個解說牌說明了一切。
-「貓空」的名稱來自當地河流沖刷岩礁所形成的「壺穴」地形，閩南語稱為「皺孔」（ji&acirc;u-khang；凹凸不平的孔洞）。日治時期又以讀音相近的「貓空」代替，至此貓空名稱誕生。
-離開這邊，再次往貓纜貓空站，這時候天色已晚，排隊的人很多，蠻冷的。在纜車上實在是很舒服，夜景也很美。不過前面的人一直在講公事，實在是煞風景。
-到達動物園站，我們又一路走回政大，完成今天繞行一圈的壯舉。這裡最後的小插曲是，我們買了燒仙草進校園裡去吃，旁邊有一隻胖貓咪一直在Dimple的腿上不走，想說貓空跟貓沒關係，但是這時候的關係就很密切了。雖然Dimple說這個貓可能只是想取暖，不過說的也沒錯，最後用一些方法讓他離開的時候，那隻貓連看我們都不看一眼，我們也帶著這樣的心情與貓說再見，也跟貓空說再見了。
-希望今年都能夠像今天一樣健康精實的過著。
-&nbsp;
-]]></content>
-      <tags>
-        <tag>Travel</tag>
       </tags>
   </entry>
   <entry>
@@ -3318,84 +3390,6 @@ select case variable_value when &#x27;ON&#x27; then &#x27;O&#x27; else &#x27;&#x
 $Html = $Html + &quot;&lt;h2&gt;Slave Status&lt;/h2&gt;&quot;&amp; $mysqlexe -u $rptuser --password=$rptpass -h $ServerIP -sN -e &quot;source .\ShowSlaveStatus.sql&quot; &gt; out.htmlif ((Get-Item .\out.html).length -gt 0)&#123;$Html = $Html + &quot;&lt;table&gt;&lt;tr&gt;&lt;th&gt;Master Host&lt;/th&gt;&lt;th&gt;Master Log File&lt;/th&gt;&lt;th&gt;Relay Master Log File&lt;/th&gt;&lt;th&gt;Slave IO State&lt;/th&gt;&lt;th&gt;Last Errno&lt;/th&gt;&lt;th&gt;Last Error&lt;/th&gt;&lt;th&gt;Last IO Errno&lt;/th&gt;&lt;th&gt;Last IO Error&lt;/th&gt;&lt;th&gt;Last SQL Errno&lt;/th&gt;&lt;th&gt;Last SQL Error&lt;/th&gt;&lt;/tr&gt;&quot;$stat = [string[]](Get-Content .\out.html)$Html = $Html + &quot;&lt;tr&gt;&lt;td&gt;&quot; + $stat[2] + &quot;&lt;/td&gt;&lt;td&gt;&quot; + $stat[6] + &quot;&lt;/td&gt;&lt;td&gt;&quot; + $stat[10] + &quot;&lt;/td&gt;&lt;td&gt;&quot; + $stat[1] + &quot;&lt;/td&gt;&lt;td&gt;&quot;if ($stat[19] -eq &quot;0&quot;) &#123;$Html = $Html + $stat[19] + &quot;&lt;/td&gt;&lt;td&gt;&quot; + $stat[20] + &quot;&lt;/td&gt;&lt;td&gt;&quot;&#125;else &#123;$Html = $Html + &quot;&lt;div class=&quot;&quot;Critical&quot;&quot;&gt;&quot; + $stat[19] + &quot;&lt;/div&gt;&lt;/td&gt;&lt;td&gt;&lt;div class=&quot;&quot;Critical&quot;&quot;&gt;&quot; + $stat[20] + &quot;&lt;/div&gt;&lt;/td&gt;&lt;td&gt;&quot;&#125;if ($stat[35] -eq &quot;0&quot;) &#123;$Html = $Html + $stat[35] + &quot;&lt;/td&gt;&lt;td&gt;&quot; + $stat[36] + &quot;&lt;/td&gt;&lt;td&gt;&quot;&#125;else &#123;$Html = $Html + &quot;&lt;div class=&quot;&quot;Critical&quot;&quot;&gt;&quot; + $stat[35] + &quot;&lt;/div&gt;&lt;/td&gt;&lt;td&gt;&lt;div class=&quot;&quot;Critical&quot;&quot;&gt;&quot; + $stat[36] + &quot;&lt;/div&gt;&lt;/td&gt;&lt;td&gt;&quot;&#125;if ($stat[37] -eq &quot;0&quot;) &#123;$Html = $Html + $stat[37] + &quot;&lt;/td&gt;&lt;td&gt;&quot; + $stat[38] + &quot;&lt;/div&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&quot;&#125;else &#123;$Html = $Html + &quot;&lt;div class=&quot;&quot;Critical&quot;&quot;&gt;&quot; + $stat[37] + &quot;&lt;/div&gt;&lt;/td&gt;&lt;td&gt;&lt;div class=&quot;&quot;Critical&quot;&quot;&gt;&quot; + $stat[38] + &quot;&lt;/div&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&quot;&#125;&#125;else &#123;$Html = $Html + &quot;&lt;span class=&quot;&quot;Critical&quot;&quot;&gt;No Slave Status&lt;/span&gt;&lt;br/&gt;&quot;&#125;
 
 基本上就是分開數位子，就完成了。
-]]></content>
-      <tags>
-        <tag>MariaDB</tag>
-        <tag>MSSQL</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>從 SQL Server 到 MariaDB - [1] 備份與還原</title>
-    <url>/blog/2016/08/08/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20%5B1%5D%20%E5%82%99%E4%BB%BD%E8%88%87%E9%82%84%E5%8E%9F/</url>
-    <content><![CDATA[需求說明從 SQL Server 要轉到 MariaDB 第一件碰到管理上的轉變，就是備份與還原。
-在 SQL Server 管理備份這回事，有幾個方式達成最少資料遺失的方式：
-
-Full Backups 完整備份
-Differencial Backups 差異備份
-Transation Data Backups 交易紀錄備份
-
-基本上這三個配合運用可達到幾乎 0 資料遺失的結果，這個在網路上應該有一大堆的說明，沒什麼太大的問題。
-但是到了 MariaDB 這邊該如何處理呢?
-在 MariaDB 這邊提供與 MySQL 一樣的方式，mysqldump，當然還有其他的方式，但是最熟悉的仍然是簡單的 mysqldump。
-然後…就這樣。
-就這樣?
-是的，基本上 MariaDB 的備份還原只有 mysqldump 那樣的 Full Backups，沒有差異備份那些方式。
-那要怎麼完成最少資料遺失呢? 總不能一直 Full Backup 吧?
-Binary LogMariaDB 提供一種與 MySQL 一樣的方式，稱之為 Binary Log (binlog)。
-這個 binlog 是什麼呢?
-簡單來說，就是紀錄著資料庫變動的紀錄，以 binary 方式儲存，有點像 Oracle DB 的 redo log，當有需要叫回備份時，首先要還原最近一次的 Full Backup，然後接著依序恢復該時間之後的 binlogs，這樣就能達到幾乎 0 資料遺失的還原。
-
-
-如果是上圖的樣子，要還原的時候就是：
-
-Full Backup
-binlog_n (從 time_A 開始)
-binlog_n+1
-binlog_n+2
-binlog_n+3 (到 time_B 結束)
-
-接下來就是來做個實驗。
-實驗a. 首先開啟 binlog 功能，在 my.ini 裡可以設定，重開 mariadb 就可以開始了。
-log_bin
-這個是沒加參數的，預設會放在 %mariadb_root%\data\，詳細可以加路徑。
-開完裡頭應該會出現 XXX-bin.00001 字樣的檔案， XXX 是 Hostname。
-b. 準備一個 database test1，裡頭一個資料表 test1 ，欄位 aaaa 為 int 。
-先做一次 full backup。
-E:\backup&gt;mysqldump -u sujunmin -p test1 &gt; test1.sqlEnter password: ************E:\backup&gt;
-
-c. 新增一筆資料 1234。
-d. trucnate test1.test1;
-e. 來看看 binlog 裡頭有什麼東西。
-E:\backup&gt;mysqlbinlog &quot;e:\MariaDB 10.1\data\WSTest-bin.000001&quot; -v &gt; test.sqlE:\backup&gt;
-
-f. test.sql 內容
-/*!50530 SET @@SESSION.PSEUDO_SLAVE_MODE=1*/;/*!40019 SET @@session.max_insert_delayed_threads=0*/;/*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;DELIMITER /*!*/;# at 4#160808 14:25:16 server id 1  end_log_pos 249 	Start: binlog v 4, server v 10.1.14-MariaDB created 160808 14:25:16 at startup# Warning: this binlog is either in use or was not closed properly.ROLLBACK/*!*/;BINLOG &#x27;zCWoVw8BAAAA9QAAAPkAAAABAAQAMTAuMS4xNC1NYXJpYURCAGxvZwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADMJahXEzgNAAgAEgAEBAQEEgAA3QAEGggAAAAICAgCAAAACgoKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEEwQAAK+oLro=&#x27;/*!*/;# at 249#160808 14:25:16 server id 1  end_log_pos 274 	Gtid list []# at 274#160808 14:25:16 server id 1  end_log_pos 314 	Binlog checkpoint WSTest-bin.000001# at 314#160808 14:28:32 server id 1  end_log_pos 352 	GTID 0-1-1 trans/*!100101 SET @@session.skip_parallel_replication=0*//*!*/;/*!100001 SET @@session.gtid_domain_id=0*//*!*/;/*!100001 SET @@session.server_id=1*//*!*/;/*!100001 SET @@session.gtid_seq_no=1*//*!*/;BEGIN/*!*/;# at 352#160808 14:28:32 server id 1  end_log_pos 466 	Query	thread_id=3	exec_time=0	error_code=0use `test1`/*!*/;SET TIMESTAMP=1470637712/*!*/;SET @@session.pseudo_thread_id=3/*!*/;SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=0, @@session.unique_checks=1, @@session.autocommit=1/*!*/;SET @@session.sql_mode=1075838976/*!*/;SET @@session.auto_increment_increment=1, @@session.auto_increment_offset=1/*!*/;/*!\C utf8mb4 *//*!*/;SET @@session.character_set_client=45,@@session.collation_connection=45,@@session.collation_server=33/*!*/;SET @@session.lc_time_names=0/*!*/;SET @@session.collation_database=DEFAULT/*!*/;INSERT INTO `test1`.`test1` (`aaaa`) VALUES (1234)/*!*/;# at 466#160808 14:28:32 server id 1  end_log_pos 493 	Xid = 55COMMIT/*!*/;# at 493#160808 14:31:19 server id 1  end_log_pos 531 	GTID 0-1-2 ddl/*!100001 SET @@session.gtid_seq_no=2*//*!*/;# at 531#160808 14:31:19 server id 1  end_log_pos 611 	Query	thread_id=3	exec_time=14	error_code=0SET TIMESTAMP=1470637879/*!*/;TRUNCATE `test1`/*!*/;DELIMITER ;# End of log fileROLLBACK /* added by mysqlbinlog */;/*!50003 SET COMPLETION_TYPE=@OLD_COMPLETION_TYPE*/;/*!50530 SET @@SESSION.PSEUDO_SLAVE_MODE=0*/;
-
-其中我們可以看到重要的兩筆資料，它們在整個時間序列的狀態為何。
-INSERT INTO `test1`.`test1` (`aaaa`) VALUES (1234)/*!*/;# at 466#160808 14:28:32 server id 1  end_log_pos 493 	Xid = 55COMMIT/*!*/;# at 493#160808 14:31:19 server id 1  end_log_pos 531 	GTID 0-1-2 ddl/*!100001 SET @@session.gtid_seq_no=2*//*!*/;# at 531#160808 14:31:19 server id 1  end_log_pos 611 	Query	thread_id=3	exec_time=14	error_code=0SET TIMESTAMP=1470637879/*!*/;TRUNCATE `test1`/*!*/;
-
-g. 所以如果我們要恢復到 truncate table 之前的話，首先就是 restore full backup。
-E:\backup&gt;mysql -u sujunmin -p test1 &lt; test1.sqlEnter password: ************E:\backup
-
-h. 接著還原 binlog 到 14:31:19 之前(因為接下來就要 truncate table 了)。
-E:\backup&gt;mysqlbinlog &quot;e:\MariaDB 10.1\data\WSTest-bin.000001&quot; --stop-datetime=&quot;2016/08/08 14:31:00&quot; | mysql -u sujunmin -p test1Enter password: ************E:\backup&gt;
-
-i. 看一下 test1.test1，資料應該又回來了。
-運用規劃因為這個 binlog 會在系統的狀態改變(重新啟動，記憶體資料寫入 disk…)時產生，加上沒有其他的備份機制(類似像 Oracle DB 的 Archive 模式)，其實當有事情時會不能知道能夠還原到哪。
-所以要透過強制 rotate 與備份資料來幫忙，以下是規劃的方式。
-
-當定時的時間一到，呼叫 mysqlbinlogrotate 切斷 log。
-之前的 log 複製到安全的地方處理。
-每次 Full Backup 完 PURGE LOG。
-
-更新2016&#x2F;08&#x2F;12感謝Sam Wong提供資訊
-
-sync_binlog &#x3D; 1 (&lt;5.7.7 默認竟是 0，不是最保守的設定)
-
-
-innodb_flush_log_at_trx_commit &#x3D; 1 (默認就是 1)
-
-相關資料在此。　
 ]]></content>
       <tags>
         <tag>MariaDB</tag>
@@ -3554,6 +3548,84 @@ However, you cannot change the parameters or body of a stored procedure using th
 也造成服務兩次中斷 (忘了給回權限)
 
 
+]]></content>
+      <tags>
+        <tag>MariaDB</tag>
+        <tag>MSSQL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>從 SQL Server 到 MariaDB - [1] 備份與還原</title>
+    <url>/blog/2016/08/08/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20%5B1%5D%20%E5%82%99%E4%BB%BD%E8%88%87%E9%82%84%E5%8E%9F/</url>
+    <content><![CDATA[需求說明從 SQL Server 要轉到 MariaDB 第一件碰到管理上的轉變，就是備份與還原。
+在 SQL Server 管理備份這回事，有幾個方式達成最少資料遺失的方式：
+
+Full Backups 完整備份
+Differencial Backups 差異備份
+Transation Data Backups 交易紀錄備份
+
+基本上這三個配合運用可達到幾乎 0 資料遺失的結果，這個在網路上應該有一大堆的說明，沒什麼太大的問題。
+但是到了 MariaDB 這邊該如何處理呢?
+在 MariaDB 這邊提供與 MySQL 一樣的方式，mysqldump，當然還有其他的方式，但是最熟悉的仍然是簡單的 mysqldump。
+然後…就這樣。
+就這樣?
+是的，基本上 MariaDB 的備份還原只有 mysqldump 那樣的 Full Backups，沒有差異備份那些方式。
+那要怎麼完成最少資料遺失呢? 總不能一直 Full Backup 吧?
+Binary LogMariaDB 提供一種與 MySQL 一樣的方式，稱之為 Binary Log (binlog)。
+這個 binlog 是什麼呢?
+簡單來說，就是紀錄著資料庫變動的紀錄，以 binary 方式儲存，有點像 Oracle DB 的 redo log，當有需要叫回備份時，首先要還原最近一次的 Full Backup，然後接著依序恢復該時間之後的 binlogs，這樣就能達到幾乎 0 資料遺失的還原。
+
+
+如果是上圖的樣子，要還原的時候就是：
+
+Full Backup
+binlog_n (從 time_A 開始)
+binlog_n+1
+binlog_n+2
+binlog_n+3 (到 time_B 結束)
+
+接下來就是來做個實驗。
+實驗a. 首先開啟 binlog 功能，在 my.ini 裡可以設定，重開 mariadb 就可以開始了。
+log_bin
+這個是沒加參數的，預設會放在 %mariadb_root%\data\，詳細可以加路徑。
+開完裡頭應該會出現 XXX-bin.00001 字樣的檔案， XXX 是 Hostname。
+b. 準備一個 database test1，裡頭一個資料表 test1 ，欄位 aaaa 為 int 。
+先做一次 full backup。
+E:\backup&gt;mysqldump -u sujunmin -p test1 &gt; test1.sqlEnter password: ************E:\backup&gt;
+
+c. 新增一筆資料 1234。
+d. trucnate test1.test1;
+e. 來看看 binlog 裡頭有什麼東西。
+E:\backup&gt;mysqlbinlog &quot;e:\MariaDB 10.1\data\WSTest-bin.000001&quot; -v &gt; test.sqlE:\backup&gt;
+
+f. test.sql 內容
+/*!50530 SET @@SESSION.PSEUDO_SLAVE_MODE=1*/;/*!40019 SET @@session.max_insert_delayed_threads=0*/;/*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;DELIMITER /*!*/;# at 4#160808 14:25:16 server id 1  end_log_pos 249 	Start: binlog v 4, server v 10.1.14-MariaDB created 160808 14:25:16 at startup# Warning: this binlog is either in use or was not closed properly.ROLLBACK/*!*/;BINLOG &#x27;zCWoVw8BAAAA9QAAAPkAAAABAAQAMTAuMS4xNC1NYXJpYURCAGxvZwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADMJahXEzgNAAgAEgAEBAQEEgAA3QAEGggAAAAICAgCAAAACgoKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEEwQAAK+oLro=&#x27;/*!*/;# at 249#160808 14:25:16 server id 1  end_log_pos 274 	Gtid list []# at 274#160808 14:25:16 server id 1  end_log_pos 314 	Binlog checkpoint WSTest-bin.000001# at 314#160808 14:28:32 server id 1  end_log_pos 352 	GTID 0-1-1 trans/*!100101 SET @@session.skip_parallel_replication=0*//*!*/;/*!100001 SET @@session.gtid_domain_id=0*//*!*/;/*!100001 SET @@session.server_id=1*//*!*/;/*!100001 SET @@session.gtid_seq_no=1*//*!*/;BEGIN/*!*/;# at 352#160808 14:28:32 server id 1  end_log_pos 466 	Query	thread_id=3	exec_time=0	error_code=0use `test1`/*!*/;SET TIMESTAMP=1470637712/*!*/;SET @@session.pseudo_thread_id=3/*!*/;SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=0, @@session.unique_checks=1, @@session.autocommit=1/*!*/;SET @@session.sql_mode=1075838976/*!*/;SET @@session.auto_increment_increment=1, @@session.auto_increment_offset=1/*!*/;/*!\C utf8mb4 *//*!*/;SET @@session.character_set_client=45,@@session.collation_connection=45,@@session.collation_server=33/*!*/;SET @@session.lc_time_names=0/*!*/;SET @@session.collation_database=DEFAULT/*!*/;INSERT INTO `test1`.`test1` (`aaaa`) VALUES (1234)/*!*/;# at 466#160808 14:28:32 server id 1  end_log_pos 493 	Xid = 55COMMIT/*!*/;# at 493#160808 14:31:19 server id 1  end_log_pos 531 	GTID 0-1-2 ddl/*!100001 SET @@session.gtid_seq_no=2*//*!*/;# at 531#160808 14:31:19 server id 1  end_log_pos 611 	Query	thread_id=3	exec_time=14	error_code=0SET TIMESTAMP=1470637879/*!*/;TRUNCATE `test1`/*!*/;DELIMITER ;# End of log fileROLLBACK /* added by mysqlbinlog */;/*!50003 SET COMPLETION_TYPE=@OLD_COMPLETION_TYPE*/;/*!50530 SET @@SESSION.PSEUDO_SLAVE_MODE=0*/;
+
+其中我們可以看到重要的兩筆資料，它們在整個時間序列的狀態為何。
+INSERT INTO `test1`.`test1` (`aaaa`) VALUES (1234)/*!*/;# at 466#160808 14:28:32 server id 1  end_log_pos 493 	Xid = 55COMMIT/*!*/;# at 493#160808 14:31:19 server id 1  end_log_pos 531 	GTID 0-1-2 ddl/*!100001 SET @@session.gtid_seq_no=2*//*!*/;# at 531#160808 14:31:19 server id 1  end_log_pos 611 	Query	thread_id=3	exec_time=14	error_code=0SET TIMESTAMP=1470637879/*!*/;TRUNCATE `test1`/*!*/;
+
+g. 所以如果我們要恢復到 truncate table 之前的話，首先就是 restore full backup。
+E:\backup&gt;mysql -u sujunmin -p test1 &lt; test1.sqlEnter password: ************E:\backup
+
+h. 接著還原 binlog 到 14:31:19 之前(因為接下來就要 truncate table 了)。
+E:\backup&gt;mysqlbinlog &quot;e:\MariaDB 10.1\data\WSTest-bin.000001&quot; --stop-datetime=&quot;2016/08/08 14:31:00&quot; | mysql -u sujunmin -p test1Enter password: ************E:\backup&gt;
+
+i. 看一下 test1.test1，資料應該又回來了。
+運用規劃因為這個 binlog 會在系統的狀態改變(重新啟動，記憶體資料寫入 disk…)時產生，加上沒有其他的備份機制(類似像 Oracle DB 的 Archive 模式)，其實當有事情時會不能知道能夠還原到哪。
+所以要透過強制 rotate 與備份資料來幫忙，以下是規劃的方式。
+
+當定時的時間一到，呼叫 mysqlbinlogrotate 切斷 log。
+之前的 log 複製到安全的地方處理。
+每次 Full Backup 完 PURGE LOG。
+
+更新2016&#x2F;08&#x2F;12感謝Sam Wong提供資訊
+
+sync_binlog &#x3D; 1 (&lt;5.7.7 默認竟是 0，不是最保守的設定)
+
+
+innodb_flush_log_at_trx_commit &#x3D; 1 (默認就是 1)
+
+相關資料在此。　
 ]]></content>
       <tags>
         <tag>MariaDB</tag>
@@ -3970,96 +4042,6 @@ sql\sql_locale.cc 有怪字無法編譯
       </tags>
   </entry>
   <entry>
-    <title>從 SQL Server 到 MariaDB - [8] User-defined Functions 與擴增 Event 功能</title>
-    <url>/blog/2016/11/08/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20%5B8%5D%20User-defined%20Functions%20%E8%88%87%E6%93%B4%E5%A2%9E%20Event%20%E5%8A%9F%E8%83%BD/</url>
-    <content><![CDATA[需求說明雖然一些排程或是資訊可以透過系統排程來處理，但是原有的 SQL Server 管理方式幾乎都是透過 SQL Server Job 系統執行，加上 SQL Server 有許多可以在 Server 本體就能做完的方式，為了追求一樣的管理方式，導入 User-defined Functions (UDF) 來擴增 Server 功能。
-透過 MariaDB 裡的 Event System 進行備份基本上 Google 搜尋 MariaDB&#x2F;MySQL 備份，不外乎是利用 cron jobs 或是 Windows tasks 來進行備份，這樣進行備份一則與原來的 SQL Server 管理不一樣，另外一個也沒辦法知道備份的情況 (要登入主機看 Task 狀態)。
-如果能透過 MariaDB 來發動備份 (透過 Event) 感覺能夠與以前的管理方式一樣，Server 要的排程 Server 自己發動，而且也能收集相關資料進行監控。
-但是 MariaDB 沒有什麼介面可以來執行系統作業，這時候剛好找到 UDF，還有一大堆神人做好的 MySQLUDF Repository，裡頭剛好有我要的與系統處理有關的 UDF，正好可以拿來用。
-lib_mysqludf_sys 編譯、安裝、與使用編譯如果連到 lib_mysqludf_sys 的 github，發現到它的 Makefile 都是為 gcc 做的，Windows 用戶有點麻煩。
-網路上可以找到編譯好的 dll，但是覺得有點怕不知道裏面有什麼。
-還好找到一篇也是部份 MySQL UDF 的作者寫的 blog Creating MySQL UDFs with Microsoft Visual C++ Express，裡頭有一些方法可以參考。
-編譯的環境跟之前修改 audit log plugin 的環境一樣，需要注意的地方如下
-Configuring the Include pathPlatform SDK 的 Include Files 在 C:\Program Files (x86)\Windows Kits\8.1\Include 。
-MariaDB 的我是 &lt;MariaDB&gt;\include 與 &lt;MariaDB&gt;\include\mysql。
-這兩個資料夾的資料最好複製一份到其他地方，因為等會要改。
-Adding the HAVE_DLOPEN macro除了加這個以外，還要加兩個防止 strncpy 的安全問題一直錯的 macro。
-HAVE_DLOPEN;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE
-Configuring the library pathPlatform SDK 的 Lib Files 在 C:\Program Files (x86)\Windows Kits\8.1\Lib 。
-MariaDB 的是 &lt;MariaDB&gt;\lib 。
-其他編譯的時候會一直有 snprintf 重複定義的問題，為了減少麻煩，直接把 MariaDB 的 Include Files 裡有相關的定義先拿掉，待編譯完再改回來。
-安裝將產生出來的 dll 與 pdf 檔複製到 &lt;MariaDB&gt;\lib\plugin，透過 github 裡的 lib_mysqludf_sys.sql 安裝，記得 so 要改成 dll。
-DROP FUNCTION IF EXISTS lib_mysqludf_sys_info;DROP FUNCTION IF EXISTS sys_get;DROP FUNCTION IF EXISTS sys_set;DROP FUNCTION IF EXISTS sys_exec;DROP FUNCTION IF EXISTS sys_eval;CREATE FUNCTION lib_mysqludf_sys_info RETURNS string SONAME &#x27;lib_mysqludf_sys.dll&#x27;;CREATE FUNCTION sys_get RETURNS string SONAME &#x27;lib_mysqludf_sys.dll&#x27;;CREATE FUNCTION sys_set RETURNS int SONAME &#x27;lib_mysqludf_sys.dll&#x27;;CREATE FUNCTION sys_exec RETURNS int SONAME &#x27;lib_mysqludf_sys.dll&#x27;;CREATE FUNCTION sys_eval RETURNS string SONAME &#x27;lib_mysqludf_sys.dll&#x27;;
-
-使用可以看 lib_mysqludf_sys.html，基本上很簡單。
-
-
-
-Function Name
-Input
-Output
-
-
-
-lib_mysqludf_sys_info
-N&#x2F;A
-版本號碼
-
-
-sys_get
-系統變數名稱
-系統變數值
-
-
-sys_set
-系統變數名稱 要設定的系統變數值
-0 為成功，其他為失敗
-
-
-sys_exec
-需執行的指令
-該指令執行的 Process 傳回值
-
-
-sys_eval
-需執行的指令
-指令在 Standard Output 產生內容
-
-
-來跑一下試試看
-select sys_eval(&#x27;ipconfig&#x27;);
-
-
-
-竟然是亂碼，但是 cmd 的沒有問題
-
-
-顯然是 Windows 編碼問題，最後是這樣解決的。
-select convert(convert(sys_eval(&#x27;ipconfig&#x27;) using big5) using utf8);
-
-
-
-與 Event 實作備份首先透過之前做的 Event 紀錄系統來做處理，不過因為 sys_eval 與 sys_exec 有珍貴的 Log 資料，所以不能只是紀錄單純的 OK 就好，加上兼容一般 SQL 的排程，所以修改了一下 Event 紀錄系統。
-備份排程做一個備份排程如下
-CREATE DEFINER=`sujunmin`@`%` EVENT `backups`	ON SCHEDULE		EVERY 1 MINUTE STARTS &#x27;2016-11-07 13:42:26&#x27;	ON COMPLETION NOT PRESERVE	ENABLE	COMMENT &#x27;&#x27;	DO BEGIN    call master.proc_for_event_history(&#x27;master&#x27;, &#x27;backups&#x27;, &#x27;select sys_eval(\&#x27;&quot;E://MariaDB 10.1//bin//mysqldump.exe&quot; -u sujunmin -pabcdef@12345 --master-data --verbose --all-databases --events --routines --gtid 2&gt;&amp;1 &gt; E://backup//all_db.sql\&#x27;) into @outv;&#x27;);END
-
-要注意的是中間那個 2&gt;&amp;1，因為 mysqldump 是拿 Standard Error 來 Output 訊息，但是 sys_eval 只會送回 Standard Outupt 內容。
-執行完以後看看結果。
-
-
-資安問題網路上有很多使用 MySQL UDF 透過這些 UDF 來存取系統的資安問題，所以要確保以下的防護是否有達成。
-
-Web 連資料庫不能是 root 等級的帳號，權限愈小愈好。
-AppArmor 或是 UAC 的設定。
-
-其他紀錄2016&#x2F;11&#x2F;08安裝的時候如果碰到不能載入，除了之前那篇寫的內容之外，有可能是 Visual C++ Redistributable 套件需要安裝，我是在 Visual Studio 2015 編譯的，找 Visual C++ Redistributable for Visual Studio 2015 安裝就可以了。
-]]></content>
-      <tags>
-        <tag>MariaDB</tag>
-        <tag>MSSQL</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>從 SQL Server 到 MariaDB - [7] Linked Server 與 FederatedX Storage Engine</title>
     <url>/blog/2016/10/05/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20%5B7%5D%20Linked%20Server%20%E8%88%87%20FederatedX%20Storage%20Engine/</url>
     <content><![CDATA[需求說明資料庫有跨地區傳送資料的需求，在 SQL Server 用到 Linked Server 來傳送資料，希望在 MariaDB 也有類似的 Solution 可以使用。
@@ -4211,6 +4193,96 @@ OK
 調整資料庫 *timeout, allowed packets 也沒用。
 有天找到這個，發現到有人透過 flush table 方式來避免這個錯誤，來試試看以後，竟然就不會有錯了，解了多年來的問題。
 後來發個 issue，被 merge 到其他 issue 上，雖然覺得不是一樣的問題。
+]]></content>
+      <tags>
+        <tag>MariaDB</tag>
+        <tag>MSSQL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>從 SQL Server 到 MariaDB - [8] User-defined Functions 與擴增 Event 功能</title>
+    <url>/blog/2016/11/08/%E5%BE%9E%20SQL%20Server%20%E5%88%B0%20MariaDB%20-%20%5B8%5D%20User-defined%20Functions%20%E8%88%87%E6%93%B4%E5%A2%9E%20Event%20%E5%8A%9F%E8%83%BD/</url>
+    <content><![CDATA[需求說明雖然一些排程或是資訊可以透過系統排程來處理，但是原有的 SQL Server 管理方式幾乎都是透過 SQL Server Job 系統執行，加上 SQL Server 有許多可以在 Server 本體就能做完的方式，為了追求一樣的管理方式，導入 User-defined Functions (UDF) 來擴增 Server 功能。
+透過 MariaDB 裡的 Event System 進行備份基本上 Google 搜尋 MariaDB&#x2F;MySQL 備份，不外乎是利用 cron jobs 或是 Windows tasks 來進行備份，這樣進行備份一則與原來的 SQL Server 管理不一樣，另外一個也沒辦法知道備份的情況 (要登入主機看 Task 狀態)。
+如果能透過 MariaDB 來發動備份 (透過 Event) 感覺能夠與以前的管理方式一樣，Server 要的排程 Server 自己發動，而且也能收集相關資料進行監控。
+但是 MariaDB 沒有什麼介面可以來執行系統作業，這時候剛好找到 UDF，還有一大堆神人做好的 MySQLUDF Repository，裡頭剛好有我要的與系統處理有關的 UDF，正好可以拿來用。
+lib_mysqludf_sys 編譯、安裝、與使用編譯如果連到 lib_mysqludf_sys 的 github，發現到它的 Makefile 都是為 gcc 做的，Windows 用戶有點麻煩。
+網路上可以找到編譯好的 dll，但是覺得有點怕不知道裏面有什麼。
+還好找到一篇也是部份 MySQL UDF 的作者寫的 blog Creating MySQL UDFs with Microsoft Visual C++ Express，裡頭有一些方法可以參考。
+編譯的環境跟之前修改 audit log plugin 的環境一樣，需要注意的地方如下
+Configuring the Include pathPlatform SDK 的 Include Files 在 C:\Program Files (x86)\Windows Kits\8.1\Include 。
+MariaDB 的我是 &lt;MariaDB&gt;\include 與 &lt;MariaDB&gt;\include\mysql。
+這兩個資料夾的資料最好複製一份到其他地方，因為等會要改。
+Adding the HAVE_DLOPEN macro除了加這個以外，還要加兩個防止 strncpy 的安全問題一直錯的 macro。
+HAVE_DLOPEN;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE
+Configuring the library pathPlatform SDK 的 Lib Files 在 C:\Program Files (x86)\Windows Kits\8.1\Lib 。
+MariaDB 的是 &lt;MariaDB&gt;\lib 。
+其他編譯的時候會一直有 snprintf 重複定義的問題，為了減少麻煩，直接把 MariaDB 的 Include Files 裡有相關的定義先拿掉，待編譯完再改回來。
+安裝將產生出來的 dll 與 pdf 檔複製到 &lt;MariaDB&gt;\lib\plugin，透過 github 裡的 lib_mysqludf_sys.sql 安裝，記得 so 要改成 dll。
+DROP FUNCTION IF EXISTS lib_mysqludf_sys_info;DROP FUNCTION IF EXISTS sys_get;DROP FUNCTION IF EXISTS sys_set;DROP FUNCTION IF EXISTS sys_exec;DROP FUNCTION IF EXISTS sys_eval;CREATE FUNCTION lib_mysqludf_sys_info RETURNS string SONAME &#x27;lib_mysqludf_sys.dll&#x27;;CREATE FUNCTION sys_get RETURNS string SONAME &#x27;lib_mysqludf_sys.dll&#x27;;CREATE FUNCTION sys_set RETURNS int SONAME &#x27;lib_mysqludf_sys.dll&#x27;;CREATE FUNCTION sys_exec RETURNS int SONAME &#x27;lib_mysqludf_sys.dll&#x27;;CREATE FUNCTION sys_eval RETURNS string SONAME &#x27;lib_mysqludf_sys.dll&#x27;;
+
+使用可以看 lib_mysqludf_sys.html，基本上很簡單。
+
+
+
+Function Name
+Input
+Output
+
+
+
+lib_mysqludf_sys_info
+N&#x2F;A
+版本號碼
+
+
+sys_get
+系統變數名稱
+系統變數值
+
+
+sys_set
+系統變數名稱 要設定的系統變數值
+0 為成功，其他為失敗
+
+
+sys_exec
+需執行的指令
+該指令執行的 Process 傳回值
+
+
+sys_eval
+需執行的指令
+指令在 Standard Output 產生內容
+
+
+來跑一下試試看
+select sys_eval(&#x27;ipconfig&#x27;);
+
+
+
+竟然是亂碼，但是 cmd 的沒有問題
+
+
+顯然是 Windows 編碼問題，最後是這樣解決的。
+select convert(convert(sys_eval(&#x27;ipconfig&#x27;) using big5) using utf8);
+
+
+
+與 Event 實作備份首先透過之前做的 Event 紀錄系統來做處理，不過因為 sys_eval 與 sys_exec 有珍貴的 Log 資料，所以不能只是紀錄單純的 OK 就好，加上兼容一般 SQL 的排程，所以修改了一下 Event 紀錄系統。
+備份排程做一個備份排程如下
+CREATE DEFINER=`sujunmin`@`%` EVENT `backups`	ON SCHEDULE		EVERY 1 MINUTE STARTS &#x27;2016-11-07 13:42:26&#x27;	ON COMPLETION NOT PRESERVE	ENABLE	COMMENT &#x27;&#x27;	DO BEGIN    call master.proc_for_event_history(&#x27;master&#x27;, &#x27;backups&#x27;, &#x27;select sys_eval(\&#x27;&quot;E://MariaDB 10.1//bin//mysqldump.exe&quot; -u sujunmin -pabcdef@12345 --master-data --verbose --all-databases --events --routines --gtid 2&gt;&amp;1 &gt; E://backup//all_db.sql\&#x27;) into @outv;&#x27;);END
+
+要注意的是中間那個 2&gt;&amp;1，因為 mysqldump 是拿 Standard Error 來 Output 訊息，但是 sys_eval 只會送回 Standard Outupt 內容。
+執行完以後看看結果。
+
+
+資安問題網路上有很多使用 MySQL UDF 透過這些 UDF 來存取系統的資安問題，所以要確保以下的防護是否有達成。
+
+Web 連資料庫不能是 root 等級的帳號，權限愈小愈好。
+AppArmor 或是 UAC 的設定。
+
+其他紀錄2016&#x2F;11&#x2F;08安裝的時候如果碰到不能載入，除了之前那篇寫的內容之外，有可能是 Visual C++ Redistributable 套件需要安裝，我是在 Visual Studio 2015 編譯的，找 Visual C++ Redistributable for Visual Studio 2015 安裝就可以了。
 ]]></content>
       <tags>
         <tag>MariaDB</tag>
@@ -4389,6 +4461,18 @@ Dimple怎麼看這一件事情呢?在我的逼迫(?)之下，感情豐富但很�
       </tags>
   </entry>
   <entry>
+    <title>我的最突出的五種 Clifton StrengthsFinder 特徵</title>
+    <url>/blog/2011/04/20/%E6%88%91%E7%9A%84%E6%9C%80%E7%AA%81%E5%87%BA%E7%9A%84%E4%BA%94%E7%A8%AE-Clifton-StrengthsFinder-%E7%89%B9%E5%BE%B5/</url>
+    <content><![CDATA[首先感謝北51夜明珠組長兼班代揚富的贈書：發現我的天才，裡頭有個能力發現剖析測驗，每一本書都有一個獨特的Code(所以要買書才能做)，可以測驗自己的5大特質。組長說要拿當做第一次100題的想法下去做(先不看書)，我就按照這樣的方法的做了。
+題目很多，要很快的解答(才會是最真實的)，不過實在很多都很難選。做完以後，給我的結果如下。
+
+嗯…我是覺得有的還蠻準的，開始來看看書裡的介紹吧~
+]]></content>
+      <tags>
+        <tag>Gossipings</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>我的PMP之路</title>
     <url>/blog/2010/04/05/%E6%88%91%E7%9A%84PMP%E4%B9%8B%E8%B7%AF/</url>
     <content><![CDATA[這篇是要來記錄我的PMP證照之路，希望能夠走到PMP退休(PMP Retired Status)的境界。
@@ -4459,18 +4543,6 @@ CCR4: 2022&#x2F;03&#x2F;01-2025&#x2F;03&#x2F;01。
 ]]></content>
       <tags>
         <tag>PMP</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>我的最突出的五種 Clifton StrengthsFinder 特徵</title>
-    <url>/blog/2011/04/20/%E6%88%91%E7%9A%84%E6%9C%80%E7%AA%81%E5%87%BA%E7%9A%84%E4%BA%94%E7%A8%AE-Clifton-StrengthsFinder-%E7%89%B9%E5%BE%B5/</url>
-    <content><![CDATA[首先感謝北51夜明珠組長兼班代揚富的贈書：發現我的天才，裡頭有個能力發現剖析測驗，每一本書都有一個獨特的Code(所以要買書才能做)，可以測驗自己的5大特質。組長說要拿當做第一次100題的想法下去做(先不看書)，我就按照這樣的方法的做了。
-題目很多，要很快的解答(才會是最真實的)，不過實在很多都很難選。做完以後，給我的結果如下。
-
-嗯…我是覺得有的還蠻準的，開始來看看書裡的介紹吧~
-]]></content>
-      <tags>
-        <tag>Gossipings</tag>
       </tags>
   </entry>
   <entry>
@@ -4972,6 +5044,46 @@ Email:*   網址:*   日期: 2010-08-01 12:44:54
       </tags>
   </entry>
   <entry>
+    <title>[歡喜走春三日遊][Day1]花博二日遊(前)(上)</title>
+    <url>/blog/2011/02/22/%E6%AD%A1%E5%96%9C%E8%B5%B0%E6%98%A5%E4%B8%89%E6%97%A5%E9%81%8A-Day1-%E8%8A%B1%E5%8D%9A%E4%BA%8C%E6%97%A5%E9%81%8A-%E5%89%8D-%E4%B8%8A/</url>
+    <content><![CDATA[這一次的旅遊計畫從農曆過年前開始計畫，經過一些的時間變動(原來是一月要去的，因為實在太忙不能請假，一直往後延)，終於在2&#x2F;16-2&#x2F;18到花博與平溪放天燈，規劃的內容在這邊。
+首先要感謝網路上很多的Blog與說明，才能造就這一個規劃，不過最重要的，是這三天陪我東奔西跑的Dimple，重感冒的她，在天氣忽冷忽熱的狀態，很怕被人家發現狂咳嗽的時候，基本上規劃的內容都有跑完，真的是辛苦她了。
+這次的三日遊基本上分花博二日遊前(Day1)與後(Day3)，中間夾一個平溪天燈節(Day2)。花博二日遊(前)當天遊覽的路線如下圖。
+
+1. 新生轉運站排夢想館預約券
+當天一大早Dimple坐最早的公車來到花博，我則是4點半起來，騎著車，在天都還沒亮的狀態，來到花博(也因為這樣，我搞錯條路，花了一些時間才來到花博)。大家為了都是一個原因：夢想館的預約券。在網路上可以查詢到一些訊息，都是要很早排隊，排很久。這一次選擇週間來逛，也是希望能夠避開人潮。結果要說是我們幸運嗎?還是其他的原因?我們6:30開始排隊，拿到12:17的預約券(拿預約券的時候有一些混亂，我拿到的是志工手拿的一疊預約券下面分開拿的兩張，看來是有被換過)，後來問其他的志工，說我們6:30排能夠拿到12:17的，實在也是幸運，於是我們今天的旅程就從這個幸運開始了。
+我們排的隊伍是大概轉運站票匝口前面的隊伍的第二列。地上都有黃點，代表排隊的依據，昏暗的光影同時也是我們充滿熱血的證明。
+
+原來開心好像是第二排，應該很前面吧，結果…
+
+其實也不過過了1個半小時(快8點)，已經有很多人在候補區了，看到這個告示真的有點心酸。
+
+8:30正式開始發預約券並且入園，打起精神出發了(排了兩個小時)~
+
+拿預約券的地方，有一點混亂，天氣不太好，拍到一堆雨傘~
+
+拿到預約券，進入花博展區，開始今天的旅程了~
+2. 未來館與天使生活館
+進到展區裡，沿著棒球場的邊緣走，就會看到志工吆和著排未來館與天使生活館往這邊，因為行程也有這兩個館的計畫，就去排隊看看了(後來發現其實晚一點看就沒人排隊啦)。排隊進去以後，首先從未來館開始看。這裡是一階一階的展示各式各樣的植物：1樓是樹類與一些珍奇的植物(還有會隨音樂跳舞的植物喔)、永生花展示區(永生花就是不會凋謝，永保美麗的花，用一些方法把水份換成蠟，就會變成這樣了)，1&#x2F;2樓是多肉植物區(仙人掌類的)、溫帶與高山植物區(這邊有放冷氣，有一點冷)，3樓是未來庭園與蘭花區，有一些生技產品的介紹與蘭花的展示。
+離開了未來館，往樓下走，就是天使生活館。這邊需要排一下隊才能進去。有一個很不錯的導覽人員來幫忙解說與跟我們打屁(她長得十分清秀，說話很有趣，而且….好高喔~)。裡面用數位科技的方式來說明台灣之美與綠色生活，有一個動畫展示，不過覺得有一些無聊。離開天使生活館之前，到中庭的地方曬曬太陽，拍拍照，那邊感覺很舒服，看到樓頂有人走來走去，也想上去看看，向志工打聽知道是青青步道(後來聽Dimple的媽媽說，上面可以鳥瞰花博全景)。不過到了中午時刻，該是野餐的時間，就在旁邊野餐了一下(碰到旁邊有一些死小孩)，看了看時間，到了要進夢想館的時間，就直接過去夢想館了(再次回來已經很晚了，才注意到青青步道只開放到下午四點，成為遺珠之憾)。
+
+
+
+
+
+
+
+
+
+
+
+(待續)
+]]></content>
+      <tags>
+        <tag>Travel</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>有笑有淚、極度震撼的印度好片-三個傻瓜 (3 idiots)</title>
     <url>/blog/2011/01/11/%E6%9C%89%E7%AC%91%E6%9C%89%E6%B7%9A%E3%80%81%E6%A5%B5%E5%BA%A6%E9%9C%87%E6%92%BC%E7%9A%84%E5%8D%B0%E5%BA%A6%E5%A5%BD%E7%89%87-%E4%B8%89%E5%80%8B%E5%82%BB%E7%93%9C-3-idiots/</url>
     <content><![CDATA[在看這部之前，有看過一些印度電影，其實最讓人印象深刻的，就是悲喜分明，節奏明快，還有很多的歌舞場面。這一部也是一樣，片長甚至是快3個小時，Dimple想去看看，我就一起去看了。看完的簡單感覺是：意猶未盡，沒感覺時間有那麼長，極度推推推的電影。
@@ -5028,46 +5140,6 @@ _而印度的自殺人口，主要來源在：
 ]]></content>
       <tags>
         <tag>Movies</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[歡喜走春三日遊][Day1]花博二日遊(前)(上)</title>
-    <url>/blog/2011/02/22/%E6%AD%A1%E5%96%9C%E8%B5%B0%E6%98%A5%E4%B8%89%E6%97%A5%E9%81%8A-Day1-%E8%8A%B1%E5%8D%9A%E4%BA%8C%E6%97%A5%E9%81%8A-%E5%89%8D-%E4%B8%8A/</url>
-    <content><![CDATA[這一次的旅遊計畫從農曆過年前開始計畫，經過一些的時間變動(原來是一月要去的，因為實在太忙不能請假，一直往後延)，終於在2&#x2F;16-2&#x2F;18到花博與平溪放天燈，規劃的內容在這邊。
-首先要感謝網路上很多的Blog與說明，才能造就這一個規劃，不過最重要的，是這三天陪我東奔西跑的Dimple，重感冒的她，在天氣忽冷忽熱的狀態，很怕被人家發現狂咳嗽的時候，基本上規劃的內容都有跑完，真的是辛苦她了。
-這次的三日遊基本上分花博二日遊前(Day1)與後(Day3)，中間夾一個平溪天燈節(Day2)。花博二日遊(前)當天遊覽的路線如下圖。
-
-1. 新生轉運站排夢想館預約券
-當天一大早Dimple坐最早的公車來到花博，我則是4點半起來，騎著車，在天都還沒亮的狀態，來到花博(也因為這樣，我搞錯條路，花了一些時間才來到花博)。大家為了都是一個原因：夢想館的預約券。在網路上可以查詢到一些訊息，都是要很早排隊，排很久。這一次選擇週間來逛，也是希望能夠避開人潮。結果要說是我們幸運嗎?還是其他的原因?我們6:30開始排隊，拿到12:17的預約券(拿預約券的時候有一些混亂，我拿到的是志工手拿的一疊預約券下面分開拿的兩張，看來是有被換過)，後來問其他的志工，說我們6:30排能夠拿到12:17的，實在也是幸運，於是我們今天的旅程就從這個幸運開始了。
-我們排的隊伍是大概轉運站票匝口前面的隊伍的第二列。地上都有黃點，代表排隊的依據，昏暗的光影同時也是我們充滿熱血的證明。
-
-原來開心好像是第二排，應該很前面吧，結果…
-
-其實也不過過了1個半小時(快8點)，已經有很多人在候補區了，看到這個告示真的有點心酸。
-
-8:30正式開始發預約券並且入園，打起精神出發了(排了兩個小時)~
-
-拿預約券的地方，有一點混亂，天氣不太好，拍到一堆雨傘~
-
-拿到預約券，進入花博展區，開始今天的旅程了~
-2. 未來館與天使生活館
-進到展區裡，沿著棒球場的邊緣走，就會看到志工吆和著排未來館與天使生活館往這邊，因為行程也有這兩個館的計畫，就去排隊看看了(後來發現其實晚一點看就沒人排隊啦)。排隊進去以後，首先從未來館開始看。這裡是一階一階的展示各式各樣的植物：1樓是樹類與一些珍奇的植物(還有會隨音樂跳舞的植物喔)、永生花展示區(永生花就是不會凋謝，永保美麗的花，用一些方法把水份換成蠟，就會變成這樣了)，1&#x2F;2樓是多肉植物區(仙人掌類的)、溫帶與高山植物區(這邊有放冷氣，有一點冷)，3樓是未來庭園與蘭花區，有一些生技產品的介紹與蘭花的展示。
-離開了未來館，往樓下走，就是天使生活館。這邊需要排一下隊才能進去。有一個很不錯的導覽人員來幫忙解說與跟我們打屁(她長得十分清秀，說話很有趣，而且….好高喔~)。裡面用數位科技的方式來說明台灣之美與綠色生活，有一個動畫展示，不過覺得有一些無聊。離開天使生活館之前，到中庭的地方曬曬太陽，拍拍照，那邊感覺很舒服，看到樓頂有人走來走去，也想上去看看，向志工打聽知道是青青步道(後來聽Dimple的媽媽說，上面可以鳥瞰花博全景)。不過到了中午時刻，該是野餐的時間，就在旁邊野餐了一下(碰到旁邊有一些死小孩)，看了看時間，到了要進夢想館的時間，就直接過去夢想館了(再次回來已經很晚了，才注意到青青步道只開放到下午四點，成為遺珠之憾)。
-
-
-
-
-
-
-
-
-
-
-
-(待續)
-]]></content>
-      <tags>
-        <tag>Travel</tag>
       </tags>
   </entry>
   <entry>
@@ -5876,6 +5948,32 @@ Todd在一連串的印度體驗以後，漸漸感覺到印度的文化改變了�
       </tags>
   </entry>
   <entry>
+    <title>讓不支援 Web API 的程式支援並使用 LINE Notify 服務</title>
+    <url>/blog/2017/03/03/%E8%AE%93%E4%B8%8D%E6%94%AF%E6%8F%B4%20Web%20API%20%E7%9A%84%E7%A8%8B%E5%BC%8F%E6%94%AF%E6%8F%B4%E4%B8%A6%E4%BD%BF%E7%94%A8%20LINE%20Notify%20%E6%9C%8D%E5%8B%99/</url>
+    <content><![CDATA[需求說明在開發某個應用的時候，使用 LINE Notify 作為通知功能，卻發現到該架構沒有使用 Web API 的函式 (Webrequest, HttpWebRequest, RestGet, …)，透過執行外部程式的方式來達成目的。
+LINE Notify這個服務蠻方便的，如果要作簡易的通知機器人又不想要作複雜的機器人開發，只要註冊一下就可以使用了，Google 一下有很多人都有使用經驗，是個不錯的服務。
+讓不支援 Web API 的程式支援如果你的架構能支援使用外部程式，或是可以使用其他類 (如 C++ export function) 函式庫的話，以下的說明可以讓該架構可以使用 Web API。
+我的架構中是沒有支援使用外部程式，但可以用 C++ 的外部函式庫，在 Windows 上面。
+首先，我使用 Windows 都有的 shell32.dll。
+#import &quot;shell32.dll&quot;         int ShellExecuteW( int       hWnd,                           string    lpVerb,                           string    lpFile,                           string    lpParameters,                           string    lpDirectory,                           int       nCmdShow                           );#import                 
+
+其中 ShellExecuteW 是拿來執行外部程式的函數。
+接下來使用 curl 來作為發動 Http Request 的外部程式，這個 curl 支援多種平台，真的很方便。
+因為環境在 Windows 上，所以下載 Windows 版的 (記得裡頭的檔案都要在同個目錄下才能運作)。
+最後在要使用 Web API 的地方加
+      ...      string cmd = &quot; -X POST -H \&quot;Authorization: Bearer &quot; + LineNotifyAccessToken + &quot;\&quot; -F \&quot;message=&quot; + msg + &quot;\&quot; -F \&quot;imageFile=&quot;+filename+&quot;\&quot; https://notify-api.line.me/api/notify&quot;; ...ShellExecuteW (0, &quot;Open&quot;, &quot;curl.exe&quot;, cmd, workpath, 0);      ...
+
+其中 imageFile 的格式是 jpeg&#x2F;png ，自己電腦裡的路徑 @C:/test/abc.png，所以就是 imageFile=@C:/test/abc.png。
+另外這個服務是每個小時有一個上限，API Rate Limit，可以參考一下。
+F:\Test&gt;curl -X GET -H &quot;Authorization: Bearer &lt;token&gt;&quot; https://notify-api.line.me/api/status -IHTTP/1.1 200 OKServer: nginxDate: Fri, 03 Mar 2017 02:45:18 GMTContent-Type: application/json;charset=UTF-8Transfer-Encoding: chunkedConnection: keep-aliveKeep-Alive: timeout=3X-RateLimit-Limit: 1000X-RateLimit-ImageLimit: 50X-RateLimit-Remaining: 946X-RateLimit-ImageRemaining: 50X-RateLimit-Reset: 1488511643
+
+這樣一來就讓不支援 Web API 的程式支援了。
+]]></content>
+      <tags>
+        <tag>Networks</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>試玩了一下 VMWare Photon 1.0</title>
     <url>/blog/2016/06/17/%E8%A9%A6%E7%8E%A9%E4%BA%86%E4%B8%80%E4%B8%8B%20VMWare%20Photon%201.0/</url>
     <content><![CDATA[今天早上看到這個，想說有空來試玩一下，以下是我的心得。
@@ -5902,32 +6000,6 @@ Yum 系的 package manager，但是改成了 tdnf 。
 ]]></content>
       <tags>
         <tag>VMWare</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>讓不支援 Web API 的程式支援並使用 LINE Notify 服務</title>
-    <url>/blog/2017/03/03/%E8%AE%93%E4%B8%8D%E6%94%AF%E6%8F%B4%20Web%20API%20%E7%9A%84%E7%A8%8B%E5%BC%8F%E6%94%AF%E6%8F%B4%E4%B8%A6%E4%BD%BF%E7%94%A8%20LINE%20Notify%20%E6%9C%8D%E5%8B%99/</url>
-    <content><![CDATA[需求說明在開發某個應用的時候，使用 LINE Notify 作為通知功能，卻發現到該架構沒有使用 Web API 的函式 (Webrequest, HttpWebRequest, RestGet, …)，透過執行外部程式的方式來達成目的。
-LINE Notify這個服務蠻方便的，如果要作簡易的通知機器人又不想要作複雜的機器人開發，只要註冊一下就可以使用了，Google 一下有很多人都有使用經驗，是個不錯的服務。
-讓不支援 Web API 的程式支援如果你的架構能支援使用外部程式，或是可以使用其他類 (如 C++ export function) 函式庫的話，以下的說明可以讓該架構可以使用 Web API。
-我的架構中是沒有支援使用外部程式，但可以用 C++ 的外部函式庫，在 Windows 上面。
-首先，我使用 Windows 都有的 shell32.dll。
-#import &quot;shell32.dll&quot;         int ShellExecuteW( int       hWnd,                           string    lpVerb,                           string    lpFile,                           string    lpParameters,                           string    lpDirectory,                           int       nCmdShow                           );#import                 
-
-其中 ShellExecuteW 是拿來執行外部程式的函數。
-接下來使用 curl 來作為發動 Http Request 的外部程式，這個 curl 支援多種平台，真的很方便。
-因為環境在 Windows 上，所以下載 Windows 版的 (記得裡頭的檔案都要在同個目錄下才能運作)。
-最後在要使用 Web API 的地方加
-      ...      string cmd = &quot; -X POST -H \&quot;Authorization: Bearer &quot; + LineNotifyAccessToken + &quot;\&quot; -F \&quot;message=&quot; + msg + &quot;\&quot; -F \&quot;imageFile=&quot;+filename+&quot;\&quot; https://notify-api.line.me/api/notify&quot;; ...ShellExecuteW (0, &quot;Open&quot;, &quot;curl.exe&quot;, cmd, workpath, 0);      ...
-
-其中 imageFile 的格式是 jpeg&#x2F;png ，自己電腦裡的路徑 @C:/test/abc.png，所以就是 imageFile=@C:/test/abc.png。
-另外這個服務是每個小時有一個上限，API Rate Limit，可以參考一下。
-F:\Test&gt;curl -X GET -H &quot;Authorization: Bearer &lt;token&gt;&quot; https://notify-api.line.me/api/status -IHTTP/1.1 200 OKServer: nginxDate: Fri, 03 Mar 2017 02:45:18 GMTContent-Type: application/json;charset=UTF-8Transfer-Encoding: chunkedConnection: keep-aliveKeep-Alive: timeout=3X-RateLimit-Limit: 1000X-RateLimit-ImageLimit: 50X-RateLimit-Remaining: 946X-RateLimit-ImageRemaining: 50X-RateLimit-Reset: 1488511643
-
-這樣一來就讓不支援 Web API 的程式支援了。
-]]></content>
-      <tags>
-        <tag>Networks</tag>
       </tags>
   </entry>
   <entry>
